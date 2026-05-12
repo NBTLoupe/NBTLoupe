@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Configurations>AppStore;Debug;Release</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <AssemblyTitle>NBTUtil</AssemblyTitle>
     <Description>A command-line utility to inspect and modify NBT data.</Description>
     <Product>NBTUtil</Product>
     <Copyright>Copyright © Justin Aquadro 2014</Copyright>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NBTModel\NBTModel.csproj" />

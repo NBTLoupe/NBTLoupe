@@ -8,8 +8,8 @@ namespace NBTExplorer.Model
     {
         private class PathPartDesc
         {
-            public string Name;
-            public DataNode Node;
+            public string Name = null;
+            public DataNode Node = null;
         }
 
         private string _pathRoot;
@@ -82,8 +82,8 @@ namespace NBTExplorer.Model
     {
         private class PathPart
         {
-            public string Name;
-            public DataNode Node;
+            public string Name = null;
+            public DataNode Node = null;
         }
 
         

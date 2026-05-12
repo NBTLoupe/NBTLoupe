@@ -6,7 +6,7 @@ namespace NBTExplorer.Model
     public class ListTagContainer : IOrderedTagContainer
     {
         private TagNodeList _tag;
-        private Action<bool> _modifyHandler;
+        private Action<bool> _modifyHandler = null;
 
         public ListTagContainer (TagNodeList tag, Action<bool> modifyHandler)
         {

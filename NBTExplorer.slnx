@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="NBTModel/NBTModel.csproj" />
+  <Project Path="NBTUtil/NBTUtil.csproj" />
+  <Project Path="Substrate/SubstrateCS/Substrate.csproj" />
+</Solution>

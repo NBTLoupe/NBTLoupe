@@ -88,7 +88,7 @@ namespace NBTExplorer.Model
                     }
                 }
             }
-            catch (Exception e) {
+            catch (Exception) {
                 if (FormRegistry.MessageBox != null)
                     FormRegistry.MessageBox("Not a valid region file.");
             }
