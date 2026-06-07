@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using NBTExplorer.Model;
 using NBTModel.Interop;
 using Substrate.Nbt;
@@ -73,7 +74,7 @@ internal class AddTagDialogState : DialogState
     }
 
     // And here's the actual magic! The OK button!
-    internal override void Execute()
+    internal override async Task ExecuteAsync()
     {
         // Check if SubNodes is null, and return if so.
         var selectedTreeNode = _window.SelectedTreeNodes.FirstOrDefault();
@@ -89,7 +90,7 @@ internal class AddTagDialogState : DialogState
         selectedTreeNode.IsExpanded = true;
 
         // Refresh its parent.
-        selectedTreeNode.RefreshChildNodes();
+        await selectedTreeNode.RefreshChildNodesAsync();
 
         // And find the new TreeNode, so we can Select it.
         _window.SelectedTreeNodes.Clear();
@@ -161,7 +162,7 @@ internal class RenameTagDialogState : DialogState
     }
 
     // And here's the actual magic! The OK button!
-    internal override void Execute()
+    internal override async Task ExecuteAsync()
     {
         // Check if DataNode is null, and return if so.
         var selectedTreeNode = _window.SelectedTreeNodes.FirstOrDefault();
@@ -171,7 +172,7 @@ internal class RenameTagDialogState : DialogState
         if (!selectedTreeNode.DataNode.RenameNode()) throw new UnreachableException();
 
         // And we refresh its parent so the order updates.
-        selectedTreeNode.Parent?.RefreshChildNodes();
+        if (selectedTreeNode.Parent is not null) await selectedTreeNode.Parent.RefreshChildNodesAsync();
     }
 }
 
@@ -267,7 +268,7 @@ internal class EditTagDialogState : DialogState
     }
 
     // And here's the actual magic! The OK button!
-    internal override void Execute()
+    internal override Task ExecuteAsync()
     {
         var selectedTreeNode = _window.SelectedTreeNodes.FirstOrDefault();
 
@@ -276,7 +277,7 @@ internal class EditTagDialogState : DialogState
         if (tag is null) throw new UnreachableException();
 
         // ...we let the FormHandlers deal with it.
-        if (selectedTreeNode?.DataNode.EditNode() != true) throw new UnreachableException();
+        return selectedTreeNode?.DataNode.EditNode() != true ? throw new UnreachableException() : Task.CompletedTask;
     }
 }
 
@@ -360,7 +361,7 @@ internal class FindDialogState : DialogState
                                           (ValueEnabled && !string.IsNullOrEmpty(ValueText));
 
     // And here's the actual magic! The OK button!
-    internal override void Execute()
+    internal override Task ExecuteAsync()
     {
         // We set the enabled values into our MainWindow variable, to potentially use elsewhere.
         _window.FindName = NameEnabled ? NameText : null;
@@ -377,9 +378,10 @@ internal class AboutDialogState : DialogState
     // We set the AboutDialog's title from here as it's neater to have the current version in there.
     internal static string AboutTitle => $"About {Program.FullName}";
 
-    internal override void Execute()
+    internal override Task ExecuteAsync()
     {
         // Yes, it's really boring... :C
+        return Task.CompletedTask;
     }
 }
 
@@ -415,9 +417,10 @@ internal class ErrorDialogState : DialogState
         ExceptionText = RuntimeFeature.IsDynamicCodeSupported ? exception.ToString() : exception.Message;
     }
 
-    internal override void Execute()
+    internal override Task ExecuteAsync()
     {
         // Yes, it's really boring... :C
+        return Task.CompletedTask;
     }
 }
 
@@ -434,11 +437,13 @@ internal class UnsavedChangesDialogState : DialogState
     }
 
     // And here's the actual magic! The OK button!
-    internal override void Execute()
+    internal override Task ExecuteAsync()
     {
         // We disable the Save button to bypass the dialog...
         _window.Save.Toggle(false);
         // ...and immediately exit!
         _window.Exit.Execute(null);
+
+        return Task.CompletedTask;
     }
 }

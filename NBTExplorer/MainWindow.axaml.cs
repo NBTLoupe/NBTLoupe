@@ -29,6 +29,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private void OnPropertyChanged([CallerMemberName] string? name = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+    // This is how we block the main UI when something is happening. We only do this in IO-related tasks as these take the longest.
+    internal bool IsBlocked
+    {
+        get;
+        set
+        {
+            if (field == value) return;
+            field = value;
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBlocked)));
+        }
+    }
+
     public MainWindow()
     {
         // We initialize everything we'll need...
@@ -95,8 +108,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 throw new UserErrorException($"File Not Found: {path}");
             }
 
-            // ...then we pass it to the OpenFileAt function, which does the actual Opening.
-            OpenFileAt(path);
+            // ...then we pass it to the OpenFileAsync function, which does the actual Opening.
+            await OpenFileAsync(path);
         }, StorageProvider.CanOpen);
 
         // This one is executed when the user chooses to Open a Folder through the Button.
@@ -128,8 +141,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 throw new UserErrorException($"Directory Not Found: {path}");
             }
 
-            // ...then we pass it to the OpenFolderAt function, which does the actual Opening.
-            OpenFolderAt(path);
+            // ...then we pass it to the OpenFolderAsync function, which does the actual Opening.
+            await OpenFolderAsync(path);
         }, StorageProvider.CanPickFolder);
 
         // This one is executed when the user chooses to Open a DirectoryDataNode in their file Explorer.
@@ -156,26 +169,35 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         });
 
         // This one is executed when the user chooses to Refresh a TreeNode.
-        Refresh = CreateAppCommand(_ =>
+        Refresh = CreateAppCommand(async _ =>
         {
-            // Check if DataNode is null.
-            var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
-            if (selectedTreeNode?.DataNode is null) throw new UnreachableException();
+            IsBlocked = true;
 
-            // First we back up the IsExpanded (UI-wise) TreeNodes.
-            var savedExpandedNodes = selectedTreeNode.SaveExpandedNodes();
+            try
+            {
+                // Check if DataNode is null.
+                var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
+                if (selectedTreeNode?.DataNode is null) throw new UnreachableException();
 
-            // Then NBTModel deals with the main TreeNode Refreshing...
-            if (!selectedTreeNode.DataNode.RefreshNode()) throw new UnreachableException();
+                // First we back up the IsExpanded (UI-wise) TreeNodes.
+                var savedExpandedNodes = selectedTreeNode.SaveExpandedNodes();
 
-            // ...and we deal with its children.
-            selectedTreeNode.RefreshChildNodes();
+                // Then NBTModel deals with the main TreeNode Refreshing...
+                if (!selectedTreeNode.DataNode.RefreshNode()) throw new UnreachableException();
 
-            // Then we can restore the IsExpanded (UI-wise) backup...
-            selectedTreeNode.RestoreExpandedNodes(savedExpandedNodes);
+                // ...and we deal with its children.
+                await selectedTreeNode.RefreshChildNodesAsync();
 
-            // ...and clear the SelectedTreeNodes, as they're invalid now.
-            SelectedTreeNodes.Clear();
+                // Then we can restore the IsExpanded (UI-wise) backup...
+                selectedTreeNode.RestoreExpandedNodes(savedExpandedNodes);
+
+                // ...and clear the SelectedTreeNodes, as they're invalid now.
+                SelectedTreeNodes.Clear();
+            }
+            finally
+            {
+                IsBlocked = false;
+            }
         });
 
         // This one is executed when the user chooses to Exit through the Button.
@@ -198,7 +220,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             // Check if DataNode or Parent are null.
             var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
-            if (selectedTreeNode?.DataNode is null || selectedTreeNode.Parent is null) throw new UnreachableException();
+            if (selectedTreeNode?.DataNode is null || selectedTreeNode.Parent is null)
+                throw new UnreachableException();
 
             // We isolate the parent because its child is going to be Cut...
             var parent = selectedTreeNode.Parent.Parent ?? TreeNodes.FirstOrDefault();
@@ -207,7 +230,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             if (!await selectedTreeNode.DataNode.CutNode()) throw new UnreachableException();
 
             // Then we refresh the TreeNode's parent...
-            parent?.RefreshChildNodes();
+            if (parent is not null) await parent.RefreshChildNodesAsync();
 
             // ...and also clear the SelectedTreeNodes, as the child is gone now.
             SelectedTreeNodes.Clear();
@@ -231,7 +254,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 throw new UnreachableException();
 
             // ...then we refresh the TreeNode's grandparent to make sure the title is accurate.
-            (selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault())?.RefreshChildNodes();
+            var grandParent = selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
+            if (grandParent is not null) await grandParent.RefreshChildNodesAsync();
 
             // ...and clear the SelectedTreeNodes, as they're invalid now.
             SelectedTreeNodes.Clear();
@@ -260,7 +284,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         });
 
         // This one is executed when the user chooses to Delete a TreeNode.
-        Delete = CreateAppCommand(_ =>
+        Delete = CreateAppCommand(async _ =>
         {
             var grandparents = new HashSet<TreeNode?>();
 
@@ -275,9 +299,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             }
 
             // We do have to deal with refreshing the grandparent ourselves, though...
-            foreach (var grandparent in grandparents)
+            foreach (var grandparent in grandparents.OfType<TreeNode>())
             {
-                grandparent?.RefreshChildNodes();
+                await grandparent.RefreshChildNodesAsync();
             }
 
             // ...and also clear the SelectedTreeNodes, as the child is gone now.
@@ -382,20 +406,20 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         });
 
         // This one is executed when the user chooses to Expand a TreeNode's Tree.
-        ExpandTree = CreateAppCommand(_ =>
+        ExpandTree = CreateAppCommand(async _ =>
         {
             // Check if selectedTreeNode is null.
             var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
             if (selectedTreeNode is null) throw new UnreachableException();
 
-            selectedTreeNode.ExpandTree();
+            await selectedTreeNode.ExpandTreeAsync();
         });
 
         // This one is executed when the user OKs a Dialog.
-        DialogOk = CreateAppCommand(_ =>
+        DialogOk = CreateAppCommand(async _ =>
         {
             // Execute the designated OK code!
-            _currentDialog?.Execute();
+            if (_currentDialog is not null) await _currentDialog.ExecuteAsync();
 
             // Once the Dialog-specific actions are done, we can Refresh the Selected TreeNode's Title just in case... 
             SelectedTreeNodes.FirstOrDefault()?.RefreshTitle();

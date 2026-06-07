@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using NBTExplorer.Model;
 using Serilog;
 
@@ -159,50 +160,74 @@ public partial class MainWindow
     internal ObservableCollection<RecentItem> RecentFolders { get; set; }
 
     // This function Opens a File from a Path.
-    private void OpenFileAt(string path)
+    private async Task OpenFileAsync(string path)
     {
-        // First we clear the TreeNode collections, as we're starting fresh.
-        SelectedTreeNodes.Clear();
-        TreeNodes.Clear();
+        IsBlocked = true;
 
-        // We check, from the Path, if the File is supported by NBTModel, and use its respective NodeCreate method to create our DataNode if so.
-        var node = FileTypeRegistry.RegisteredTypes.FirstOrDefault(item => item.Value.NamePatternTest(path)).Value
-            ?.NodeCreate(path);
-
-        // If we couldn't find any Path-based matches, we just assume it is a NbtFileDataNode...
-        node ??= NbtFileDataNode.TryCreateFrom(path);
-
-        // And if it failed to open, we tell the user.
-        if (node is null)
-            throw new UserErrorException(
-                "Invalid NBT file. Please only open supported file formats. If you did so, your file may be corrupted.");
-
-        // We add it to our Recent Files list, and update the UI!
-        RecentFiles.Clear();
-        foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder))
+        try
         {
-            RecentFiles.Add(item);
-        }
+            // First we clear the TreeNode collections, as we're starting fresh.
+            SelectedTreeNodes.Clear();
+            TreeNodes.Clear();
+            
+            // We disable the Save button, as the postExecute task may not be instant for this specific case.
+            Save.Toggle(false);
 
-        // And we can start expanding our NodeTree!
-        TreeNode.ExpandNode([node], TreeNodes);
+            // We check, from the Path, if the File is supported by NBTModel, and use its respective NodeCreate method to create our DataNode if so.
+            var node = FileTypeRegistry.RegisteredTypes.FirstOrDefault(item => item.Value.NamePatternTest(path)).Value
+                ?.NodeCreate(path);
+
+            // If we couldn't find any Path-based matches, we just assume it is a NbtFileDataNode...
+            node ??= NbtFileDataNode.TryCreateFrom(path);
+
+            // And if it failed to open, we tell the user.
+            if (node is null)
+                throw new UserErrorException(
+                    "Invalid NBT file. Please only open supported file formats. If you did so, your file may be corrupted.");
+
+            // We add it to our Recent Files list, and update the UI!
+            RecentFiles.Clear();
+            foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder))
+            {
+                RecentFiles.Add(item);
+            }
+
+            // And we can start expanding our NodeTree!
+            await TreeNode.ExpandNodeAsync([node], TreeNodes);
+        }
+        finally
+        {
+            IsBlocked = false;
+        }
     }
 
     // This function Opens a Folder from a Path.
-    private void OpenFolderAt(string path)
+    private async Task OpenFolderAsync(string path)
     {
-        // First we clear the TreeNode collections, as we're starting fresh.
-        SelectedTreeNodes.Clear();
-        TreeNodes.Clear();
+        IsBlocked = true;
 
-        // We add it to our Recent Folders list, and update the UI!
-        RecentFolders.Clear();
-        foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder))
+        try
         {
-            RecentFolders.Add(item);
-        }
+            // First we clear the TreeNode collections, as we're starting fresh.
+            SelectedTreeNodes.Clear();
+            TreeNodes.Clear();
+            
+            // We disable the Save button, as the postExecute task may not be instant for this specific case.
+            Save.Toggle(false);
 
-        // And we can start expanding our NodeTree! Trimming the trailing slashes as NBTModel doesn't like them. 
-        TreeNode.ExpandNode([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes);
+            // We add it to our Recent Folders list, and update the UI!
+            RecentFolders.Clear();
+            foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder))
+            {
+                RecentFolders.Add(item);
+            }
+
+            // And we can start expanding our NodeTree! Trimming the trailing slashes as NBTModel doesn't like them. 
+            await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes);
+        }
+        finally
+        {
+            IsBlocked = false;
+        }
     }
 }
