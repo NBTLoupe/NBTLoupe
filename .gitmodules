@@ -1,3 +1,3 @@
 [submodule "Substrate"]
 	path = Substrate
-	url = https://github.com/MallardLuna/neoSubstrate.git
+	url = https://github.com/neoNBTExplorer/neoSubstrate.git
