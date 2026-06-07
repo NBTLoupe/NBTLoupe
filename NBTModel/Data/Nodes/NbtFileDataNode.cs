@@ -4,6 +4,7 @@ using Substrate.Core;
 using Substrate.Nbt;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 using NBTModel.Interop;
 
 namespace NBTExplorer.Model
@@ -11,6 +12,7 @@ namespace NBTExplorer.Model
     public class NbtFileDataNode : DataNode, IMetaTagContainer
     {
         private NbtTree _tree;
+        public string TreeName => _tree?.Name;
         private string _path;
         private CompressionType _compressionType;
 
@@ -155,7 +157,7 @@ namespace NBTExplorer.Model
 
         public override bool RenameNode ()
         {
-            if (CanRenameNode && FormRegistry.EditString != null) {
+            if (CanRenameNode && FormRegistry.RenameTag != null) {
                 RestrictedStringFormData data = new RestrictedStringFormData(_tree.Name ?? "") {
                     AllowEmpty = true,
                 };
@@ -177,9 +179,9 @@ namespace NBTExplorer.Model
             return _tree != null && _tree.Root != null && Enum.IsDefined(typeof(TagType), type) && type != TagType.TAG_END;
         }
 
-        public override bool CanPasteIntoNode
+        public override async Task<bool> CanPasteIntoNode()
         {
-            get { return _tree != null && _tree.Root != null && NbtClipboardController.ContainsData; }
+            return _tree != null && _tree.Root != null && await NbtClipboardController.ContainsDataAsync();
         }
 
         public override bool CreateNode (TagType type)
@@ -203,12 +205,12 @@ namespace NBTExplorer.Model
             return false;
         }
 
-        public override bool PasteNode ()
+        public override async Task<bool> PasteNode ()
         {
-            if (!CanPasteIntoNode)
+            if (!await CanPasteIntoNode())
                 return false;
 
-            NbtClipboardData clipboard = NbtClipboardController.CopyFromClipboard();
+            NbtClipboardData clipboard = await NbtClipboardController.CopyFromClipboardAsync();
             if (clipboard == null || clipboard.Node == null)
                 return false;
 

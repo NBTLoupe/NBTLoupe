@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
@@ -37,21 +38,18 @@ namespace NBTExplorer.Model
                 return Enum.IsDefined(typeof(TagType), type) && type != TagType.TAG_END;
         }
 
-        public override bool CanPasteIntoNode
+        public override async Task<bool> CanPasteIntoNode()
         {
-            get
-            {
-                if (NbtClipboardController.ContainsData) {
-                    NbtClipboardData data = NbtClipboardController.CopyFromClipboard();
-                    if (data == null)
-                        return false;
+            if (await NbtClipboardController.ContainsDataAsync()) {
+                NbtClipboardData data = await NbtClipboardController.CopyFromClipboardAsync();
+                if (data == null)
+                    return false;
 
-                    if (data.Node != null && (data.Node.GetTagType() == Tag.ValueType || Tag.Count == 0))
-                        return true;
-                }
-
-                return false;
+                if (data.Node != null && (data.Node.GetTagType() == Tag.ValueType || Tag.Count == 0))
+                    return true;
             }
+
+            return false;
         }
 
         public override bool CreateNode (TagType type)
@@ -67,12 +65,12 @@ namespace NBTExplorer.Model
             return true;
         }
 
-        public override bool PasteNode ()
+        public override async Task<bool> PasteNode ()
         {
-            if (!CanPasteIntoNode)
+            if (!await CanPasteIntoNode())
                 return false;
 
-            NbtClipboardData clipboard = NbtClipboardController.CopyFromClipboard();
+            NbtClipboardData clipboard = await NbtClipboardController.CopyFromClipboardAsync();
             if (clipboard == null || clipboard.Node == null)
                 return false;
 

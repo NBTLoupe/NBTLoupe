@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace NBTModel.Interop
 {
@@ -16,36 +17,33 @@ namespace NBTModel.Interop
             get { return _instance != null; }
         }
 
-        public static bool ContainsData
+        public static async Task<bool> ContainsDataAsync()
         {
-            get 
-            {
-                if (_instance == null)
-                    return false;
-                return _instance.ContainsData; 
-            }
+            if (_instance == null)
+                return false;
+            return await _instance.ContainsDataAsync(); 
         }
 
-        public static NbtClipboardData CopyFromClipboard ()
+        public static async Task<NbtClipboardData> CopyFromClipboardAsync ()
         {
             if (_instance == null)
                 return null;
-            return _instance.CopyFromClipboard();
+            return await _instance.CopyFromClipboardAsync();
         }
 
-        public static void CopyToClipboard (NbtClipboardData data)
+        public static async Task CopyToClipboardAsync (NbtClipboardData data)
         {
             if (_instance == null)
                 return;
-            _instance.CopyToClipboard(data);
+            await _instance.CopyToClipboardAsync(data);
         }
     }
 
     public interface INbtClipboardController
     {
-        bool ContainsData { get; }
+        Task<bool> ContainsDataAsync ();
 
-        void CopyToClipboard (NbtClipboardData data);
-        NbtClipboardData CopyFromClipboard ();
+        Task CopyToClipboardAsync (NbtClipboardData data);
+        Task<NbtClipboardData> CopyFromClipboardAsync ();
     }
 }

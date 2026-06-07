@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
@@ -81,32 +81,27 @@ namespace NBTExplorer.Model
             }
         }
 
-        private static Dictionary<TagType, Type> _tagRegistry;
-
-        static TagDataNode ()
-        {
-            _tagRegistry = new Dictionary<TagType, Type>();
-            _tagRegistry[TagType.TAG_BYTE] = typeof(TagByteDataNode);
-            _tagRegistry[TagType.TAG_BYTE_ARRAY] = typeof(TagByteArrayDataNode);
-            _tagRegistry[TagType.TAG_COMPOUND] = typeof(TagCompoundDataNode);
-            _tagRegistry[TagType.TAG_DOUBLE] = typeof(TagDoubleDataNode);
-            _tagRegistry[TagType.TAG_FLOAT] = typeof(TagFloatDataNode);
-            _tagRegistry[TagType.TAG_INT] = typeof(TagIntDataNode);
-            _tagRegistry[TagType.TAG_INT_ARRAY] = typeof(TagIntArrayDataNode);
-            _tagRegistry[TagType.TAG_LIST] = typeof(TagListDataNode);
-            _tagRegistry[TagType.TAG_LONG] = typeof(TagLongDataNode);
-            _tagRegistry[TagType.TAG_LONG_ARRAY] = typeof(TagLongArrayDataNode);
-            _tagRegistry[TagType.TAG_SHORT] = typeof(TagShortDataNode);
-            _tagRegistry[TagType.TAG_SHORT_ARRAY] = typeof(TagShortArrayDataNode);
-            _tagRegistry[TagType.TAG_STRING] = typeof(TagStringDataNode);
-        }
-
         static public TagDataNode CreateFromTag (TagNode tag)
         {
-            if (tag == null || !_tagRegistry.ContainsKey(tag.GetTagType()))
-                return null;
-
-            return Activator.CreateInstance(_tagRegistry[tag.GetTagType()], tag) as TagDataNode;
+            return tag == null
+                ? null
+                : tag.GetTagType() switch
+                {
+                    TagType.TAG_BYTE => new TagByteDataNode(tag as TagNodeByte),
+                    TagType.TAG_BYTE_ARRAY => new TagByteArrayDataNode(tag as TagNodeByteArray),
+                    TagType.TAG_COMPOUND => new TagCompoundDataNode(tag as TagNodeCompound),
+                    TagType.TAG_DOUBLE => new TagDoubleDataNode(tag as TagNodeDouble),
+                    TagType.TAG_FLOAT => new TagFloatDataNode(tag as TagNodeFloat),
+                    TagType.TAG_INT => new TagIntDataNode(tag as TagNodeInt),
+                    TagType.TAG_INT_ARRAY => new TagIntArrayDataNode(tag as TagNodeIntArray),
+                    TagType.TAG_LIST => new TagListDataNode(tag as TagNodeList),
+                    TagType.TAG_LONG => new TagLongDataNode(tag as TagNodeLong),
+                    TagType.TAG_LONG_ARRAY => new TagLongArrayDataNode(tag as TagNodeLongArray),
+                    TagType.TAG_SHORT => new TagShortDataNode(tag as TagNodeShort),
+                    TagType.TAG_SHORT_ARRAY => new TagShortArrayDataNode(tag as TagNodeShortArray),
+                    TagType.TAG_STRING => new TagStringDataNode(tag as TagNodeString),
+                    _ => null
+                };
         }
 
         static public TagNode DefaultTag (TagType type)
@@ -255,7 +250,7 @@ namespace NBTExplorer.Model
 
         public override bool RenameNode ()
         {
-            if (CanRenameNode && TagParent != null && TagParent.IsNamedContainer && FormRegistry.EditString != null) {
+            if (CanRenameNode && TagParent != null && TagParent.IsNamedContainer && FormRegistry.RenameTag != null) {
                 RestrictedStringFormData data = new RestrictedStringFormData(TagParent.NamedTagContainer.GetTagName(Tag));
                 data.RestrictedValues.AddRange(TagParent.NamedTagContainer.TagNamesInUse);
 
@@ -270,20 +265,20 @@ namespace NBTExplorer.Model
             return false;
         }
 
-        public override bool CopyNode ()
+        public override async Task<bool> CopyNode ()
         {
             if (CanCopyNode) {
-                NbtClipboardController.CopyToClipboard(new NbtClipboardData(NodeName, Tag));
+                await NbtClipboardController.CopyToClipboardAsync(new NbtClipboardData(NodeName, Tag));
                 return true;
             }
 
             return false;
         }
 
-        public override bool CutNode ()
+        public override async Task<bool> CutNode ()
         {
             if (CanCutNode && TagParent != null) {
-                NbtClipboardController.CopyToClipboard(new NbtClipboardData(NodeName, Tag));
+                await NbtClipboardController.CopyToClipboardAsync(new NbtClipboardData(NodeName, Tag));
 
                 TagParent.DeleteTag(Tag);
                 IsParentModified = true;

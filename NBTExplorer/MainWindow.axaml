@@ -1,0 +1,705 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:NBTExplorer"
+        xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="NBTExplorer.MainWindow"
+        x:DataType="local:MainWindow"
+        Title="neoNBTExplorer"
+        Icon="neoNBTExplorer.ico"
+        Width="1100" Height="750"
+        Closing="Window_OnClosing">
+    <Grid>
+        <DockPanel IsEnabled="{Binding !IsDialogOpen}">
+            <StackPanel DockPanel.Dock="Top">
+                <Menu x:Name="TopMenu">
+                    <MenuItem Header="_File">
+                        <MenuItem Header="_Open..." InputGesture="{OnPlatform 'Ctrl+O', macOS='Cmd+O'}"
+                                  Command="{Binding OpenFile}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="DocumentFolder" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Open _Folder..."
+                                  InputGesture="{OnPlatform 'Ctrl+Shift+O', macOS='Cmd+Shift+O'}"
+                                  Command="{Binding OpenFolder}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="FolderOpen" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Open in _Explorer"
+                                  InputGesture="{OnPlatform 'Ctrl+Shift+E', macOS='Cmd+Shift+E'}"
+                                  Command="{Binding OpenInExplorer}" />
+                        <Separator />
+                        <MenuItem Header="_Save" InputGesture="{OnPlatform 'Ctrl+S', macOS='Cmd+S'}"
+                                  Command="{Binding Save}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Save" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Refresh" InputGesture="F5" Command="{Binding Refresh}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="ArrowSync" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Recent Files" ItemsSource="{Binding RecentFiles}"
+                                  IsEnabled="{Binding RecentFiles.Count}"
+                                  DisplayMemberBinding="{Binding Path}" Command="{Binding OpenFile}"
+                                  CommandParameter="{Binding $self.SelectedItem}" />
+                        <MenuItem Header="Recent Folders" ItemsSource="{Binding RecentFolders}"
+                                  IsEnabled="{Binding RecentFolders.Count}"
+                                  DisplayMemberBinding="{Binding Path}" Command="{Binding OpenFolder}"
+                                  CommandParameter="{Binding $self.SelectedItem}" />
+                        <Separator />
+                        <MenuItem Header="E_xit" InputGesture="{OnPlatform 'Alt+F4', macOS='Cmd+Q'}"
+                                  Command="{Binding Exit}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="ArrowExit" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="_Edit">
+                        <MenuItem Header="Cu_t" InputGesture="{OnPlatform 'Ctrl+X', macOS='Cmd+X'}"
+                                  Command="{Binding Cut}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Cut" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Copy" InputGesture="{OnPlatform 'Ctrl+C', macOS='Cmd+C'}"
+                                  Command="{Binding Copy}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Copy" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Paste" InputGesture="{OnPlatform 'Ctrl+V', macOS='Cmd+V'}"
+                                  Command="{Binding Paste}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="ClipboardPaste" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="_Rename" InputGesture="{OnPlatform 'Ctrl+R', macOS='Cmd+R'}"
+                                  Command="{Binding Rename}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="RenameA" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Edit Value" InputGesture="{OnPlatform 'Ctrl+E', macOS='Cmd+E'}"
+                                  Command="{Binding EditValue}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Edit" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Delete" InputGesture="Delete" Command="{Binding Delete}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Delete" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Move _Up" InputGesture="{OnPlatform 'Ctrl+Up', macOS='Cmd+Up'}"
+                                  Command="{Binding MoveUp}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="ArrowUp" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Move Do_wn" InputGesture="{OnPlatform 'Ctrl+Down', macOS='Cmd+Down'}"
+                                  Command="{Binding MoveDown}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="ArrowDown" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="_Search">
+                        <MenuItem Header="_Find..." InputGesture="{OnPlatform 'Ctrl+F', macOS='Cmd+F'}"
+                                  Command="{Binding Find}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Search" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Find _Next" InputGesture="F3" Command="{Binding FindNext}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="DocumentSearch" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="_Replace..." InputGesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}"
+                                  Command="{Binding Replace}" />
+                        <Separator />
+                        <MenuItem Header="_Chunk Finder..." Command="{Binding ChunkFinder}" />
+                    </MenuItem>
+                    <MenuItem Header="_Help">
+                        <MenuItem Header="_About" InputGesture="F1" Command="{Binding About}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Info" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Ac_knowledgements" Command="{Binding Acknowledgements}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="Certificate" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                    </MenuItem>
+                </Menu>
+
+                <CommandBar x:Name="CommandBar" DefaultLabelPosition="Collapsed" IsDynamicOverflowEnabled="True">
+                    <CommandBar.PrimaryCommands>
+                        <CommandBarButton Label="Open NBT Data Source" ToolTip.Tip="Open NBT Data Source"
+                                          Command="{Binding OpenFile}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="DocumentFolder" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Open Folder" ToolTip.Tip="Open Folder" Command="{Binding OpenFolder}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="FolderOpen" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Save All Modified Tags" ToolTip.Tip="Save All Modified Tags"
+                                          Command="{Binding Save}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="Save" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Refresh Content From Disk" ToolTip.Tip="Refresh Content From Disk"
+                                          Command="{Binding Refresh}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="ArrowSync" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarSeparator />
+
+                        <CommandBarButton Label="Cut" ToolTip.Tip="Cut" Command="{Binding Cut}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="Cut" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+                        <CommandBarButton Label="Copy" ToolTip.Tip="Copy" Command="{Binding Copy}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="Copy" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+                        <CommandBarButton Label="Paste" ToolTip.Tip="Paste" Command="{Binding Paste}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="ClipboardPaste" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarSeparator />
+
+                        <CommandBarButton Label="Rename Tag" ToolTip.Tip="Rename Tag" Command="{Binding Rename}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="RenameA" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Edit Tag Value" ToolTip.Tip="Edit Tag Value"
+                                          Command="{Binding EditValue}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="Edit" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Delete Tag" ToolTip.Tip="Delete Tag" Command="{Binding Delete}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="Delete" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarSeparator />
+
+                        <CommandBarButton Label="Add Byte Tag" ToolTip.Tip="Add Byte Tag"
+                                          Command="{Binding AddByteTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="NumberCircle1" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Short Tag" ToolTip.Tip="Add Short Tag"
+                                          Command="{Binding AddShortTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="NumberCircle2" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Int Tag" ToolTip.Tip="Add Int Tag" Command="{Binding AddIntTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="NumberCircle4" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Long Tag" ToolTip.Tip="Add Long Tag"
+                                          Command="{Binding AddLongTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="NumberCircle8" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Float Tag" ToolTip.Tip="Add Float Tag"
+                                          Command="{Binding AddFloatTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="DecimalArrowLeft" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Double Tag" ToolTip.Tip="Add Double Tag"
+                                          Command="{Binding AddDoubleTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="DecimalArrowRight" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Byte Array Tag" ToolTip.Tip="Add Byte Array Tag"
+                                          Command="{Binding AddByteArrayTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="CodeBlock" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Int Array Tag" ToolTip.Tip="Add Int Array Tag"
+                                          Command="{Binding AddIntArrayTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="DataBarVertical" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Long Array Tag" ToolTip.Tip="Add Long Array Tag"
+                                          Command="{Binding AddLongArrayTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="DataBarHorizontal" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add String Tag" ToolTip.Tip="Add String Tag"
+                                          Command="{Binding AddStringTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="TextT" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add List Tag" ToolTip.Tip="Add List Tag"
+                                          Command="{Binding AddListTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="TextBulletList" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Add Compound Tag" ToolTip.Tip="Add Compound Tag"
+                                          Command="{Binding AddCompoundTag}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="Box" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarSeparator />
+
+                        <CommandBarButton Label="Find" ToolTip.Tip="Find" Command="{Binding Find}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="Search" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarButton Label="Find Next" ToolTip.Tip="Find Next" Command="{Binding FindNext}">
+                            <CommandBarButton.Icon>
+                                <ic:FluentIcon Icon="DocumentSearch" />
+                            </CommandBarButton.Icon>
+                        </CommandBarButton>
+
+                        <CommandBarSeparator />
+
+                        <!-- This is hacky, but this is the best way I could align the CommandBar to the left without it looking awkward. -->
+                        <CommandBarButton IsEnabled="False" IsVisible="{Binding !$self.IsInOverflow}"
+                                          Width="{Binding $parent.Bounds.Width}" />
+                    </CommandBar.PrimaryCommands>
+                </CommandBar>
+            </StackPanel>
+
+            <TreeView ItemsSource="{Binding TreeNodes}" SelectedItems="{Binding SelectedTreeNodes}"
+                      SelectionMode="Multiple" DragDrop.AllowDrop="True" DragDrop.DragOver="TreeView_OnDragOver"
+                      DragDrop.Drop="TreeView_OnDrop">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding SubNodes}">
+                        <StackPanel Orientation="Horizontal">
+                            <ic:FluentIcon Icon="{Binding Icon}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+                <TreeView.ContextMenu>
+                    <ContextMenu Opening="ContextMenu_OnOpening">
+                        <MenuItem x:Name="Expand" Header="_Expand" Command="{Binding ToggleExpand}" />
+                        <MenuItem x:Name="Collapse" Header="_Collapse" Command="{Binding ToggleExpand}" />
+                        <Separator />
+                        <MenuItem Header="Expand C_hildren" Command="{Binding ExpandChildren}" />
+                        <MenuItem Header="Expand _Tree" Command="{Binding ExpandTree}" />
+
+                        <Separator />
+                        <MenuItem Header="Move _Up" Command="{Binding MoveUp}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="ArrowUp" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Move _Down" Command="{Binding MoveDown}">
+                            <MenuItem.Icon>
+                                <ic:FluentIcon Icon="ArrowDown" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
+                <TreeView.KeyBindings>
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+Shift+E', macOS='Cmd+Shift+E'}"
+                                Command="{Binding OpenInExplorer}" />
+
+                    <KeyBinding Gesture="F5" Command="{Binding Refresh}" />
+
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+X', macOS='Cmd+X'}" Command="{Binding Cut}" />
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+C', macOS='Cmd+C'}" Command="{Binding Copy}" />
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+V', macOS='Cmd+V'}" Command="{Binding Paste}" />
+
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+R', macOS='Cmd+R'}" Command="{Binding Rename}" />
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+E', macOS='Cmd+E'}" Command="{Binding EditValue}" />
+
+                    <KeyBinding Gesture="Delete" Command="{Binding Delete}" />
+
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+Up', macOS='Cmd+Up'}" Command="{Binding MoveUp}" />
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+Down', macOS='Cmd+Down'}" Command="{Binding MoveDown}" />
+
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+F', macOS='Cmd+F'}" Command="{Binding Find}" />
+                    <KeyBinding Gesture="F3" Command="{Binding FindNext}" />
+                    <KeyBinding Gesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}" Command="{Binding Replace}" />
+                </TreeView.KeyBindings>
+            </TreeView>
+        </DockPanel>
+
+        <!--
+            This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+
+            Licensed under the MIT License.
+            Copyright (c) 2025 amwx
+            See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+            
+            Source repository: https://github.com/amwx/FluentAvalonia
+        -->
+        <Border IsVisible="{Binding IsDialogOpen}">
+            <Panel Background="{DynamicResource DialogOverlayBrush}">
+                <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderThickness="1"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" CornerRadius="8"
+                        MinWidth="320" MaxWidth="548" MinHeight="184" MaxHeight="756" HorizontalAlignment="Center"
+                        VerticalAlignment="Center" Effect="{DynamicResource DialogShadow}"
+                        BackgroundSizing="InnerBorderEdge">
+                    <Border ClipToBounds="True" CornerRadius="8">
+                        <Grid ClipToBounds="True" RowDefinitions="*,Auto">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Padding="24"
+                                        BorderThickness="0,0,0,1"
+                                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                                    <!-- Personalised dialogs -->
+                                    <ContentControl Content="{Binding CurrentDialog}">
+                                        <ContentControl.DataTemplates>
+                                            <!-- Add Tag -->
+                                            <DataTemplate DataType="{x:Type local:AddTagDialogState}">
+                                                <Grid RowDefinitions="Auto,*">
+                                                    <StackPanel Margin="0,0,0,12">
+                                                        <TextBlock TextWrapping="Wrap" Text="{Binding TitleText}"
+                                                                   FontSize="20"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="1" Spacing="4">
+                                                        <TextBox Loaded="DialogTextBox_Loaded"
+                                                                 Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 PlaceholderText="Name">
+                                                            <TextBox.KeyBindings>
+                                                                <KeyBinding Gesture="Enter"
+                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                            </TextBox.KeyBindings>
+                                                        </TextBox>
+                                                        <NumericUpDown Value="{Binding TagSize, Mode=TwoWay}"
+                                                                       IsEnabled="{Binding SizeEnabled}"
+                                                                       Minimum="0"
+                                                                       FormatString="0" ParsingNumberStyle="Integer">
+                                                            <NumericUpDown.InnerLeftContent>
+                                                                <TextBlock Text="Size:" VerticalAlignment="Center"
+                                                                           Margin="10 0 0 0" />
+                                                            </NumericUpDown.InnerLeftContent>
+
+                                                            <NumericUpDown.KeyBindings>
+                                                                <KeyBinding Gesture="Enter"
+                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                            </NumericUpDown.KeyBindings>
+                                                        </NumericUpDown>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </DataTemplate>
+
+                                            <!-- Rename Tag -->
+                                            <DataTemplate DataType="{x:Type local:RenameTagDialogState}">
+                                                <Grid RowDefinitions="Auto,*">
+                                                    <StackPanel Margin="0,0,0,12">
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   Text="{Binding TitleText}"
+                                                                   FontSize="20" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                    </StackPanel>
+                                                    <TextBox Loaded="DialogTextBox_Loaded"
+                                                             Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             PlaceholderText="Name" Grid.Row="1">
+                                                        <TextBox.KeyBindings>
+                                                            <KeyBinding Gesture="Enter"
+                                                                        Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                        </TextBox.KeyBindings>
+                                                    </TextBox>
+                                                </Grid>
+                                            </DataTemplate>
+
+                                            <!-- Edit Tag Value -->
+                                            <DataTemplate DataType="{x:Type local:EditTagDialogState}">
+                                                <Grid RowDefinitions="Auto,*">
+                                                    <StackPanel Margin="0,0,0,12">
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   Text="{Binding TitleText}"
+                                                                   FontSize="20" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                    </StackPanel>
+                                                    <TextBox Loaded="DialogTextBox_Loaded"
+                                                             Text="{Binding TagValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             PlaceholderText="Value"
+                                                             TextWrapping="Wrap" MinLines="5" MaxLines="10"
+                                                             Grid.Row="1">
+                                                        <TextBox.KeyBindings>
+                                                            <KeyBinding Gesture="Enter"
+                                                                        Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                        </TextBox.KeyBindings>
+                                                    </TextBox>
+                                                </Grid>
+                                            </DataTemplate>
+
+                                            <!-- Find -->
+                                            <DataTemplate DataType="{x:Type local:FindDialogState}">
+                                                <Grid RowDefinitions="Auto,*">
+                                                    <TextBlock TextWrapping="Wrap" Margin="0,0,0,12" Text="Find"
+                                                               FontSize="20"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                               HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                    <StackPanel Grid.Row="1" Spacing="4">
+                                                        <CheckBox HorizontalAlignment="Stretch"
+                                                                  HorizontalContentAlignment="Stretch"
+                                                                  IsChecked="{Binding NameEnabled, Mode=TwoWay}">
+                                                            <TextBox
+                                                                Text="{Binding NameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                IsEnabled="{Binding NameEnabled}">
+                                                                <TextBox.InnerLeftContent>
+                                                                    <TextBlock Text="Name:" VerticalAlignment="Center"
+                                                                               Margin="10 0 0 0" />
+                                                                </TextBox.InnerLeftContent>
+
+                                                                <TextBox.KeyBindings>
+                                                                    <KeyBinding Gesture="Enter"
+                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                                </TextBox.KeyBindings>
+                                                            </TextBox>
+                                                        </CheckBox>
+                                                        <CheckBox HorizontalAlignment="Stretch"
+                                                                  HorizontalContentAlignment="Stretch"
+                                                                  IsChecked="{Binding ValueEnabled, Mode=TwoWay}">
+                                                            <TextBox
+                                                                Text="{Binding ValueText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                IsEnabled="{Binding ValueEnabled}">
+                                                                <TextBox.InnerLeftContent>
+                                                                    <TextBlock Text="Value:" VerticalAlignment="Center"
+                                                                               Margin="10 0 0 0" />
+                                                                </TextBox.InnerLeftContent>
+
+                                                                <TextBox.KeyBindings>
+                                                                    <KeyBinding Gesture="Enter"
+                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                                </TextBox.KeyBindings>
+                                                            </TextBox>
+                                                        </CheckBox>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </DataTemplate>
+
+                                            <!-- About -->
+                                            <DataTemplate DataType="{x:Type local:AboutDialogState}">
+                                                <Grid RowDefinitions="Auto,*" Loaded="InformationalDialog_OnLoaded">
+                                                    <DockPanel LastChildFill="True">
+                                                        <Image Width="64" Height="64" Source="neoNBTExplorer.png" />
+                                                        <StackPanel Margin="24,0,0,0">
+                                                            <TextBlock TextWrapping="Wrap"
+                                                                       Text="{Binding AboutTitle}" FontSize="20"
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                                       HorizontalAlignment="Left"
+                                                                       VerticalAlignment="Top" />
+                                                            <TextBlock TextWrapping="Wrap" FontSize="14"
+                                                                       Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                                       HorizontalAlignment="Left"
+                                                                       VerticalAlignment="Top">
+                                                                Copyright (c) 2024-2026 MallardLuna
+                                                                <LineBreak />
+                                                                Copyright (c) 2011-2017 Justin Aquadro
+                                                                <LineBreak /><LineBreak />
+                                                                neoNBTExplorer is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself based on NBTEdit by copygirl).
+                                                                <LineBreak /><LineBreak />
+                                                                A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this shows its excellence, it's also starting to show its age and limited native platform support.
+                                                                <LineBreak /><LineBreak />
+                                                                neoNBTExplorer tries to close that gap with the help of .NET 10 and a GUI written from the ground up in Avalonia.
+                                                                <LineBreak /><LineBreak />
+                                                                Right now we fully support macOS, Windows and GNU/Linux; and the idea is to eventually bring it to the web as well!
+                                                                <LineBreak />
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </DockPanel>
+                                                </Grid>
+                                            </DataTemplate>
+
+                                            <!-- Error -->
+                                            <DataTemplate DataType="{x:Type local:ErrorDialogState}">
+                                                <Grid RowDefinitions="Auto,*" Loaded="InformationalDialog_OnLoaded">
+                                                    <StackPanel Margin="0,0,0,12">
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   Text="Something went wrong... :C"
+                                                                   FontSize="20" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                        <TextBlock
+                                                            Text="We strongly recommend you save your changes and restart the app. If this keeps happening, please open an issue on our GitHub."
+                                                            IsVisible="{Binding PotentialBug}"
+                                                            TextWrapping="Wrap" FontSize="14"
+                                                            Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                            HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+                                                        <TextBlock
+                                                            Text="A critical error has occurred in Substrate, compromising the app state. To prevent data corruption, you must restart the app. If this keeps happening, please open an issue on our GitHub."
+                                                            IsVisible="{Binding FatalException}"
+                                                            TextWrapping="Wrap" FontSize="14"
+                                                            Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                            HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                    </StackPanel>
+                                                    <TextBox Text="{Binding ExceptionText}" TextWrapping="Wrap"
+                                                             TextAlignment="Center"
+                                                             MinLines="5" IsReadOnly="True" Grid.Row="1" />
+                                                </Grid>
+                                            </DataTemplate>
+
+                                            <!-- Unsaved Changes -->
+                                            <DataTemplate DataType="{x:Type local:UnsavedChangesDialogState}">
+                                                <Grid RowDefinitions="Auto,*" Loaded="InformationalDialog_OnLoaded">
+                                                    <StackPanel Margin="0,0,0,12">
+                                                        <TextBlock TextWrapping="Wrap" Text="Unsaved changes!"
+                                                                   FontSize="20" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                        <TextBlock
+                                                            Text="Are you sure you want to close the app? Unsaved changes will be lost!"
+                                                            TextWrapping="Wrap" FontSize="14"
+                                                            Foreground="{DynamicResource ThemeForegroundBrush}"
+                                                            HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ContentControl.DataTemplates>
+                                    </ContentControl>
+                                </Border>
+                            </ScrollViewer>
+
+                            <!-- The Buttons! I know the way I chose to show them or not is janky, but it's a temporary solution. -->
+                            <Border Grid.Row="1" Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                                    Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                                <DockPanel LastChildFill="False">
+                                    <StackPanel Orientation="Horizontal" Spacing="4"
+                                                DockPanel.Dock="Left">
+                                        <Button Name="DialogImportButton" Content="Import"
+                                                Command="{Binding DialogImport}"
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                        <Button Name="DialogExportButton" Content="Export"
+                                                Command="{Binding DialogExport}"
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="4" DockPanel.Dock="Right">
+                                        <Button Name="DialogCancelButton" Content="Cancel"
+                                                Command="{Binding DialogCancel}"
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                        <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+                                        <Button Name="DialogOkButton" Content="OK" Command="{Binding DialogOk}"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                                Classes="accent" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Border>
+            </Panel>
+
+            <!-- Only Cancel is Dialog-global, as I don't want users trying to Enter on the "Cancel" Button to end up "Ok"ing -->
+            <Border.KeyBindings>
+                <KeyBinding Gesture="Escape" Command="{Binding DialogCancel}" />
+            </Border.KeyBindings>
+
+            <!-- And Ok is enabled per-item, so you won't find it here. -->
+        </Border>
+    </Grid>
+
+    <Window.KeyBindings>
+        <KeyBinding Gesture="{OnPlatform 'Ctrl+O', macOS='Cmd+O'}" Command="{Binding OpenFile}" />
+        <KeyBinding Gesture="{OnPlatform 'Ctrl+Shift+O', macOS='Cmd+Shift+O'}" Command="{Binding OpenFolder}" />
+        <KeyBinding Gesture="{OnPlatform 'Ctrl+S', macOS='Cmd+S'}" Command="{Binding Save}" />
+        <KeyBinding Gesture="{OnPlatform 'Alt+F4', macOS='Cmd+Q'}" Command="{Binding Exit}" />
+        <KeyBinding Gesture="F1" Command="{Binding About}" />
+    </Window.KeyBindings>
+
+    <Window.Styles>
+        <Style Selector="TreeViewItem" x:DataType="local:MainWindow+TreeNode">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        </Style>
+        <Style Selector="CommandBarButton:disabled">
+            <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundDisabled}" />
+            <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}" />
+        </Style>
+        <Style Selector="Button#DialogImportButton:disabled">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Button#DialogExportButton:disabled">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Button#DialogCancelButton:disabled">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </Window.Styles>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4D000000" />
+                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- ReSharper disable Xaml.RedundantResource -->
+                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4DFFFFFF" />
+                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66FFFFFF" />
+                    <!-- ReSharper restore Xaml.RedundantResource -->
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+</Window>

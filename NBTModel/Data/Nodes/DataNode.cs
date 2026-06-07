@@ -1,6 +1,7 @@
 ﻿using Substrate.Nbt;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace NBTExplorer.Model
 {
@@ -274,9 +275,16 @@ namespace NBTExplorer.Model
             get { return (Capabilities & NodeCapabilities.Cut) != NodeCapabilities.None; }
         }
 
-        public virtual bool CanPasteIntoNode
+        public virtual Task<bool> CanPasteIntoNode ()
         {
-            get { return (Capabilities & NodeCapabilities.PasteInto) != NodeCapabilities.None; }
+            try
+            {
+                return Task.FromResult((Capabilities & NodeCapabilities.PasteInto) != NodeCapabilities.None);
+            }
+            catch (Exception exception)
+            {
+                return Task.FromException<bool>(exception);
+            }
         }
 
         public virtual bool CanSearchNode
@@ -382,19 +390,19 @@ namespace NBTExplorer.Model
             return false;
         }
 
-        public virtual bool CopyNode ()
+        public virtual Task<bool> CopyNode ()
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        public virtual bool CutNode ()
+        public virtual Task<bool> CutNode ()
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        public virtual bool PasteNode ()
+        public virtual Task<bool> PasteNode ()
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         public virtual bool ChangeRelativePosition (int offset)

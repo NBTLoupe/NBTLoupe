@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
@@ -39,9 +40,9 @@ namespace NBTExplorer.Model
             return Enum.IsDefined(typeof(TagType), type) && type != TagType.TAG_END;
         }
 
-        public override bool CanPasteIntoNode
+        public override async Task<bool> CanPasteIntoNode()
         {
-            get { return NbtClipboardController.ContainsData; }
+            return await NbtClipboardController.ContainsDataAsync();
         }
 
         public override bool CreateNode (TagType type)
@@ -64,12 +65,12 @@ namespace NBTExplorer.Model
             return false;
         }
 
-        public override bool PasteNode ()
+        public override async Task<bool> PasteNode ()
         {
-            if (!CanPasteIntoNode)
+            if (!await CanPasteIntoNode())
                 return false;
 
-            NbtClipboardData clipboard = NbtClipboardController.CopyFromClipboard();
+            NbtClipboardData clipboard = await NbtClipboardController.CopyFromClipboardAsync();
             if (clipboard == null || clipboard.Node == null)
                 return false;
 
