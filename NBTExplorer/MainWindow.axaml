@@ -411,7 +411,6 @@
                                                         <TextBlock TextWrapping="Wrap" Text="{Binding TitleText}"
                                                                    FontSize="20"
                                                                    FontWeight="SemiBold"
-                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                     </StackPanel>
                                                     <StackPanel Grid.Row="1" Spacing="4">
@@ -448,7 +447,6 @@
                                                         <TextBlock TextWrapping="Wrap"
                                                                    Text="{Binding TitleText}"
                                                                    FontSize="20" FontWeight="SemiBold"
-                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                     </StackPanel>
                                                     <TextBox Loaded="DialogTextBox_Loaded"
@@ -469,7 +467,6 @@
                                                         <TextBlock TextWrapping="Wrap"
                                                                    Text="{Binding TitleText}"
                                                                    FontSize="20" FontWeight="SemiBold"
-                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                     </StackPanel>
                                                     <TextBox Loaded="DialogTextBox_Loaded"
@@ -491,7 +488,6 @@
                                                     <TextBlock TextWrapping="Wrap" Margin="0,0,0,12" Text="Find"
                                                                FontSize="20"
                                                                FontWeight="SemiBold"
-                                                               Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                     <StackPanel Grid.Row="1" Spacing="4">
                                                         <CheckBox HorizontalAlignment="Stretch"
@@ -541,11 +537,9 @@
                                                             <TextBlock TextWrapping="Wrap"
                                                                        Text="{Binding AboutTitle}" FontSize="20"
                                                                        FontWeight="SemiBold"
-                                                                       Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                        HorizontalAlignment="Left"
                                                                        VerticalAlignment="Top" />
                                                             <TextBlock TextWrapping="Wrap" FontSize="14"
-                                                                       Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                        HorizontalAlignment="Left"
                                                                        VerticalAlignment="Top">
                                                                 Copyright (c) 2024-2026 MallardLuna
@@ -573,20 +567,17 @@
                                                         <TextBlock TextWrapping="Wrap"
                                                                    Text="Something went wrong... :C"
                                                                    FontSize="20" FontWeight="SemiBold"
-                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                         <TextBlock
                                                             Text="We strongly recommend you save your changes and restart the app. If this keeps happening, please open an issue on our GitHub."
                                                             IsVisible="{Binding PotentialBug}"
                                                             TextWrapping="Wrap" FontSize="14"
-                                                            Foreground="{DynamicResource ThemeForegroundBrush}"
                                                             HorizontalAlignment="Left" VerticalAlignment="Top" />
 
                                                         <TextBlock
                                                             Text="A critical error has occurred in Substrate, compromising the app state. To prevent data corruption, you must restart the app. If this keeps happening, please open an issue on our GitHub."
                                                             IsVisible="{Binding FatalException}"
                                                             TextWrapping="Wrap" FontSize="14"
-                                                            Foreground="{DynamicResource ThemeForegroundBrush}"
                                                             HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                     </StackPanel>
                                                     <TextBox Text="{Binding ExceptionText}" TextWrapping="Wrap"
@@ -601,12 +592,10 @@
                                                     <StackPanel Margin="0,0,0,12">
                                                         <TextBlock TextWrapping="Wrap" Text="Unsaved changes!"
                                                                    FontSize="20" FontWeight="SemiBold"
-                                                                   Foreground="{DynamicResource ThemeForegroundBrush}"
                                                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                         <TextBlock
                                                             Text="Are you sure you want to close the app? Unsaved changes will be lost!"
                                                             TextWrapping="Wrap" FontSize="14"
-                                                            Foreground="{DynamicResource ThemeForegroundBrush}"
                                                             HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                     </StackPanel>
                                                 </Grid>
