@@ -1,0 +1,136 @@
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
+using NBTExplorer.Model;
+using Substrate.Nbt;
+
+namespace NBTExplorer;
+
+public partial class MainWindow
+{
+    // We need a way to disable the Clipboard-based features if they wouldn't work.
+    private bool ClipboardAvailable => Clipboard is not null;
+
+    // ReSharper disable UnusedMember.Global
+    // Our Drag support... (AKA the effect that tells the user they can drag a file into the app)
+    internal void TreeView_OnDragOver(object? sender, DragEventArgs e)
+    {
+        e.DragEffects = e.DataTransfer.Items.Count == 1 && e.DataTransfer.Formats.Contains(DataFormat.File)
+            ? DragDropEffects.Copy
+            : DragDropEffects.None;
+    }
+
+    // ...and our Drop support! (AKA actually processing what they dropped into the app)
+    internal void TreeView_OnDrop(object? sender, DragEventArgs e)
+    {
+        var item = e.DataTransfer.TryGetFiles();
+        if (item?.Length != 1) return;
+
+        switch (item[0])
+        {
+            case null:
+                return;
+            case IStorageFile file:
+                OpenFileAt(file.Path.LocalPath);
+                break;
+            case IStorageFolder folder:
+                OpenFolderAt(folder.Path.LocalPath);
+                break;
+        }
+    }
+    // ReSharper restore UnusedMember.Global
+
+    // Basically all this does is toggle the Expand/Collapse functionality if you right-click a Tag.
+    internal void ContextMenu_OnOpening(object? sender, CancelEventArgs e)
+    {
+        // Well, except if you selected more than one. Then we just don't show the Context Menu at all.
+        if (SelectedTreeNodes.Count != 1)
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
+
+        // Immediately return if selectedTreeNode is null.
+        if (selectedTreeNode is null) throw new UnreachableException();
+
+        // Show the corresponding Button, depending on if the SelectedTreeNode is already IsExpanded (UI-wise) or not. 
+        Expand.IsVisible = !selectedTreeNode.IsExpanded;
+        Collapse.IsVisible = selectedTreeNode.IsExpanded;
+
+        // Only show the Expand Children/Expand Tree Buttons if it IsExpanded (UI-wise)
+        ExpandChildren.Toggle(selectedTreeNode.IsExpanded);
+        ExpandTree.Toggle(selectedTreeNode.IsExpanded);
+    }
+
+    // When the TreeNode selection changes, certain actions are allowed and others not. This function checks them all.
+    // These are extremely self-explanatory, so I'm not going to comment them.
+    private async Task SelectionChanged()
+    {
+        var single = SelectedTreeNodes.Count == 1 ? SelectedTreeNodes[0] : null;
+
+        ToggleExpand.Toggle(single?.SubNodes?.Count > 0);
+
+        OpenInExplorer.Toggle(single?.DataNode is DirectoryDataNode);
+
+        MoveUp.Toggle(single?.DataNode is { CanReoderNode: true, CanMoveNodeUp: true });
+        MoveDown.Toggle(single?.DataNode is { CanReoderNode: true, CanMoveNodeDown: true });
+
+        Refresh.Toggle(single?.DataNode?.CanRefreshNode ?? false);
+
+        Cut.Toggle(ClipboardAvailable && single?.DataNode?.CanCutNode == true);
+        Copy.Toggle(ClipboardAvailable && single?.DataNode?.CanCopyNode == true);
+        Paste.Toggle(ClipboardAvailable && single?.DataNode is not null && await single.DataNode.CanPasteIntoNode());
+
+        Rename.Toggle(single?.DataNode?.CanRenameNode ?? false);
+        EditValue.Toggle(single?.DataNode?.CanEditNode ?? false);
+        Delete.Toggle(SelectedTreeNodes.Count > 0 && SelectedTreeNodes.All(x => x.DataNode.CanDeleteNode));
+
+        AddByteTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_BYTE) ?? false);
+        AddShortTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_SHORT) ?? false);
+        AddIntTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_INT) ?? false);
+        AddLongTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_LONG) ?? false);
+        AddFloatTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_FLOAT) ?? false);
+        AddDoubleTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_DOUBLE) ?? false);
+        AddByteArrayTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_BYTE_ARRAY) ?? false);
+        AddIntArrayTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_INT_ARRAY) ?? false);
+        AddLongArrayTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_LONG_ARRAY) ?? false);
+        AddStringTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_STRING) ?? false);
+        AddListTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_LIST) ?? false);
+        AddCompoundTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_COMPOUND) ?? false);
+
+        Find.Toggle(single?.DataNode?.CanSearchNode ?? false);
+    }
+
+    // Once an Informational Dialog is loaded...
+    internal void InformationalDialog_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        // ...we focus its corresponding Buttons.
+        if (CurrentDialog is AboutDialogState or ErrorDialogState) DialogOkButton.Focus();
+        if (CurrentDialog is UnsavedChangesDialogState) DialogCancelButton.Focus();
+    }
+
+    // Once a Dialog's main TextBox is loaded...
+    internal void DialogTextBox_Loaded(object? sender, RoutedEventArgs e)
+    {
+        // ...we focus it.
+        (sender as TextBox)?.Focus();
+    }
+
+    // The main purpose of this is making sure the user doesn't accidentally lose any edits!
+    internal void Window_OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        // If the user has unsaved changes...
+        if (!Save.CanExecute(null)) return;
+
+        // ...we open a Dialog to warn them and abort the Closing.
+        OpenDialog(new UnsavedChangesDialogState(this));
+        e.Cancel = true;
+    }
+}

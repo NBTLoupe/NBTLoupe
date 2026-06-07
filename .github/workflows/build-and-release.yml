@@ -1,0 +1,148 @@
+name: Build and Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (${{ matrix.target.rid }})
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - { rid: osx-x64, os: macos-latest }
+          - { rid: osx-arm64, os: macos-latest }
+          - { rid: linux-x64, os: ubuntu-latest }
+          - { rid: linux-arm64, os: ubuntu-24.04-arm } # Cross-compiling doesn't work on GNU/Linux by default, and using an ARM64 runner is quicker than installing the required dependencies on an x86_64 runner.
+          - { rid: win-x64, os: windows-latest }
+          - { rid: win-arm64, os: windows-11-arm } # On Windows cross-compiling works fine, but this is here for consistency reasons.
+          
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.x"
+
+      - name: Set version from tag
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+
+      - name: Publish (Release)
+        shell: bash
+        run: dotnet publish NBTExplorer -r ${{ matrix.target.rid }} -c Release -o publish/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION}
+
+      - name: Publish (Debug)
+        shell: bash
+        run: dotnet publish NBTExplorer -r ${{ matrix.target.rid }} -c Debug -o publish-DEBUG/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION-DEBUG}
+
+
+      - name: Bundle .app (macOS)
+        if: startsWith(matrix.target.rid, 'osx-')
+        shell: bash
+        run: |
+          mkdir -p "publish/neoNBTExplorer.app/Contents/MacOS" "publish/neoNBTExplorer.app/Contents/Resources"
+
+          mv publish/${{ matrix.target.rid }}/*.icns "publish/neoNBTExplorer.app/Contents/Resources/"
+
+          mv publish/${{ matrix.target.rid }}/neoNBTExplorer publish/${{ matrix.target.rid }}/*.dylib "publish/neoNBTExplorer.app/Contents/MacOS/"
+          chmod +x "publish/neoNBTExplorer.app/Contents/MacOS/neoNBTExplorer"
+
+          cat > "publish/neoNBTExplorer.app/Contents/Info.plist" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+          <key>CFBundleExecutable</key>
+          <string>neoNBTExplorer</string>
+          <key>CFBundleIdentifier</key>
+          <string>MallardLuna.neoNBTExplorer</string>
+          <key>CFBundleName</key>
+          <string>neoNBTExplorer</string>
+          <key>CFBundleIconFile</key>
+          <string>neoNBTExplorer.icns</string>
+          <key>CFBundleVersion</key>
+          <string>$VERSION</string>
+          <key>CFBundleShortVersionString</key>
+          <string>$VERSION</string>
+          <key>CFBundlePackageType</key>
+          <string>APPL</string>
+          <key>NSHighResolutionCapable</key>
+          <true/>
+          <key>NSHumanReadableCopyright</key>
+          <string>Copyright (c) 2024-2026 MallardLuna. Licensed under the MIT license.</string>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Zip artifact (macOS)
+        if: startsWith(matrix.target.rid, 'osx-')
+        shell: bash
+        run: |
+          cd publish
+          zip -r "neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.zip" "neoNBTExplorer.app"
+
+
+      - name: Zip artifact (GNU/Linux)
+        if: startsWith(matrix.target.rid, 'linux-')
+        shell: bash
+        run: |
+          cd publish/${{ matrix.target.rid }}
+          zip "../neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.zip" neoNBTExplorer *.so
+
+
+      - name: Zip artifact (Windows)
+        if: startsWith(matrix.target.rid, 'win-')
+        shell: pwsh
+        run: Compress-Archive -Path "publish/${{ matrix.target.rid }}/neoNBTExplorer.exe", "publish/${{ matrix.target.rid }}/*.dll" -DestinationPath "publish/neoNBTExplorer-v$env:VERSION-RELEASE-${{ matrix.target.rid }}.zip"
+
+
+      - name: Upload artifacts (Release)
+        uses: actions/upload-artifact@v7
+        with:
+          name: neoNBTExplorer-v${{ env.VERSION }}-RELEASE-${{ matrix.target.rid }}
+          path: publish/neoNBTExplorer-v${{ env.VERSION }}-RELEASE-${{ matrix.target.rid }}.zip
+          archive: false
+
+      - name: Upload artifacts (Debug)
+        uses: actions/upload-artifact@v7
+        with:
+          name: neoNBTExplorer-v${{ env.VERSION }}-DEBUG-${{ matrix.target.rid }}
+          path: publish-DEBUG/${{ matrix.target.rid }}/
+
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+          skip-decompress: true
+
+      - name: Create release
+        id: uploadRelease
+        uses: softprops/action-gh-release@v3
+        with:
+          name: neoNBTExplorer ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          files: |
+            artifacts/*.zip
