@@ -24,6 +24,42 @@ internal class RecentItem
     // And this is true if the Item is a Directory/Folder.
     public bool IsFolder { get; init; }
 
+    // This is our fancy DisplayPath so we don't fill the RecentItems menu.
+    internal string DisplayPath
+    {
+        get
+        {
+            // If it isn't stored in the Minecraft world saves folder...
+            var savesIndex = Path.IndexOf("/saves/", StringComparison.InvariantCultureIgnoreCase);
+            if (savesIndex < 0)
+            {
+                // ...we just cut to the parent directory.
+                var fileInfo = new FileInfo(Path);
+                return $".../{fileInfo.Directory?.Name}/{fileInfo.Name}";
+            }
+
+            // But if it is stored in the Minecraft world saves folder...
+
+            // We cut the path up to the name.
+            var relativePath = Path[(savesIndex + 7)..];
+
+            // Then we find the first slash after the world name.
+            var firstSlash = relativePath.IndexOfAny(['/', '\\']);
+
+            // If for some reason we didn't, we likely failed to find a true world.
+            if (firstSlash < 0)
+            {
+                var fileInfo = new FileInfo(Path);
+                return $".../{fileInfo.Directory?.Name}/{fileInfo.Name}";
+            }
+
+            // But if we did, we can isolate the world name from the rest of the path, making it clear what it is!
+            var worldName = relativePath[..firstSlash];
+            var restOfPath = relativePath[(firstSlash + 1)..];
+            return $"[{worldName}]/{restOfPath}";
+        }
+    }
+
     // And this method helps us Load our data file!
     internal static List<RecentItem> Load(bool startingUp = false)
     {

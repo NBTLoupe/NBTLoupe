@@ -46,13 +46,14 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
-                        <MenuItem Header="Recent Files" ItemsSource="{Binding RecentFiles}"
+                        <MenuItem Header="Recent Files" Classes="recentItemsMenu" ItemsSource="{Binding RecentFiles}"
                                   IsEnabled="{Binding RecentFiles.Count}"
-                                  DisplayMemberBinding="{Binding Path}" Command="{Binding OpenFile}"
+                                  DisplayMemberBinding="{Binding DisplayPath}" Command="{Binding OpenFile}"
                                   CommandParameter="{Binding $self.SelectedItem}" />
-                        <MenuItem Header="Recent Folders" ItemsSource="{Binding RecentFolders}"
+                        <MenuItem Header="Recent Folders" Classes="recentItemsMenu"
+                                  ItemsSource="{Binding RecentFolders}"
                                   IsEnabled="{Binding RecentFolders.Count}"
-                                  DisplayMemberBinding="{Binding Path}" Command="{Binding OpenFolder}"
+                                  DisplayMemberBinding="{Binding DisplayPath}" Command="{Binding OpenFolder}"
                                   CommandParameter="{Binding $self.SelectedItem}" />
                         <Separator />
                         <MenuItem Header="E_xit" InputGesture="{OnPlatform 'Alt+F4', macOS='Cmd+Q'}"
@@ -142,8 +143,20 @@
                                 <ic:FluentIcon Icon="Certificate" />
                             </MenuItem.Icon>
                         </MenuItem>
-
                     </MenuItem>
+
+                    <Menu.Styles>
+                        <Style Selector="MenuItem.recentItemsMenu > MenuItem">
+                            <!-- This is so the user can see the full path on the ToolTip. -->
+                            <Setter Property="ToolTip.Tip" x:DataType="local:RecentItem" Value="{Binding Path}" />
+                            <Setter Property="DataContext" Value="{Binding $self.SelectedItem}" />
+
+                            <!-- And this makes sure the DisplayPath doesn't leave any blank space -->
+                            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                                <Setter Property="Grid.ColumnSpan" Value="2" />
+                            </Style>
+                        </Style>
+                    </Menu.Styles>
                 </Menu>
 
                 <CommandBar x:Name="CommandBar" DefaultLabelPosition="Collapsed" IsDynamicOverflowEnabled="True">
