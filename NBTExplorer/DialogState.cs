@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using NBTExplorer.Model;
 using Substrate.Nbt;
 
@@ -28,6 +29,9 @@ public partial class MainWindow
 
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsDialogOpen));
+
+            // And this is how we block the UI.
+            IsBlocked = value is not null;
         }
     }
 
@@ -60,7 +64,7 @@ public partial class MainWindow
     internal void RefreshOkButton() => DialogOk.Toggle(_currentDialog is { IsOkEnabled: true });
 
     // I extracted the AddTag function over here because it's shared by a lot of AppCommands.
-    private void AddTag(TagType tagType)
+    private async Task AddTag(TagType tagType)
     {
         var state = new AddTagDialogState(this, tagType);
 
@@ -69,7 +73,7 @@ public partial class MainWindow
         {
             // Well, we don't really bypass it per-se but rather "trick" it to never show.
             CurrentDialog = state;
-            state.Execute();
+            await state.ExecuteAsync();
             CloseDialog();
 
             return;
@@ -90,7 +94,7 @@ internal abstract class DialogState : INotifyPropertyChanged
     internal virtual bool IsOkEnabled => true;
 
     // And if the user clicks it... Here we go! Well, every Dialog defines where we go...
-    internal abstract void Execute();
+    internal abstract Task ExecuteAsync();
 
     // Add an event handler that fires if the state changed.
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -7,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using NBTExplorer.Model;
+using Serilog;
 using Substrate.Nbt;
 
 namespace NBTExplorer;
@@ -26,21 +28,30 @@ public partial class MainWindow
     }
 
     // ...and our Drop support! (AKA actually processing what they dropped into the app)
-    internal void TreeView_OnDrop(object? sender, DragEventArgs e)
+    internal async void TreeView_OnDrop(object? sender, DragEventArgs e)
     {
-        var item = e.DataTransfer.TryGetFiles();
-        if (item?.Length != 1) return;
-
-        switch (item[0])
+        try
         {
-            case null:
-                return;
-            case IStorageFile file:
-                OpenFileAt(file.Path.LocalPath);
-                break;
-            case IStorageFolder folder:
-                OpenFolderAt(folder.Path.LocalPath);
-                break;
+            var item = e.DataTransfer.TryGetFiles();
+            if (item?.Length != 1) return;
+
+            switch (item[0])
+            {
+                case null:
+                    return;
+                case IStorageFile file:
+                    await OpenFileAsync(file.Path.LocalPath);
+                    break;
+                case IStorageFolder folder:
+                    await OpenFolderAsync(folder.Path.LocalPath);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // If something goes wrong, we log it and show a Dialog to the user. :C
+            Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
+            OpenDialog(new ErrorDialogState(ex));
         }
     }
     // ReSharper restore UnusedMember.Global

@@ -12,7 +12,7 @@
         Width="1100" Height="750"
         Closing="Window_OnClosing">
     <Grid>
-        <DockPanel IsEnabled="{Binding !IsDialogOpen}">
+        <DockPanel IsEnabled="{Binding !IsBlocked}">
             <StackPanel DockPanel.Dock="Top">
                 <Menu x:Name="TopMenu">
                     <MenuItem Header="_File">
@@ -144,19 +144,6 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-
-                    <Menu.Styles>
-                        <Style Selector="MenuItem.recentItemsMenu > MenuItem">
-                            <!-- This is so the user can see the full path on the ToolTip. -->
-                            <Setter Property="ToolTip.Tip" x:DataType="local:RecentItem" Value="{Binding Path}" />
-                            <Setter Property="DataContext" Value="{Binding $self.SelectedItem}" />
-
-                            <!-- And this makes sure the DisplayPath doesn't leave any blank space -->
-                            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-                                <Setter Property="Grid.ColumnSpan" Value="2" />
-                            </Style>
-                        </Style>
-                    </Menu.Styles>
                 </Menu>
 
                 <CommandBar x:Name="CommandBar" DefaultLabelPosition="Collapsed" IsDynamicOverflowEnabled="True">
@@ -333,6 +320,8 @@
                                           Width="{Binding $parent.Bounds.Width}" />
                     </CommandBar.PrimaryCommands>
                 </CommandBar>
+
+                <ProgressBar IsIndeterminate="True" Opacity="{Binding IsBlocked}" VerticalAlignment="Top" />
             </StackPanel>
 
             <TreeView ItemsSource="{Binding TreeNodes}" SelectedItems="{Binding SelectedTreeNodes}"
@@ -670,13 +659,18 @@
     </Window.KeyBindings>
 
     <Window.Styles>
+        <!-- This lets us control the UI IsExpanded both ways -->
         <Style Selector="TreeViewItem" x:DataType="local:MainWindow+TreeNode">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
         </Style>
+
+        <!-- This makes it obvious when a CommandBarButton is disabled -->
         <Style Selector="CommandBarButton:disabled">
             <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundDisabled}" />
             <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}" />
         </Style>
+
+        <!-- We hide the Import/Export/Cancel Dialog Buttons when they're disabled -->
         <Style Selector="Button#DialogImportButton:disabled">
             <Setter Property="IsVisible" Value="False" />
         </Style>
@@ -685,6 +679,18 @@
         </Style>
         <Style Selector="Button#DialogCancelButton:disabled">
             <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <!-- And these are RecentItem-specific. -->
+        <Style Selector="MenuItem.recentItemsMenu > MenuItem">
+            <!-- This is so the user can see the full path on the ToolTip. -->
+            <Setter Property="ToolTip.Tip" x:DataType="local:RecentItem" Value="{Binding Path}" />
+            <Setter Property="DataContext" Value="{Binding $self.SelectedItem}" />
+
+            <!-- And this makes sure the DisplayPath doesn't leave any blank space -->
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Grid.ColumnSpan" Value="2" />
+            </Style>
         </Style>
     </Window.Styles>
 

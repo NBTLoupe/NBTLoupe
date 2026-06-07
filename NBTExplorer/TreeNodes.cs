@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using NBTExplorer.Model;
 using NBTExplorer.Utility;
 using Substrate.Nbt;
@@ -163,7 +165,7 @@ public partial class MainWindow
         }
 
         // Nodes in NBTModel have to be "Expanded" to be able to access their children. This does that in a sorted manner.
-        internal static void ExpandNode(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
+        internal static async Task ExpandNodeAsync(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
             TreeNode? parent = null)
         {
             // First we sort the NodeTree...
@@ -182,21 +184,22 @@ public partial class MainWindow
                 treeNode.SetParent(parent);
 
                 // And finally, we can add the Expanded one back to its parent.
-                treeNodes.Add(treeNode);
+                await Dispatcher.UIThread.InvokeAsync(() => treeNodes.Add(treeNode),
+                    DispatcherPriority.Background);
 
                 // But if we find out one of its children has their own children, we need to continue Expanding.
                 if (dataNode.Nodes.Count > 0)
                 {
-                    ExpandNode(dataNode.Nodes, subNodes, treeNode);
+                    await ExpandNodeAsync(dataNode.Nodes, subNodes, treeNode);
                 }
             }
         }
 
         // This IsExpands (UI-wise) an entire TreeNode. Related to the ExpandTree AppCommand. 
-        internal void ExpandTree()
+        internal async Task ExpandTreeAsync()
         {
             // We first expand the TreeNode itself...
-            IsExpanded = true;
+            await Dispatcher.UIThread.InvokeAsync(() => IsExpanded = true, DispatcherPriority.Background);
 
             // ...immediately return if it doesn't have SubNodes...
             if (SubNodes is null) return;
@@ -204,12 +207,12 @@ public partial class MainWindow
             // ...but if it does, we loop until the entire TreeNode IsExpanded (UI-wise).
             foreach (var child in SubNodes)
             {
-                child.ExpandTree();
+                await child.ExpandTreeAsync();
             }
         }
 
         // This refreshes a TreeNode. Required to display in the UI any change in it.
-        internal void RefreshChildNodes()
+        internal async Task RefreshChildNodesAsync()
         {
             // Immediately return if it doesn't have SubNodes.
             if (SubNodes is null) return;
@@ -217,7 +220,7 @@ public partial class MainWindow
             // First we back up the current SubNodes...
             var currentNodes = SubNodes.ToDictionary(treeNode => treeNode.DataNode, treeNode => treeNode);
             // ...as we're going to clear the original's.
-            SubNodes.Clear();
+            await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Clear(), DispatcherPriority.Background);
 
             // Then we sort the NodeTree...
             var sortedNodeTree = DataNode.Nodes.OrderBy(dataNode => dataNode, NodeComparer);
@@ -229,13 +232,13 @@ public partial class MainWindow
                 {
                     // ...we readd it to the SubNodes, and Refresh it if needed.
                     existing.SetParent(this);
-                    if (!child.HasUnexpandedChildren) existing.RefreshChildNodes();
-                    SubNodes.Add(existing);
+                    if (!child.HasUnexpandedChildren) await existing.RefreshChildNodesAsync();
+                    await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(existing), DispatcherPriority.Background);
                 }
                 else
                 {
                     // And if it's a new child, we Expand it.
-                    ExpandNode([child], SubNodes, this);
+                    await ExpandNodeAsync([child], SubNodes, this);
                 }
             }
 
