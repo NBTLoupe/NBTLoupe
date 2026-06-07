@@ -5,7 +5,7 @@
   <b>neoNBTExplorer</b><br>
   A native cross-platform fork of NBTExplorer.<br><br>
   <img src="Screenshots/light.png#gh-light-mode-only">
-  <img src="Screenshots/light.png#gh-dark-mode-only">
+  <img src="Screenshots/dark.png#gh-dark-mode-only">
   <br><br>
 </p>
 
