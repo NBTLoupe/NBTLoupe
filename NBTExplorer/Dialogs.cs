@@ -109,8 +109,9 @@ internal class EditTagDialogState : DialogState
     // The Title TextBlock...
     internal string TitleText { get; }
 
-    // The old Name...
+    // The old Name and Value...
     private readonly string _oldTagName;
+    private readonly string _oldTagValue;
 
     // The new Name TextBox...
     internal string? TagName
@@ -138,6 +139,9 @@ internal class EditTagDialogState : DialogState
         }
     }
 
+    // ...(which is only visible in certain cases, by the way)
+    internal bool ValueVisible => _window.SelectedTreeNodes.FirstOrDefault()?.DataNode.CanEditNode ?? false;
+
     // Here we set up the Dialog!
     internal EditTagDialogState(MainWindow window)
     {
@@ -157,7 +161,7 @@ internal class EditTagDialogState : DialogState
         TagName = _oldTagName;
 
         // If the TreeNode is an Array, we parse it depending on which kind it is.
-        TagValue = tagDataNode?.Tag.GetTagType() switch
+        _oldTagValue = tagDataNode?.Tag.GetTagType() switch
         {
             TagType.TAG_BYTE_ARRAY => string.Join(",", tagDataNode.Tag.ToTagByteArray().Data),
             TagType.TAG_SHORT_ARRAY => string.Join(",", tagDataNode.Tag.ToTagShortArray().Data),
@@ -165,6 +169,7 @@ internal class EditTagDialogState : DialogState
             TagType.TAG_LONG_ARRAY => string.Join(",", tagDataNode.Tag.ToTagLongArray().Data),
             _ => tagDataNode?.Tag.ToString()
         };
+        TagValue = _oldTagValue;
     }
 
     // And here's where our Validation magic happens!
@@ -172,8 +177,12 @@ internal class EditTagDialogState : DialogState
     {
         get
         {
-            // TODO: write proper logic for checking
-            return true;
+            var node = _window.SelectedTreeNodes.FirstOrDefault()?.DataNode;
+
+            if (!node.CanEditNode) return !string.IsNullOrEmpty(TagName) && _oldTagName != TagName;
+
+            return !string.IsNullOrEmpty(TagName) && !string.IsNullOrEmpty(TagValue)
+            && _oldTagName != TagName && _oldTagValue != TagValue;
         }
     }
 
@@ -211,14 +220,13 @@ internal class EditTagDialogState : DialogState
     {
         var selectedTreeNode = _window.SelectedTreeNodes.FirstOrDefault();
 
-        // Check if tag or DataNode is null.
+        // Check if DataNode or tag is null.
         var node = selectedTreeNode?.DataNode;
         if (node is null) throw new UnreachableException();
-    
         if ((node as TagDataNode)?.Tag is null) throw new UnreachableException();
 
         // ...we let the FormHandlers deal with it.
-        if (!node.EditNode()) throw new UnreachableException();
+        if (node.CanEditNode && !node.EditNode()) throw new UnreachableException();
         if (_oldTagName != TagName && !node.RenameNode()) throw new UnreachableException();
 
         // And we refresh its parent so the order updates.

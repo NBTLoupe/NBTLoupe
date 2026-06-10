@@ -99,7 +99,7 @@ public partial class MainWindow
         Copy.Toggle(ClipboardAvailable && single?.DataNode?.CanCopyNode == true);
         Paste.Toggle(ClipboardAvailable && single?.DataNode is not null && await single.DataNode.CanPasteIntoNode());
 
-        EditValue.Toggle(single?.DataNode?.CanEditNode ?? false);
+        EditValue.Toggle(single?.DataNode is not null && single?.DataNode is not NbtFileDataNode);
         Delete.Toggle(SelectedTreeNodes.Count > 0 && SelectedTreeNodes.All(x => x.DataNode.CanDeleteNode));
 
         AddByteTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_BYTE) ?? false);

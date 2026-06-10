@@ -460,11 +460,12 @@
 
                                                         <TextBlock TextWrapping="Wrap" Text="Value:"
                                                             FontSize="14" FontWeight="SemiBold"
-                                                            HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                            Margin="0,0,0,4" IsVisible="{Binding ValueVisible}" />
                                                         <TextBox Loaded="DialogTextBox_Loaded"
                                                             Text="{Binding TagValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                             PlaceholderText="Value" TextWrapping="Wrap"
-                                                            MinLines="5" MaxLines="10">
+                                                            MinLines="5" MaxLines="10" IsVisible="{Binding ValueVisible}" >
                                                             <TextBox.KeyBindings>
                                                                 <KeyBinding Gesture="Enter"
                                                                     Command="{Binding $parent[local:MainWindow].DialogOk}" />
