@@ -307,6 +307,6 @@ public partial class MainWindow
 
         TagType.TAG_COMPOUND => "Compound Tag",
 
-        _ => tagType.ToString()
-    } ?? "Unknown";
+        _ => tagType is not null ? tagType.ToString() : "Tag"
+    } ?? "Tag";
 }
