@@ -455,11 +455,8 @@
                                                     <StackPanel Grid.Row="1" Spacing="4">
                                                         <TextBox Loaded="DialogTextBox_Loaded"
                                                                  Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                 VerticalAlignment="Center">
-                                                            <TextBox.InnerLeftContent>
-                                                                <TextBlock Text="Name:" VerticalAlignment="Center"
-                                                                           Margin="10 0 0 0" />
-                                                            </TextBox.InnerLeftContent>
+                                                                 VerticalAlignment="Center"
+                                                                 PlaceholderText="Name">
                                                             <TextBox.KeyBindings>
                                                                 <KeyBinding Gesture="Enter"
                                                                             Command="{Binding $parent[local:MainWindow].DialogOk}" />

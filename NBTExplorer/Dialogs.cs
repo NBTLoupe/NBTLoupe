@@ -159,7 +159,7 @@ internal class EditTagDialogState : DialogState
         DialogTagType = trueTagType ?? TagType.TAG_END;
 
         // Set the context-accurate Title and Type.
-        TitleText = $"Edit {MainWindow.GetFriendlyTag(trueTagType)}";
+        TitleText = $"Edit {MainWindow.GetFriendlyTag(trueTagType)}: \"{nodeName}\"";
 
         // If the TreeNode is a NbtFileDataNode, its Renameable Name is different.
         _oldTagName = (selectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
