@@ -154,12 +154,10 @@ internal class EditTagDialogState : DialogState
         var selectedTreeNode = window.SelectedTreeNodes.FirstOrDefault();
         var nodeName = selectedTreeNode?.DataNode.NodeName;
         var tagDataNode = selectedTreeNode?.DataNode as TagDataNode;
-
-        var trueTagType = tagDataNode?.Tag.GetTagType();
-        DialogTagType = trueTagType ?? TagType.TAG_END;
+        DialogTagType = tagDataNode?.Tag.GetTagType() ?? TagType.TAG_END;
 
         // Set the context-accurate Title and Type.
-        TitleText = $"Edit {MainWindow.GetFriendlyTag(trueTagType)}: \"{nodeName}\"";
+        TitleText = $"Edit {MainWindow.GetFriendlyTag(tagDataNode?.Tag.GetTagType())}: \"{nodeName}\"";
 
         // If the TreeNode is a NbtFileDataNode, its Renameable Name is different.
         _oldTagName = (selectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
@@ -167,16 +165,14 @@ internal class EditTagDialogState : DialogState
             : fileDataNode.TreeName) ?? "";
         TagName = _oldTagName;
 
-        if (tagDataNode is null) throw new UnreachableException();
-
         // If the TreeNode is an Array, we parse it depending on which kind it is.
-        _oldTagValue = trueTagType switch
+        _oldTagValue = tagDataNode?.Tag.GetTagType() switch
         {
             TagType.TAG_BYTE_ARRAY => string.Join(",", tagDataNode.Tag.ToTagByteArray().Data),
             TagType.TAG_SHORT_ARRAY => string.Join(",", tagDataNode.Tag.ToTagShortArray().Data),
             TagType.TAG_INT_ARRAY => string.Join(",", tagDataNode.Tag.ToTagIntArray().Data),
             TagType.TAG_LONG_ARRAY => string.Join(",", tagDataNode.Tag.ToTagLongArray().Data),
-            _ => tagDataNode.Tag.ToString()
+            _ => tagDataNode?.Tag.ToString()
         } ?? "";
         TagValue = _oldTagValue;
     }
