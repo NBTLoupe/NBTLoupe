@@ -42,8 +42,10 @@ public partial class MainWindow
 
         // Due to the Buttons being global, it's pretty simple to Enable them!
         DialogOk.Toggle(state.IsOkEnabled);
-        DialogImport.Toggle(CurrentDialog is EditTagDialogState);
-        DialogExport.Toggle(CurrentDialog is EditTagDialogState);
+
+        DialogImport.Toggle(CurrentDialog is EditTagDialogState { ValueVisible: true });
+        DialogExport.Toggle(CurrentDialog is EditTagDialogState { ValueVisible: true });
+
         // Also yes, the way we disable Cancel on the About and Error Dialog is kind of ugly... sorry.
         DialogCancel.Toggle(CurrentDialog is not AboutDialogState && CurrentDialog is not ErrorDialogState);
     }

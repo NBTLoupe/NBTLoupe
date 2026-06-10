@@ -268,7 +268,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
             if (selectedTreeNode?.DataNode is null) throw new UnreachableException();
 
-            var state = new RenameTagDialogState(this);
+            var state = new EditTagDialogState(this, true);
             OpenDialog(state);
         });
 

@@ -325,7 +325,8 @@
             </StackPanel>
 
             <TreeView ItemsSource="{Binding TreeNodes}" SelectedItems="{Binding SelectedTreeNodes}"
-                      SelectionMode="Multiple" DragDrop.AllowDrop="True" DragDrop.DragOver="TreeView_OnDragOver"
+                      SelectionMode="Multiple" DoubleTapped="InputElement_OnDoubleTapped" DragDrop.AllowDrop="True"
+                      DragDrop.DragOver="TreeView_OnDragOver"
                       DragDrop.Drop="TreeView_OnDrop">
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding SubNodes}">
@@ -442,45 +443,46 @@
                                                 </Grid>
                                             </DataTemplate>
 
-                                            <!-- Rename Tag -->
-                                            <DataTemplate DataType="{x:Type local:RenameTagDialogState}">
-                                                <Grid RowDefinitions="Auto,*">
-                                                    <StackPanel Margin="0,0,0,12">
-                                                        <TextBlock TextWrapping="Wrap"
-                                                                   Text="{Binding TitleText}"
-                                                                   FontSize="20" FontWeight="SemiBold"
-                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
-                                                    </StackPanel>
-                                                    <TextBox Loaded="DialogTextBox_Loaded"
-                                                             Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                             PlaceholderText="Name" Grid.Row="1">
-                                                        <TextBox.KeyBindings>
-                                                            <KeyBinding Gesture="Enter"
-                                                                        Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                        </TextBox.KeyBindings>
-                                                    </TextBox>
-                                                </Grid>
-                                            </DataTemplate>
-
                                             <!-- Edit Tag Value -->
                                             <DataTemplate DataType="{x:Type local:EditTagDialogState}">
-                                                <Grid RowDefinitions="Auto,*">
-                                                    <StackPanel Margin="0,0,0,12">
-                                                        <TextBlock TextWrapping="Wrap"
-                                                                   Text="{Binding TitleText}"
-                                                                   FontSize="20" FontWeight="SemiBold"
-                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                <Grid RowDefinitions="Auto,Auto">
+                                                    <TextBlock TextWrapping="Wrap"
+                                                               Text="{Binding TitleText}"
+                                                               FontSize="20" FontWeight="SemiBold"
+                                                               HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                               Margin="0,0,0,12" />
+
+                                                    <StackPanel Grid.Row="1" Spacing="4">
+                                                        <TextBox Loaded="DialogTextBox_Loaded"
+                                                                 Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 VerticalAlignment="Center">
+                                                            <TextBox.InnerLeftContent>
+                                                                <TextBlock Text="Name:" VerticalAlignment="Center"
+                                                                           Margin="10 0 0 0" />
+                                                            </TextBox.InnerLeftContent>
+                                                            <TextBox.KeyBindings>
+                                                                <KeyBinding Gesture="Enter"
+                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                            </TextBox.KeyBindings>
+                                                        </TextBox>
+
+                                                        <TextBox x:Name="EditValueTextBox"
+                                                                 Loaded="DialogTextBox_Loaded"
+                                                                 Text="{Binding TagValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 TextWrapping="Wrap"
+                                                                 MinLines="5" MaxLines="10"
+                                                                 IsVisible="{Binding ValueVisible}">
+                                                            <TextBox.InnerLeftContent>
+                                                                <TextBlock Text="Value:" VerticalAlignment="Top"
+                                                                           Margin="10 6 0 0" />
+                                                            </TextBox.InnerLeftContent>
+
+                                                            <TextBox.KeyBindings>
+                                                                <KeyBinding Gesture="Enter"
+                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
+                                                            </TextBox.KeyBindings>
+                                                        </TextBox>
                                                     </StackPanel>
-                                                    <TextBox Loaded="DialogTextBox_Loaded"
-                                                             Text="{Binding TagValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                             PlaceholderText="Value"
-                                                             TextWrapping="Wrap" MinLines="5" MaxLines="10"
-                                                             Grid.Row="1">
-                                                        <TextBox.KeyBindings>
-                                                            <KeyBinding Gesture="Enter"
-                                                                        Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                        </TextBox.KeyBindings>
-                                                    </TextBox>
                                                 </Grid>
                                             </DataTemplate>
 

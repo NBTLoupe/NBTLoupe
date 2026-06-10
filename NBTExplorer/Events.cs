@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using NBTExplorer.Model;
 using Serilog;
 using Substrate.Nbt;
@@ -119,6 +120,17 @@ public partial class MainWindow
         Find.Toggle(single?.DataNode?.CanSearchNode ?? false);
     }
 
+    // This opens the EditDialog when the user double-clicks a supported item.
+    internal void InputElement_OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        // We check if the user is double-clicking a true item.
+        var treeViewItem = (e.Source as Control)?.FindAncestorOfType<TreeViewItem>(includeSelf: true);
+        if (treeViewItem is null) return;
+        
+        if (EditValue.CanExecute(null)) EditValue.Execute(null);
+        else if (Rename.CanExecute(null)) Rename.Execute(null);
+    }
+
     // Once an Informational Dialog is loaded...
     internal void InformationalDialog_OnLoaded(object? sender, RoutedEventArgs e)
     {
@@ -130,8 +142,11 @@ public partial class MainWindow
     // Once a Dialog's main TextBox is loaded...
     internal void DialogTextBox_Loaded(object? sender, RoutedEventArgs e)
     {
-        // ...we focus it.
-        (sender as TextBox)?.Focus();
+        var textBox = sender as TextBox;
+
+        // ...we focus it. Unless we're on a Rename Dialog, and the Loaded TextBox is the Value one.
+        if (!(CurrentDialog is EditTagDialogState { IsRename: true } && textBox?.Name == "EditValueTextBox"))
+            textBox?.Focus();
     }
 
     // The main purpose of this is making sure the user doesn't accidentally lose any edits!
