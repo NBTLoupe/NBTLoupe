@@ -41,11 +41,9 @@
         <AvaloniaResource Include="neoNBTExplorer.png" />
         <None Remove="neoNBTExplorer.ico" />
         <AvaloniaResource Include="neoNBTExplorer.ico" />
-    </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="neoNBTExplorer.icns">
-        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-      </Content>
+        <Content Include="neoNBTExplorer.icns">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
     </ItemGroup>
 </Project>

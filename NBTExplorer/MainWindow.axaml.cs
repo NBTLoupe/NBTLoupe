@@ -39,8 +39,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             field = value;
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBlocked)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowProgressBar)));
         }
     }
+    
+    // And this is just so Dialogs (which also block the UI) don't show a progress bar.
+    internal bool ShowProgressBar => IsBlocked && CurrentDialog is null;
 
     public MainWindow()
     {
