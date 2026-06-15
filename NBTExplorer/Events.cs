@@ -144,12 +144,12 @@ public partial class MainWindow
     {
         var textBox = sender as TextBox;
 
-        // ...we Focus it and Select its text. Unless we're on a Rename Dialog, and the Loaded TextBox is the Value one.
-        if (!(CurrentDialog is EditTagDialogState { IsRename: true } && textBox?.Name == "EditValueTextBox"))
-        {
-            textBox?.Focus();
-            textBox?.SelectAll();
-        }
+        // If we're on a Rename Dialog, and the Loaded TextBox is the Value one, we ignore it.
+        if (CurrentDialog is EditTagDialogState { IsRename: true } && textBox?.Name == "EditValueTextBox") return;
+        
+        // If not, we Focus it and Select its text.
+        textBox?.Focus();
+        textBox?.SelectAll();
     }
 
     // The main purpose of this is making sure the user doesn't accidentally lose any edits!
