@@ -256,9 +256,21 @@ internal class EditTagDialogState : DialogState
 
         if (!success) throw new UnreachableException();
 
+        // Then we back up our SelectedTreeNodes' IndexPath.
+        var savedSelectedTreeNodes = selectedTreeNode?.GetIndexPath(_window.TreeNodes);
+
         // And, on a rename, we refresh its parent so the order updates.
         if (hasNewTagName && selectedTreeNode?.Parent is not null)
+        {
             await selectedTreeNode.Parent.RefreshChildNodesAsync();
+
+            // And finally, we restore our SelectedTreeNodes using our IndexPath and the new name.
+            if (savedSelectedTreeNodes is null) return;
+            var restoredSelectedTreeNode =
+                MainWindow.TreeNode.GetByIndexPath(_window.TreeNodes, savedSelectedTreeNodes);
+            var foundNode = restoredSelectedTreeNode?.Parent?.SubNodes?.FirstOrDefault(node => node.DataNode.NodeName == TagName);
+            if (foundNode is not null) _window.SelectedTreeNodes.Add(foundNode);
+        }
     }
 }
 
