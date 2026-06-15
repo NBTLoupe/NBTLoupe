@@ -30,19 +30,22 @@ internal class RecentItem
     {
         get
         {
+            // We replace backslashes with normal slashes to keep Windows compatibility.
+            var antiWindowsPath = Path.Replace('\\', '/');
+            
             // If it isn't stored in the Minecraft world saves folder...
-            var savesIndex = Path.IndexOf("/saves/", StringComparison.InvariantCultureIgnoreCase);
+            var savesIndex = antiWindowsPath.IndexOf("/saves/", StringComparison.InvariantCultureIgnoreCase);
             if (savesIndex < 0)
             {
                 // ...we just cut to the parent directory.
-                var fileInfo = new FileInfo(Path);
+                var fileInfo = new FileInfo(antiWindowsPath);
                 return $".../{fileInfo.Directory?.Name}/{fileInfo.Name}";
             }
 
             // But if it is stored in the Minecraft world saves folder...
 
             // We cut the path up to the name.
-            var relativePath = Path[(savesIndex + 7)..];
+            var relativePath = antiWindowsPath[(savesIndex + 7)..];
 
             // Then we find the first slash after the world name.
             var firstSlash = relativePath.IndexOfAny(['/', '\\']);
@@ -50,7 +53,7 @@ internal class RecentItem
             // If for some reason we didn't, we likely failed to find a true world.
             if (firstSlash < 0)
             {
-                var fileInfo = new FileInfo(Path);
+                var fileInfo = new FileInfo(antiWindowsPath);
                 return $".../{fileInfo.Directory?.Name}/{fileInfo.Name}";
             }
 
