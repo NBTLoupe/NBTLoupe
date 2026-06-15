@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using NBTExplorer.Model;
 using Serilog;
@@ -56,6 +57,31 @@ public partial class MainWindow
         }
     }
     // ReSharper restore UnusedMember.Global
+    
+    // This is how when lazily load items when the user expands them UI-wise.
+    internal async void TreeViewItem_OnExpanded(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            // We get the TreeViewItem that was expanded, and its related TreeNode.
+            if (e.Source is not TreeViewItem { DataContext: TreeNode treeNode }) return;
+            
+            // Check if SubNodes is null.
+            if (treeNode.SubNodes is null) throw new UnreachableException();
+            
+            // First we clear our stubby/lazy SubNodes...
+            await Dispatcher.UIThread.InvokeAsync(() => treeNode.SubNodes.Clear(), DispatcherPriority.Background);
+            
+            // ...then we Expand its real children lazily.
+            await WithBlock(async () => await TreeNode.ExpandNodeAsync(treeNode.DataNode.Nodes, treeNode.SubNodes, treeNode), true);
+        }
+        catch (Exception ex)
+        {
+            // If something goes wrong, we log it and show a Dialog to the user. :C
+            Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
+            OpenDialog(new ErrorDialogState(ex));
+        }
+    }
 
     // Basically all this does is toggle the Expand/Collapse functionality if you right-click a Tag.
     internal void ContextMenu_OnOpening(object? sender, CancelEventArgs e)

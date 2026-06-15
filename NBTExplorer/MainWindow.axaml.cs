@@ -7,12 +7,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using NBTExplorer.Model;
 using NBTModel.Interop;
+using Serilog;
 using Substrate.Nbt;
 
 namespace NBTExplorer;
@@ -43,6 +46,30 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
     
+    // This helps us set the variable above only when it's truly needed. So if an operation is unlikely to take long, we can make sure the UI is only locked if it is taking exceptionally long. This prevents flashing the UI. 
+    private async Task WithBlock(Func<Task> execute, bool usuallyFast = false)
+    {
+        // We create a CancellationTokenSource...
+        using var source = new CancellationTokenSource();
+        
+        // ...and use its token here.
+        _ = Task.Delay(usuallyFast ? 250 : 0, source.Token).ContinueWith(_ => IsBlocked = true, source.Token);
+
+        try
+        {
+            // Here we execute.
+            await execute();
+        }
+        finally
+        {
+            // And once it finishes, we cancel our CancellationTokenSource. Making sure our UI is never blocked if execute took less than maxWait.
+            await source.CancelAsync();
+            
+            // But if it did take more, we need to make sure we unblock it.
+            IsBlocked = false;
+        }
+    }
+    
     // And this is just so Dialogs (which also block the UI) don't show a progress bar.
     internal bool ShowProgressBar => IsBlocked && CurrentDialog is null;
 
@@ -65,7 +92,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         RecentFolders = new ObservableCollection<RecentItem>(recentItems.Where(x => x.IsFolder));
 
         // ...our SelectionChanged event (for the TreeView)...
-        SelectedTreeNodes.CollectionChanged += async (_, _) => await SelectionChanged();
+        SelectedTreeNodes.CollectionChanged += async (_, _) =>
+        {
+            try
+            {
+                await SelectionChanged();
+            } 
+            catch (Exception ex)
+            {
+                // If something goes wrong, we log it and show a Dialog to the user. :C
+                Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
+                OpenDialog(new ErrorDialogState(ex));
+            }
+        };
 
         // Here's where the main app's logic is. All the AppCommands! Oh, and here you can also tell when my comments started losing their personality... I'm sorry, it got tiring. :C
 
@@ -169,22 +208,25 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         });
 
         // This one is executed when the user chooses to Save their "project" (TreeNodes).
-        Save = CreateAppCommand(_ =>
+        Save = CreateAppCommand(async _ =>
         {
-            // We iterate through all open TreeNodes...
-            foreach (var node in TreeNodes)
+            await WithBlock( () =>
             {
-                // ...and the actual Saving is dealt with by NBTModel, convenient!
-                node.DataNode.Save();
-            }
+                // We iterate through all open TreeNodes...
+                foreach (var node in TreeNodes)
+                {
+                    // ...and the actual Saving is dealt with by NBTModel, convenient!
+                    node.DataNode.Save();
+                }
+
+                return Task.CompletedTask;
+            }, true);
         });
 
         // This one is executed when the user chooses to Refresh a TreeNode.
         Refresh = CreateAppCommand(async _ =>
         {
-            IsBlocked = true;
-
-            try
+            await WithBlock(async () =>
             {
                 // Check if DataNode is null.
                 var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
@@ -204,11 +246,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // ...and clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
-            }
-            finally
-            {
-                IsBlocked = false;
-            }
+            });
         });
 
         // This one is executed when the user chooses to Exit through the Button.
@@ -229,47 +267,56 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         // This one is executed when the user chooses to Cut a TreeNode.
         Cut = CreateAppCommand(async _ =>
         {
-            // Check if DataNode or Parent are null.
-            var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
-            if (selectedTreeNode?.DataNode is null || selectedTreeNode.Parent is null)
-                throw new UnreachableException();
+            await WithBlock(async () =>
+            {
+                // Check if DataNode or Parent are null.
+                var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
+                if (selectedTreeNode?.DataNode is null || selectedTreeNode.Parent is null)
+                    throw new UnreachableException();
 
-            // We isolate the parent because its child is going to be Cut...
-            var parent = selectedTreeNode.Parent.Parent ?? TreeNodes.FirstOrDefault();
+                // We isolate the parent because its child is going to be Cut...
+                var parent = selectedTreeNode.Parent.Parent ?? TreeNodes.FirstOrDefault();
 
-            // ...then we Cut the selected TreeNode. 
-            if (!await selectedTreeNode.DataNode.CutNode()) throw new UnreachableException();
+                // ...then we Cut the selected TreeNode. 
+                if (!await selectedTreeNode.DataNode.CutNode()) throw new UnreachableException();
 
-            // Then we refresh the TreeNode's parent...
-            if (parent is not null) await parent.RefreshChildNodesAsync();
+                // Then we refresh the TreeNode's parent...
+                if (parent is not null) await parent.RefreshChildNodesAsync();
 
-            // ...and also clear the SelectedTreeNodes, as the child is gone now.
-            SelectedTreeNodes.Clear();
+                // ...and also clear the SelectedTreeNodes, as the child is gone now.
+                SelectedTreeNodes.Clear();
+            }, true);
         });
 
         // This one is executed when the user chooses to Copy a TreeNode.
         Copy = CreateAppCommand(async _ =>
         {
-            // Check if DataNode is null, and copy it if not...
-            var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
-            if (selectedTreeNode?.DataNode is null || !await selectedTreeNode.DataNode.CopyNode())
-                throw new UnreachableException();
+            await WithBlock(async () =>
+            {
+                // Check if DataNode is null, and copy it if not...
+                var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
+                if (selectedTreeNode?.DataNode is null || !await selectedTreeNode.DataNode.CopyNode())
+                    throw new UnreachableException();
+            }, true);
         });
 
         // This one is executed when the user chooses to Paste a TreeNode.
         Paste = CreateAppCommand(async _ =>
         {
-            // Check if DataNode is null, and paste the copied TreeNode into the selected Parent if not...
-            var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
-            if (selectedTreeNode?.DataNode is null || !await selectedTreeNode.DataNode.PasteNode())
-                throw new UnreachableException();
+            await WithBlock(async () =>
+            {
+                // Check if DataNode is null, and paste the copied TreeNode into the selected Parent if not...
+                var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
+                if (selectedTreeNode?.DataNode is null || !await selectedTreeNode.DataNode.PasteNode())
+                    throw new UnreachableException();
 
-            // ...then we refresh the TreeNode's grandparent to make sure the title is accurate.
-            var grandParent = selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
-            if (grandParent is not null) await grandParent.RefreshChildNodesAsync();
+                // ...then we refresh the TreeNode's grandparent to make sure the title is accurate.
+                var grandParent = selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
+                if (grandParent is not null) await grandParent.RefreshChildNodesAsync();
 
-            // ...and clear the SelectedTreeNodes, as they're invalid now.
-            SelectedTreeNodes.Clear();
+                // ...and clear the SelectedTreeNodes, as they're invalid now.
+                SelectedTreeNodes.Clear();
+            }, true);
         });
 
         // This one is executed when the user chooses to Rename a TreeNode.
@@ -297,26 +344,29 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         // This one is executed when the user chooses to Delete a TreeNode.
         Delete = CreateAppCommand(async _ =>
         {
-            var grandparents = new HashSet<TreeNode?>();
-
-            // We iterate through all SelectedTreeNodes...
-            foreach (var selectedTreeNode in SelectedTreeNodes.ToList())
+            await WithBlock(async () =>
             {
-                // ...and the actual deleting is dealt with by NBTModel, convenient!
-                if (!selectedTreeNode.DataNode.DeleteNode()) throw new UnreachableException();
+                var grandparents = new HashSet<TreeNode?>();
 
-                // We make sure we don't refresh the same grandparent twice.
-                grandparents.Add(selectedTreeNode.Parent?.Parent ?? TreeNodes.FirstOrDefault());
-            }
+                // We iterate through all SelectedTreeNodes...
+                foreach (var selectedTreeNode in SelectedTreeNodes.ToList())
+                {
+                    // ...and the actual deleting is dealt with by NBTModel, convenient!
+                    if (!selectedTreeNode.DataNode.DeleteNode()) throw new UnreachableException();
 
-            // We do have to deal with refreshing the grandparent ourselves, though...
-            foreach (var grandparent in grandparents.OfType<TreeNode>())
-            {
-                await grandparent.RefreshChildNodesAsync();
-            }
+                    // We make sure we don't refresh the same grandparent twice.
+                    grandparents.Add(selectedTreeNode.Parent?.Parent ?? TreeNodes.FirstOrDefault());
+                }
 
-            // ...and also clear the SelectedTreeNodes, as the child is gone now.
-            SelectedTreeNodes.Clear();
+                // We do have to deal with refreshing the grandparent ourselves, though...
+                foreach (var grandparent in grandparents.OfType<TreeNode>())
+                {
+                    await grandparent.RefreshChildNodesAsync();
+                }
+
+                // ...and also clear the SelectedTreeNodes, as the child is gone now.
+                SelectedTreeNodes.Clear();
+            }, true);
         });
 
         // This one is executed when the user chooses to Move Up a TreeNode.

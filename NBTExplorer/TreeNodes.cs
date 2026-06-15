@@ -166,7 +166,7 @@ public partial class MainWindow
 
         // Nodes in NBTModel have to be "Expanded" to be able to access their children. This does that in a sorted manner.
         internal static async Task ExpandNodeAsync(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
-            TreeNode? parent = null)
+            TreeNode? parent = null, bool finalExpand = false)
         {
             // First we sort the NodeTree...
             var sortedNodeTree = nodeTree.OrderBy(dataNode => dataNode, NodeComparer);
@@ -186,11 +186,10 @@ public partial class MainWindow
                 // And finally, we can add the Expanded one back to its parent.
                 await Dispatcher.UIThread.InvokeAsync(() => treeNodes.Add(treeNode),
                     DispatcherPriority.Background);
-
-                // But if we find out one of its children has their own children, we need to continue Expanding.
-                if (dataNode.Nodes.Count > 0)
+                // But if we find out one of its children has their own children, we do it once more. That's so the UI lets us continue Expanding.
+                if (!finalExpand && dataNode.Nodes.Count > 0)
                 {
-                    await ExpandNodeAsync(dataNode.Nodes, subNodes, treeNode);
+                    await ExpandNodeAsync(dataNode.Nodes, subNodes, treeNode, true);
                 }
             }
         }
