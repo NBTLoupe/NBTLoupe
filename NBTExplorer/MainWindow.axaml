@@ -445,7 +445,7 @@
 
                                             <!-- Edit Tag Value -->
                                             <DataTemplate DataType="{x:Type local:EditTagDialogState}">
-                                                <Grid RowDefinitions="Auto,Auto">
+                                                <Grid RowDefinitions="Auto,*">
                                                     <TextBlock TextWrapping="Wrap"
                                                                Text="{Binding TitleText}"
                                                                FontSize="20" FontWeight="SemiBold"
