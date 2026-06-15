@@ -23,12 +23,20 @@ internal static class Program
         }
     }
 
-    // We get our app's LocalAppData Directory Path.    
+    // We get our app's LocalAppData Directory Path...
     private static string LocalAppDataPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "neoNBTExplorer");
 
-    // ..and use it set the Path for our RecentItems data file, as we'll use it a lot.
+    // ...and use it set the Path for our RecentItems data file, as we'll use it a lot.
     internal static string RecentItemsFile => Path.Combine(LocalAppDataPath, "recent_items.json");
+
+    // We get the platform-dependent Minecraft Save Folder, to allow the user to easily open it from the app.
+    internal static string MinecraftSaveFolder => OperatingSystem.IsWindows()
+        ?
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft")
+        : OperatingSystem.IsMacOS()
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "minecraft")
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".minecraft");
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
