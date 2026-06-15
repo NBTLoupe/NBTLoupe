@@ -194,14 +194,16 @@ internal class EditTagDialogState : DialogState
             var tagNode = _window.SelectedTreeNodes.FirstOrDefault()?.DataNode;
             var tagDataNode = tagNode as TagDataNode;
             var metaTagContainer = tagDataNode?.Parent as IMetaTagContainer;
-            if (hasNewTagName)
-                return _oldTagName != TagName && (!string.IsNullOrEmpty(TagName) || tagNode is NbtFileDataNode) &&
+
+            bool? valid = null;
+            
+            if (hasNewTagName) valid = valid is null or true && _oldTagName != TagName && (!string.IsNullOrEmpty(TagName) || tagNode is NbtFileDataNode) &&
                        (metaTagContainer?.NamedTagContainer is null ||
                         !metaTagContainer.NamedTagContainer.TagNamesInUse.Contains(TagName));
 
-            if (hasNewTagValue) return tagDataNode?.Tag is not null && ValidateTagValue(tagDataNode.Tag.GetTagType());
+            if (hasNewTagValue) valid = valid is null or true && tagDataNode?.Tag is not null && ValidateTagValue(tagDataNode.Tag.GetTagType());
 
-            return false;
+            return valid ?? false;
         }
     }
 
