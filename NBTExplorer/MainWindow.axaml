@@ -321,7 +321,7 @@
                     </CommandBar.PrimaryCommands>
                 </CommandBar>
 
-                <ProgressBar IsIndeterminate="True" Opacity="{Binding IsBlocked}" VerticalAlignment="Top" />
+                <ProgressBar IsIndeterminate="True" Opacity="{Binding ShowProgressBar}" VerticalAlignment="Top" />
             </StackPanel>
 
             <TreeView ItemsSource="{Binding TreeNodes}" SelectedItems="{Binding SelectedTreeNodes}"
