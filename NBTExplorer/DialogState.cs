@@ -75,8 +75,15 @@ public partial class MainWindow
         {
             // Well, we don't really bypass it per-se but rather "trick" it to never show.
             CurrentDialog = state;
-            await state.ExecuteAsync();
-            CloseDialog();
+
+            try
+            {
+                await state.ExecuteAsync();
+            }
+            finally
+            {
+                CloseDialog();
+            }
 
             return;
         }
