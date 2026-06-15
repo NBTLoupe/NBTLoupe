@@ -165,14 +165,12 @@ public partial class MainWindow
     // This function Opens a File from a Path.
     private async Task OpenFileAsync(string path)
     {
-        IsBlocked = true;
-
-        try
+        await WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.
             SelectedTreeNodes.Clear();
             TreeNodes.Clear();
-            
+
             // We disable the Save button, as the postExecute task may not be instant for this specific case.
             Save.Toggle(false);
 
@@ -195,26 +193,20 @@ public partial class MainWindow
                 RecentFiles.Add(item);
             }
 
-            // And we can start expanding our NodeTree!
+            // And we can begin the lazy-loading!
             await TreeNode.ExpandNodeAsync([node], TreeNodes);
-        }
-        finally
-        {
-            IsBlocked = false;
-        }
+        });
     }
 
     // This function Opens a Folder from a Path.
     private async Task OpenFolderAsync(string path)
     {
-        IsBlocked = true;
-
-        try
+        await WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.
             SelectedTreeNodes.Clear();
             TreeNodes.Clear();
-            
+
             // We disable the Save button, as the postExecute task may not be instant for this specific case.
             Save.Toggle(false);
 
@@ -225,12 +217,8 @@ public partial class MainWindow
                 RecentFolders.Add(item);
             }
 
-            // And we can start expanding our NodeTree! Trimming the trailing slashes as NBTModel doesn't like them. 
+            // And we can begin the lazy-loading!
             await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes);
-        }
-        finally
-        {
-            IsBlocked = false;
-        }
+        });
     }
 }

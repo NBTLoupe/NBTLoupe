@@ -326,7 +326,7 @@
             </StackPanel>
 
             <TreeView ItemsSource="{Binding TreeNodes}" SelectedItems="{Binding SelectedTreeNodes}"
-                      SelectionMode="Multiple" DoubleTapped="InputElement_OnDoubleTapped" DragDrop.AllowDrop="True"
+                      SelectionMode="Multiple" TreeViewItem.Expanded="TreeViewItem_OnExpanded" DoubleTapped="InputElement_OnDoubleTapped" DragDrop.AllowDrop="True"
                       DragDrop.DragOver="TreeView_OnDragOver"
                       DragDrop.Drop="TreeView_OnDrop">
                 <TreeView.ItemTemplate>
