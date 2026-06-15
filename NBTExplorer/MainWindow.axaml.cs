@@ -234,6 +234,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // First we back up the IsExpanded (UI-wise) TreeNodes.
                 var savedExpandedNodes = selectedTreeNode.SaveExpandedNodes();
+                
+                // Then we back up our SelectedTreeNodes' IndexPath.
+                var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
 
                 // Then NBTModel deals with the main TreeNode Refreshing...
                 if (!selectedTreeNode.DataNode.RefreshNode()) throw new UnreachableException();
@@ -241,11 +244,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // ...and we deal with its children.
                 await selectedTreeNode.RefreshChildNodesAsync();
 
-                // Then we can restore the IsExpanded (UI-wise) backup...
+                // Then we can restore the IsExpanded (UI-wise) backup.
                 selectedTreeNode.RestoreExpandedNodes(savedExpandedNodes);
-
-                // ...and clear the SelectedTreeNodes, as they're invalid now.
+                
+                // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
+                
+                // And finally, we restore our SelectedTreeNodes using our IndexPath.
+                var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
             });
         });
 
@@ -276,15 +283,22 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // We isolate the parent because its child is going to be Cut...
                 var parent = selectedTreeNode.Parent.Parent ?? TreeNodes.FirstOrDefault();
+                
+                // Then we back up our SelectedTreeNodes' IndexPath.
+                var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
 
                 // ...then we Cut the selected TreeNode. 
                 if (!await selectedTreeNode.DataNode.CutNode()) throw new UnreachableException();
 
                 // Then we refresh the TreeNode's parent...
                 if (parent is not null) await parent.RefreshChildNodesAsync();
-
-                // ...and also clear the SelectedTreeNodes, as the child is gone now.
+                
+                // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
+                
+                // And finally, we restore our SelectedTreeNodes using our IndexPath.
+                var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
             }, true);
         });
 
@@ -305,17 +319,26 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             await WithBlock(async () =>
             {
-                // Check if DataNode is null, and paste the copied TreeNode into the selected Parent if not...
+                // Check if DataNode is null...
                 var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
-                if (selectedTreeNode?.DataNode is null || !await selectedTreeNode.DataNode.PasteNode())
-                    throw new UnreachableException();
+                if (selectedTreeNode?.DataNode is null) throw new UnreachableException();
+                
+                // Then we back up our SelectedTreeNodes' IndexPath.
+                var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
+                
+                // ...and paste the copied TreeNode into the selected Parent if not...
+                if (!await selectedTreeNode.DataNode.PasteNode()) throw new UnreachableException();
 
                 // ...then we refresh the TreeNode's grandparent to make sure the title is accurate.
                 var grandParent = selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
                 if (grandParent is not null) await grandParent.RefreshChildNodesAsync();
-
-                // ...and clear the SelectedTreeNodes, as they're invalid now.
+                
+                // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
+                
+                // And finally, we restore our SelectedTreeNodes using our IndexPath.
+                var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
             }, true);
         });
 
@@ -347,6 +370,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             await WithBlock(async () =>
             {
                 var grandparents = new HashSet<TreeNode?>();
+                
+                // We back up the last SelectedTreeNode's IndexPath.
+                var savedSelectedTreeNodes = SelectedTreeNodes.LastOrDefault()?.GetIndexPath(TreeNodes);
 
                 // We iterate through all SelectedTreeNodes...
                 foreach (var selectedTreeNode in SelectedTreeNodes.ToList())
@@ -363,9 +389,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 {
                     await grandparent.RefreshChildNodesAsync();
                 }
-
-                // ...and also clear the SelectedTreeNodes, as the child is gone now.
+                
+                // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
+                
+                // And finally, we restore our SelectedTreeNodes using our IndexPath.
+                if (savedSelectedTreeNodes is not null)
+                {
+                    var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                    if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
+                }
             }, true);
         });
 
