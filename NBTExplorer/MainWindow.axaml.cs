@@ -148,6 +148,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             // ...then we pass it to the OpenFolderAsync function, which does the actual Opening.
             await OpenFolderAsync(path);
         }, StorageProvider.CanPickFolder);
+        
+        // This one is executed when the user chooses to Open their Minecraft Save Folder.
+        OpenMinecraftSaveFolder = CreateAppCommand(async _ =>
+        {
+            // ...we pass the Folder to the OpenFolderAsync function, which does the actual Opening.
+            await OpenFolderAsync(Program.MinecraftSaveFolder);
+        }, Directory.Exists(Program.MinecraftSaveFolder));
 
         // This one is executed when the user chooses to Open a DirectoryDataNode in their file Explorer.
         OpenInExplorer = CreateAppCommand(async _ =>

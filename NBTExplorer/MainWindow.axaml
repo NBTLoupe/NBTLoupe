@@ -29,6 +29,7 @@
                                 <ic:FluentIcon Icon="FolderOpen" />
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Open _Minecraft Save Folder" Command="{Binding OpenMinecraftSaveFolder}" />
                         <Separator />
                         <MenuItem Header="Open in _Explorer"
                                   InputGesture="{OnPlatform 'Ctrl+Shift+E', macOS='Cmd+Shift+E'}"

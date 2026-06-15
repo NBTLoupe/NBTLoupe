@@ -107,6 +107,7 @@ public partial class MainWindow
     // All the app's AppCommand definitions.
     internal AppCommand OpenFile { get; }
     internal AppCommand OpenFolder { get; }
+    internal AppCommand OpenMinecraftSaveFolder { get; }
     internal AppCommand OpenInExplorer { get; }
     internal AppCommand Save { get; }
     internal AppCommand Refresh { get; }
