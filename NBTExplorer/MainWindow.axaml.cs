@@ -45,13 +45,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowProgressBar)));
         }
     }
-    
+
     // This helps us set the variable above only when it's truly needed. So if an operation is unlikely to take long, we can make sure the UI is only locked if it is taking exceptionally long. This prevents flashing the UI. 
     private async Task WithBlock(Func<Task> execute, bool usuallyFast = false)
     {
         // We create a CancellationTokenSource...
         using var source = new CancellationTokenSource();
-        
+
         // ...and use its token here.
         _ = Task.Delay(usuallyFast ? 250 : 0, source.Token).ContinueWith(_ => IsBlocked = true, source.Token);
 
@@ -64,12 +64,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             // And once it finishes, we cancel our CancellationTokenSource. Making sure our UI is never blocked if execute took less than maxWait.
             await source.CancelAsync();
-            
+
             // But if it did take more, we need to make sure we unblock it.
             IsBlocked = false;
         }
     }
-    
+
     // And this is just so Dialogs (which also block the UI) don't show a progress bar.
     internal bool ShowProgressBar => IsBlocked && CurrentDialog is null;
 
@@ -97,7 +97,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             try
             {
                 await SelectionChanged();
-            } 
+            }
             catch (Exception ex)
             {
                 // If something goes wrong, we log it and show a Dialog to the user. :C
@@ -187,7 +187,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             // ...then we pass it to the OpenFolderAsync function, which does the actual Opening.
             await OpenFolderAsync(path);
         }, StorageProvider.CanPickFolder);
-        
+
         // This one is executed when the user chooses to Open their Minecraft Save Folder.
         OpenMinecraftSaveFolder = CreateAppCommand(async _ =>
         {
@@ -210,7 +210,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         // This one is executed when the user chooses to Save their "project" (TreeNodes).
         Save = CreateAppCommand(async _ =>
         {
-            await WithBlock( () =>
+            await WithBlock(() =>
             {
                 // We iterate through all open TreeNodes...
                 foreach (var node in TreeNodes)
@@ -234,7 +234,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // First we back up the IsExpanded (UI-wise) TreeNodes.
                 var savedExpandedNodes = selectedTreeNode.SaveExpandedNodes();
-                
+
                 // Then we back up our SelectedTreeNodes' IndexPath.
                 var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
 
@@ -246,10 +246,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // Then we can restore the IsExpanded (UI-wise) backup.
                 selectedTreeNode.RestoreExpandedNodes(savedExpandedNodes);
-                
+
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
-                
+
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
@@ -283,7 +283,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // We isolate the parent because its child is going to be Cut...
                 var parent = selectedTreeNode.Parent.Parent ?? TreeNodes.FirstOrDefault();
-                
+
                 // Then we back up our SelectedTreeNodes' IndexPath.
                 var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
 
@@ -292,10 +292,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // Then we refresh the TreeNode's parent...
                 if (parent is not null) await parent.RefreshChildNodesAsync();
-                
+
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
-                
+
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
@@ -322,20 +322,20 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // Check if DataNode is null...
                 var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
                 if (selectedTreeNode?.DataNode is null) throw new UnreachableException();
-                
+
                 // Then we back up our SelectedTreeNodes' IndexPath.
                 var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
-                
+
                 // ...and paste the copied TreeNode into the selected Parent if not...
                 if (!await selectedTreeNode.DataNode.PasteNode()) throw new UnreachableException();
 
                 // ...then we refresh the TreeNode's grandparent to make sure the title is accurate.
                 var grandParent = selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
                 if (grandParent is not null) await grandParent.RefreshChildNodesAsync();
-                
+
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
-                
+
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
@@ -370,7 +370,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             await WithBlock(async () =>
             {
                 var grandparents = new HashSet<TreeNode?>();
-                
+
                 // We back up the last SelectedTreeNode's IndexPath.
                 var savedSelectedTreeNodes = SelectedTreeNodes.LastOrDefault()?.GetIndexPath(TreeNodes);
 
@@ -389,10 +389,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 {
                     await grandparent.RefreshChildNodesAsync();
                 }
-                
+
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
-                
+
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 if (savedSelectedTreeNodes is not null)
                 {

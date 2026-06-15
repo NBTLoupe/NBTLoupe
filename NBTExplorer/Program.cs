@@ -32,8 +32,7 @@ internal static class Program
 
     // We get the platform-dependent Minecraft Save Folder, to allow the user to easily open it from the app.
     internal static string MinecraftSaveFolder => OperatingSystem.IsWindows()
-        ?
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft")
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft")
         : OperatingSystem.IsMacOS()
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "minecraft")
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".minecraft");

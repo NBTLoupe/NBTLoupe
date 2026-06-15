@@ -32,7 +32,7 @@ internal class RecentItem
         {
             // We replace backslashes with normal slashes to keep Windows compatibility.
             var antiWindowsPath = Path.Replace('\\', '/');
-            
+
             // If it isn't stored in the Minecraft world saves folder...
             var savesIndex = antiWindowsPath.IndexOf("/saves/", StringComparison.InvariantCultureIgnoreCase);
             if (savesIndex < 0)
