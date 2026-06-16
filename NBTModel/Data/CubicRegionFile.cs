@@ -2,43 +2,27 @@
 using System.Text.RegularExpressions;
 using Substrate.Core;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data;
+
+public partial class CubicRegionFile(string path) : RegionFile(path)
 {
-    public class CubicRegionFile : RegionFile
+    private const int SECTOR_BYTES = 256;
+    private static readonly Regex NamePattern = MyRegex();
+    protected override byte[] EmptySector => new byte[SECTOR_BYTES];
+
+    protected override int SectorBytes => SECTOR_BYTES;
+
+    public override RegionKey parseCoordinatesFromName()
     {
-        private static Regex _namePattern = new Regex("r2\\.(-?[0-9]+)\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mc[ar]$");
+        var match = NamePattern.Match(fileName);
+        if (!match.Success) return RegionKey.InvalidRegion;
 
-        private const int _sectorBytes = 256;
-        private static byte[] _emptySector = new byte[_sectorBytes];
+        var x = Convert.ToInt32(match.Groups[1].Value);
+        var z = Convert.ToInt32(match.Groups[3].Value);
 
-        public CubicRegionFile (string path)
-            : base(path)
-        { }
-
-        protected override int SectorBytes
-        {
-            get { return _sectorBytes; }
-        }
-
-        protected override byte[] EmptySector
-        {
-            get { return _emptySector; }
-        }
-
-        public override RegionKey parseCoordinatesFromName ()
-        {
-            int x = 0;
-            int z = 0;
-
-            Match match = _namePattern.Match(fileName);
-            if (!match.Success) {
-                return RegionKey.InvalidRegion;
-            }
-
-            x = Convert.ToInt32(match.Groups[1].Value);
-            z = Convert.ToInt32(match.Groups[3].Value);
-
-            return new RegionKey(x, z);
-        }
+        return new RegionKey(x, z);
     }
+
+    [GeneratedRegex(@"r2\.(-?[0-9]+)\.(-?[0-9]+)\.(-?[0-9]+)\.mc[ar]$")]
+    private static partial Regex MyRegex();
 }

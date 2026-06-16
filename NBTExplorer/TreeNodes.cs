@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
-using NBTExplorer.Model;
-using NBTExplorer.Utility;
+using NBTModel.Data.Nodes;
+using NBTModel.Utility;
 using Substrate.Nbt;
 
 namespace NBTExplorer;
@@ -16,81 +16,42 @@ public partial class MainWindow
     internal ObservableCollection<TreeNode> TreeNodes { get; }
     internal ObservableCollection<TreeNode> SelectedTreeNodes { get; }
 
+    internal static string GetFriendlyTag(TagType? tagType)
+    {
+        return tagType switch
+        {
+            TagType.TAG_BYTE => "Byte Tag",
+            TagType.TAG_SHORT => "Short Tag",
+            TagType.TAG_INT => "Int Tag",
+            TagType.TAG_LONG => "Long Tag",
+            TagType.TAG_FLOAT => "Float Tag",
+            TagType.TAG_DOUBLE => "Double Tag",
+
+            TagType.TAG_BYTE_ARRAY => "Byte Array Tag",
+            TagType.TAG_SHORT_ARRAY => "Short Array Tag",
+            TagType.TAG_INT_ARRAY => "Int Array Tag",
+            TagType.TAG_LONG_ARRAY => "Long Array Tag",
+
+            TagType.TAG_STRING => "String Tag",
+            TagType.TAG_LIST => "List Tag",
+
+            TagType.TAG_COMPOUND => "Compound Tag",
+
+            _ => tagType is not null ? tagType.ToString() : "Tag"
+        } ?? "Tag";
+    }
+
     // ...which is defined here and...
     internal class TreeNode : INotifyPropertyChanged
     {
         // More reused infrastructure! This sorts the TreeNode in exactly the same way as the original NBTExplorer!
         private static readonly NodeTreeComparer NodeComparer = new();
 
-        private class NodeTreeComparer : IComparer<DataNode>
+        // And here's how you create the actual TreeNode!
+        private TreeNode(DataNode dataNode, ObservableCollection<TreeNode> subNodes)
         {
-            private readonly NaturalComparer _comparer = new();
-
-            // Each Tag has different order priorities, these are set here.
-            private static int OrderForTag(TagType tagId)
-            {
-                return tagId switch
-                {
-                    TagType.TAG_COMPOUND => 0,
-                    TagType.TAG_LIST => 1,
-                    TagType.TAG_BYTE or TagType.TAG_SHORT or TagType.TAG_INT or TagType.TAG_LONG or TagType.TAG_FLOAT
-                        or TagType.TAG_DOUBLE or TagType.TAG_STRING => 2,
-                    _ => 3
-                };
-            }
-
-            // And DirectoryDataNodes also do, so that is set here.
-            private static int OrderForNode(DataNode node)
-            {
-                return node is DirectoryDataNode ? 0 : 1;
-            }
-
-            // Then the actual comparing occurs!
-            public int Compare(DataNode? x, DataNode? y)
-            {
-                // Immediately return if the DataNodes are null
-                if (x is null || y is null) return 0;
-
-                // We get the TagDataNode of each DataNode to compare...
-                var tagDataNodeX = x as TagDataNode;
-                var tagDataNodeY = y as TagDataNode;
-
-                // ...then we get its Tag.
-                var tagNodeX = tagDataNodeX?.Tag;
-                var tagNodeY = tagDataNodeY?.Tag;
-
-                // If it doesn't have a Tag...
-                if (tagNodeX is null || tagNodeY is null)
-                {
-                    // ...we OrderForNode.
-                    var nodeOrder = OrderForNode(x).CompareTo(OrderForNode(y));
-
-                    // But if that didn't help, we resort to their NodeDisplay.
-                    return nodeOrder != 0 ? nodeOrder : _comparer.Compare(x.NodeDisplay, y.NodeDisplay);
-                }
-
-                // We get their Parents as TagDataNodes...
-                if (tagDataNodeX?.Parent is TagDataNode parentX && tagDataNodeY?.Parent is TagDataNode parentY)
-                {
-                    // ...and prioritize them if they're TAG_LISTs.
-                    if (parentX.Tag.GetTagType() == TagType.TAG_LIST || parentY.Tag.GetTagType() == TagType.TAG_LIST)
-                    {
-                        return 0;
-                    }
-                }
-
-                // Then finally, we get their TagTypes...
-                var tagTypeX = tagNodeX.GetTagType();
-                var tagTypeY = tagNodeY.GetTagType();
-
-                // ...to be able to OrderForTag.
-                var tagOrder = OrderForTag(tagTypeX).CompareTo(OrderForTag(tagTypeY));
-
-                // But if that didn't help, we resort to their NodeDisplay.
-                return tagOrder != 0
-                    ? tagOrder
-                    : _comparer.Compare(tagDataNodeX?.NodeDisplay, tagDataNodeY?.NodeDisplay);
-            }
+            DataNode = dataNode;
+            SubNodes = subNodes;
         }
 
         // ...it includes its children (SubNodes), its data (DataNode), and its Parent.
@@ -130,9 +91,6 @@ public partial class MainWindow
             _ => "QuestionCircle"
         };
 
-        // Add an event handler that fires if the state changed.
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         // Create an IsExpanded property, that fires the handler above when modified.
         internal bool IsExpanded
         {
@@ -145,17 +103,13 @@ public partial class MainWindow
             }
         }
 
+        // Add an event handler that fires if the state changed.
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         // Oh, and this is how you refresh its Title if you have to.
         internal void RefreshTitle()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Title)));
-        }
-
-        // And here's how you create the actual TreeNode!
-        private TreeNode(DataNode dataNode, ObservableCollection<TreeNode> subNodes)
-        {
-            DataNode = dataNode;
-            SubNodes = subNodes;
         }
 
         // Oh, and here's how you set its parent!
@@ -188,9 +142,7 @@ public partial class MainWindow
                     DispatcherPriority.Background);
                 // But if we find out one of its children has their own children, we do it once more. That's so the UI lets us continue Expanding.
                 if (!finalExpand && dataNode.Nodes.Count > 0)
-                {
                     await ExpandNodeAsync(dataNode.Nodes, subNodes, treeNode, true);
-                }
             }
         }
 
@@ -204,10 +156,7 @@ public partial class MainWindow
             if (SubNodes is null) return;
 
             // ...but if it does, we loop until the entire TreeNode IsExpanded (UI-wise).
-            foreach (var child in SubNodes)
-            {
-                await child.ExpandTreeAsync();
-            }
+            foreach (var child in SubNodes) await child.ExpandTreeAsync();
         }
 
         // This refreshes a TreeNode. Required to display in the UI any change in it.
@@ -225,7 +174,6 @@ public partial class MainWindow
             var sortedNodeTree = DataNode.Nodes.OrderBy(dataNode => dataNode, NodeComparer);
 
             foreach (var child in sortedNodeTree)
-            {
                 // Then for each already-Expanded child (from the currentNodes)...
                 if (currentNodes.TryGetValue(child, out var existing))
                 {
@@ -239,7 +187,6 @@ public partial class MainWindow
                     // And if it's a new child, we Expand it.
                     await ExpandNodeAsync([child], SubNodes, this);
                 }
-            }
 
             // Then we refresh its Title. Usually not necessary, but useful when the root is being Refreshed.
             RefreshTitle();
@@ -344,27 +291,72 @@ public partial class MainWindow
             // Once we finish climbing, we return the best TreeNode we found.
             return current;
         }
+
+        private class NodeTreeComparer : IComparer<DataNode>
+        {
+            private readonly NaturalComparer _comparer = new();
+
+            // Then the actual comparing occurs!
+            public int Compare(DataNode? x, DataNode? y)
+            {
+                // Immediately return if the DataNodes are null
+                if (x is null || y is null) return 0;
+
+                // We get the TagDataNode of each DataNode to compare...
+                var tagDataNodeX = x as TagDataNode;
+                var tagDataNodeY = y as TagDataNode;
+
+                // ...then we get its Tag.
+                var tagNodeX = tagDataNodeX?.Tag;
+                var tagNodeY = tagDataNodeY?.Tag;
+
+                // If it doesn't have a Tag...
+                if (tagNodeX is null || tagNodeY is null)
+                {
+                    // ...we OrderForNode.
+                    var nodeOrder = OrderForNode(x).CompareTo(OrderForNode(y));
+
+                    // But if that didn't help, we resort to their NodeDisplay.
+                    return nodeOrder != 0 ? nodeOrder : _comparer.Compare(x.NodeDisplay, y.NodeDisplay);
+                }
+
+                // We get their Parents as TagDataNodes...
+                if (tagDataNodeX?.Parent is TagDataNode parentX && tagDataNodeY?.Parent is TagDataNode parentY)
+                    // ...and prioritize them if they're TAG_LISTs.
+                    if (parentX.Tag.GetTagType() == TagType.TAG_LIST || parentY.Tag.GetTagType() == TagType.TAG_LIST)
+                        return 0;
+
+                // Then finally, we get their TagTypes...
+                var tagTypeX = tagNodeX.GetTagType();
+                var tagTypeY = tagNodeY.GetTagType();
+
+                // ...to be able to OrderForTag.
+                var tagOrder = OrderForTag(tagTypeX).CompareTo(OrderForTag(tagTypeY));
+
+                // But if that didn't help, we resort to their NodeDisplay.
+                return tagOrder != 0
+                    ? tagOrder
+                    : _comparer.Compare(tagDataNodeX?.NodeDisplay, tagDataNodeY?.NodeDisplay);
+            }
+
+            // Each Tag has different order priorities, these are set here.
+            private static int OrderForTag(TagType tagId)
+            {
+                return tagId switch
+                {
+                    TagType.TAG_COMPOUND => 0,
+                    TagType.TAG_LIST => 1,
+                    TagType.TAG_BYTE or TagType.TAG_SHORT or TagType.TAG_INT or TagType.TAG_LONG or TagType.TAG_FLOAT
+                        or TagType.TAG_DOUBLE or TagType.TAG_STRING => 2,
+                    _ => 3
+                };
+            }
+
+            // And DirectoryDataNodes also do, so that is set here.
+            private static int OrderForNode(DataNode node)
+            {
+                return node is DirectoryDataNode ? 0 : 1;
+            }
+        }
     }
-
-    internal static string GetFriendlyTag(TagType? tagType) => tagType switch
-    {
-        TagType.TAG_BYTE => "Byte Tag",
-        TagType.TAG_SHORT => "Short Tag",
-        TagType.TAG_INT => "Int Tag",
-        TagType.TAG_LONG => "Long Tag",
-        TagType.TAG_FLOAT => "Float Tag",
-        TagType.TAG_DOUBLE => "Double Tag",
-
-        TagType.TAG_BYTE_ARRAY => "Byte Array Tag",
-        TagType.TAG_SHORT_ARRAY => "Short Array Tag",
-        TagType.TAG_INT_ARRAY => "Int Array Tag",
-        TagType.TAG_LONG_ARRAY => "Long Array Tag",
-
-        TagType.TAG_STRING => "String Tag",
-        TagType.TAG_LIST => "List Tag",
-
-        TagType.TAG_COMPOUND => "Compound Tag",
-
-        _ => tagType is not null ? tagType.ToString() : "Tag"
-    } ?? "Tag";
 }

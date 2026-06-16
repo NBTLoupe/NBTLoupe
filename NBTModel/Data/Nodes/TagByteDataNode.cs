@@ -1,38 +1,26 @@
 ﻿using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public class TagByteDataNode(TagNodeByte tag) : TagDataNode(tag)
 {
-    public class TagByteDataNode : TagDataNode
+    private new TagNodeByte Tag => (TagNodeByte)base.Tag;
+
+    public override string NodeDisplay => NodeDisplayPrefix + unchecked((sbyte)Tag.Data);
+
+    public override bool Parse(string value)
     {
-        public TagByteDataNode (TagNodeByte tag)
-            : base(tag)
-        { }
+        if (!byte.TryParse(value, out var data))
+            return false;
 
-        protected new TagNodeByte Tag
-        {
-            get { return base.Tag as TagNodeByte; }
-        }
+        Tag.Data = data;
+        IsDataModified = true;
 
-        public override bool Parse (string value)
-        {
-            byte data;
-            if (!byte.TryParse(value, out data))
-                return false;
+        return true;
+    }
 
-            Tag.Data = data;
-            IsDataModified = true;
-
-            return true;
-        }
-
-        public override bool EditNode ()
-        {
-            return EditScalarValue(Tag);
-        }
-
-        public override string NodeDisplay
-        {
-            get { return NodeDisplayPrefix + unchecked((sbyte)Tag.Data).ToString(); }
-        }
+    public override bool EditNode()
+    {
+        return EditScalarValue(Tag);
     }
 }

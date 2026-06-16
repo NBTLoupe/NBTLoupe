@@ -3,131 +3,102 @@ using System.Threading.Tasks;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public sealed class TagListDataNode(TagNodeList tag) : TagDataNode.Container(tag)
 {
-    public class TagListDataNode : TagDataNode.Container
+    private readonly ListTagContainer _container = new(tag);
+
+    public new TagNodeList Tag => (TagNodeList)base.Tag;
+
+    public override bool IsOrderedContainer => true;
+
+    public override IOrderedTagContainer OrderedTagContainer => _container;
+
+    public override int TagCount => _container.TagCount;
+
+    protected override void ExpandCore()
     {
-        private ListTagContainer _container;
-
-        public TagListDataNode (TagNodeList tag)
-            : base(tag)
+        foreach (var tag in Tag)
         {
-            _container = new ListTagContainer(tag, res => IsDataModified = true);
+            var node = CreateFromTag(tag);
+            if (node != null)
+                Nodes.Add(node);
         }
+    }
 
-        public new TagNodeList Tag
-        {
-            get { return base.Tag as TagNodeList; }
-            set { base.Tag = value; }
-        }
+    public override bool CanCreateTag(TagType type)
+    {
+        if (Tag.Count > 0)
+            return Tag.ValueType == type;
+        return Enum.IsDefined(type) && type != TagType.TAG_END;
+    }
 
-        protected override void ExpandCore ()
-        {
-            foreach (TagNode tag in Tag) {
-                TagDataNode node = TagDataNode.CreateFromTag(tag);
-                if (node != null)
-                    Nodes.Add(node);
-            }
-        }
-
-        public override bool CanCreateTag (TagType type)
-        {
-            if (Tag.Count > 0)
-                return Tag.ValueType == type;
-            else
-                return Enum.IsDefined(typeof(TagType), type) && type != TagType.TAG_END;
-        }
-
-        public override async Task<bool> CanPasteIntoNode()
-        {
-            if (await NbtClipboardController.ContainsDataAsync()) {
-                NbtClipboardData data = await NbtClipboardController.CopyFromClipboardAsync();
-                if (data == null)
-                    return false;
-
-                if (data.Node != null && (data.Node.GetTagType() == Tag.ValueType || Tag.Count == 0))
-                    return true;
-            }
-
+    public override async Task<bool> CanPasteIntoNode()
+    {
+        if (!await NbtClipboardController.ContainsDataAsync()) return false;
+        var data = await NbtClipboardController.CopyFromClipboardAsync();
+        if (data == null)
             return false;
-        }
 
-        public override bool CreateNode (TagType type)
-        {
-            if (!CanCreateTag(type))
-                return false;
+        return data.Node.GetTagType() == Tag.ValueType || Tag.Count == 0;
+    }
 
-            if (Tag.Count == 0) {
-                Tag.ChangeValueType(type);
-            }
+    public override bool CreateNode(TagType type)
+    {
+        if (!CanCreateTag(type))
+            return false;
 
-            AppendTag(TagDataNode.DefaultTag(type));
-            return true;
-        }
+        if (Tag.Count == 0) Tag.ChangeValueType(type);
 
-        public override async Task<bool> PasteNode ()
-        {
-            if (!await CanPasteIntoNode())
-                return false;
+        AppendTag(DefaultTag(type));
+        return true;
+    }
 
-            NbtClipboardData clipboard = await NbtClipboardController.CopyFromClipboardAsync();
-            if (clipboard == null || clipboard.Node == null)
-                return false;
+    public override async Task<bool> PasteNode()
+    {
+        if (!await CanPasteIntoNode())
+            return false;
 
-            if (Tag.Count == 0) {
-                Tag.ChangeValueType(clipboard.Node.GetTagType());
-            }
+        var clipboard = await NbtClipboardController.CopyFromClipboardAsync();
+        if (clipboard?.Node == null)
+            return false;
 
-            AppendTag(clipboard.Node);
-            return true;
-        }
+        if (Tag.Count == 0) Tag.ChangeValueType(clipboard.Node.GetTagType());
 
-        public override bool IsOrderedContainer
-        {
-            get { return true; }
-        }
+        AppendTag(clipboard.Node);
+        return true;
+    }
 
-        public override IOrderedTagContainer OrderedTagContainer
-        {
-            get { return _container; }
-        }
+    public override bool DeleteTag(TagNode tag)
+    {
+        return _container.DeleteTag(tag);
+    }
 
-        public override int TagCount
-        {
-            get { return _container.TagCount; }
-        }
+    public void Clear()
+    {
+        if (TagCount == 0)
+            return;
 
-        public override bool DeleteTag (TagNode tag)
-        {
-            return _container.DeleteTag(tag);
-        }
+        Nodes.Clear();
+        Tag.Clear();
 
-        public override void Clear ()
-        {
-            if (TagCount == 0)
-                return;
+        IsDataModified = true;
+    }
 
-            Nodes.Clear();
-            Tag.Clear();
+    public bool AppendTag(TagNode tag)
+    {
+        if (!CanCreateTag(tag.GetTagType()))
+            return false;
 
-            IsDataModified = true;
-        }
+        _container.InsertTag(tag, _container.TagCount);
+        IsDataModified = true;
 
-        public bool AppendTag (TagNode tag)
-        {
-            if (tag == null || !CanCreateTag(tag.GetTagType()))
-                return false;
+        if (!IsExpanded) return true;
+        var node = CreateFromTag(tag);
+        if (node != null)
+            Nodes.Add(node);
 
-            _container.InsertTag(tag, _container.TagCount);
-            IsDataModified = true;
-
-            if (IsExpanded) {
-                TagDataNode node = TagDataNode.CreateFromTag(tag);
-                if (node != null)
-                    Nodes.Add(node);
-            }
-
-            return true;
-        }
+        return true;
     }
 }

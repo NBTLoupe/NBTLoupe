@@ -1,5 +1,5 @@
 ﻿using System;
-using NBTExplorer.Model;
+using NBTModel.Data.Nodes;
 
 namespace NBTUtil.Ops;
 
@@ -19,7 +19,7 @@ internal class SetListOperation : ConsoleOperation
         {
             var tag = TagDataNode.DefaultTag(listNode.Tag.ValueType);
             var tagData = TagDataNode.CreateFromTag(tag);
-            if (!tagData.Parse(value))
+            if (tagData?.Parse(value) != true)
                 return false;
 
             if (!listNode.AppendTag(tagData.Tag))

@@ -2,6 +2,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
 
         <AssemblyName>neoNBTUtil</AssemblyName>
         <Version>0.0.0</Version>
@@ -15,9 +16,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.CommandLine" Version="2.0.9" />
+        <PackageReference Include="System.CommandLine" Version="2.0.9"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\NBTModel\NBTModel.csproj"/>
         <ProjectReference Include="..\Substrate\SubstrateCS\Substrate.csproj"/>

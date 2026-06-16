@@ -13,7 +13,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using NBTExplorer.Model;
+using NBTModel.Data.Nodes;
 using NBTModel.Interop;
 using Serilog;
 using Substrate.Nbt;
@@ -22,57 +22,6 @@ namespace NBTExplorer;
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
-    // This will be used by the Find functionality in the future.
-    internal string? FindName { get; set; }
-    internal string? FindValue { get; set; }
-
-    // This is how we tell the UI our Dialogs changed.
-    public new event PropertyChangedEventHandler? PropertyChanged;
-
-    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-    // This is how we block the main UI when something is happening. We only do this in IO-related tasks as these take the longest.
-    internal bool IsBlocked
-    {
-        get;
-        set
-        {
-            if (field == value) return;
-            field = value;
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBlocked)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowProgressBar)));
-        }
-    }
-
-    // This helps us set the variable above only when it's truly needed. So if an operation is unlikely to take long, we can make sure the UI is only locked if it is taking exceptionally long. This prevents flashing the UI. 
-    private async Task WithBlock(Func<Task> execute, bool usuallyFast = false)
-    {
-        // We create a CancellationTokenSource...
-        using var source = new CancellationTokenSource();
-
-        // ...and use its token here.
-        _ = Task.Delay(usuallyFast ? 250 : 0, source.Token).ContinueWith(_ => IsBlocked = true, source.Token);
-
-        try
-        {
-            // Here we execute.
-            await execute();
-        }
-        finally
-        {
-            // And once it finishes, we cancel our CancellationTokenSource. Making sure our UI is never blocked if execute took less than maxWait.
-            await source.CancelAsync();
-
-            // But if it did take more, we need to make sure we unblock it.
-            IsBlocked = false;
-        }
-    }
-
-    // And this is just so Dialogs (which also block the UI) don't show a progress bar.
-    internal bool ShowProgressBar => IsBlocked && CurrentDialog is null;
-
     public MainWindow()
     {
         // We initialize everything we'll need...
@@ -214,10 +163,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             {
                 // We iterate through all open TreeNodes...
                 foreach (var node in TreeNodes)
-                {
                     // ...and the actual Saving is dealt with by NBTModel, convenient!
                     node.DataNode.Save();
-                }
 
                 return Task.CompletedTask;
             }, true);
@@ -385,10 +332,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 }
 
                 // We do have to deal with refreshing the grandparent ourselves, though...
-                foreach (var grandparent in grandparents.OfType<TreeNode>())
-                {
-                    await grandparent.RefreshChildNodesAsync();
-                }
+                foreach (var grandparent in grandparents.OfType<TreeNode>()) await grandparent.RefreshChildNodesAsync();
 
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
@@ -493,10 +437,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
             if (selectedTreeNode?.SubNodes is null) throw new UnreachableException();
 
-            foreach (var child in selectedTreeNode.SubNodes)
-            {
-                child.IsExpanded = true;
-            }
+            foreach (var child in selectedTreeNode.SubNodes) child.IsExpanded = true;
         });
 
         // This one is executed when the user chooses to Expand a TreeNode's Tree.
@@ -562,15 +503,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             // If the file is Ascii, it may follow our format...
             if (Ascii.IsValid(fileContent))
-            {
                 (CurrentDialog as EditTagDialogState)?.TagValue = fileContent;
-            }
             else
-            {
                 // ...if it isn't, it'd crash the whole app so we won't accept it.
                 throw new UserErrorException(
                     "Invalid (non-ASCII) data file. Please only import data files created through neoNBTExplorer. If you did so, your file may be corrupted.");
-            }
         });
 
         DialogExport = CreateAppCommand(async _ =>
@@ -612,5 +549,58 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         // Because of our pseudo-MVVM approach, we need to bind the DataContext.
         DataContext = this;
+    }
+
+    // This will be used by the Find functionality in the future.
+    internal string? FindName { get; set; }
+    internal string? FindValue { get; set; }
+
+    // This is how we block the main UI when something is happening. We only do this in IO-related tasks as these take the longest.
+    internal bool IsBlocked
+    {
+        get;
+        set
+        {
+            if (field == value) return;
+            field = value;
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBlocked)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowProgressBar)));
+        }
+    }
+
+    // And this is just so Dialogs (which also block the UI) don't show a progress bar.
+    internal bool ShowProgressBar => IsBlocked && CurrentDialog is null;
+
+    // This is how we tell the UI our Dialogs changed.
+    public new event PropertyChangedEventHandler? PropertyChanged;
+
+    private void OnPropertyChanged([CallerMemberName] string? name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    // This helps us set the variable above only when it's truly needed. So if an operation is unlikely to take long, we can make sure the UI is only locked if it is taking exceptionally long. This prevents flashing the UI. 
+    private async Task WithBlock(Func<Task> execute, bool usuallyFast = false)
+    {
+        // We create a CancellationTokenSource...
+        using var source = new CancellationTokenSource();
+
+        // ...and use its token here.
+        _ = Task.Delay(usuallyFast ? 250 : 0, source.Token).ContinueWith(_ => IsBlocked = true, source.Token);
+
+        try
+        {
+            // Here we execute.
+            await execute();
+        }
+        finally
+        {
+            // And once it finishes, we cancel our CancellationTokenSource. Making sure our UI is never blocked if execute took less than maxWait.
+            await source.CancelAsync();
+
+            // But if it did take more, we need to make sure we unblock it.
+            IsBlocked = false;
+        }
     }
 }

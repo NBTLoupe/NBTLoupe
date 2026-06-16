@@ -1,420 +1,236 @@
-﻿using Substrate.Nbt;
+﻿using System;
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
+using NBTModel.Utility;
+using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public class DataNode
 {
-    public class RootDataNode : TagCompoundDataNode
+    private bool _childModified;
+    private bool _dataModified;
+
+    protected DataNode()
     {
-        private string _name = "Root";
-        private string _display = "";
-
-        public RootDataNode ()
-            : base(new TagNodeCompound())
-        {
-        }
-
-        public override string NodeName
-        {
-            get { return _name; }
-        }
-
-        public override string NodeDisplay
-        {
-            get { return _display; }
-        }
-
-        public void SetNodeName (string name)
-        {
-            _name = name;
-        }
-
-        public void SetDisplayName (string name)
-        {
-            _display = name;
-        }
-
-        /*public override bool CanCreateTag (TagType type)
-        {
-            return Enum.IsDefined(typeof(TagType), type) && type != TagType.TAG_END;
-        }*/
+        Nodes = new DataNodeCollection(this, new SnapshotList<DataNode>([]));
     }
 
-    // FilterDataNode
-    // AndFilterDataNode
-    // OrFilterDataNode
+    public DataNode? Parent { get; internal set; }
 
-    public class DataNode
+    public DataNode Root => Parent == null ? this : Parent.Root;
+
+    public DataNodeCollection Nodes { get; }
+
+    public bool IsModified => _dataModified || _childModified;
+
+    protected bool IsDataModified
     {
-        private DataNode _parent;
-        private DataNodeCollection _children;
-
-        private bool _expanded;
-
-        private bool _dataModified;
-        private bool _childModified;
-
-        public DataNode ()
+        set
         {
-            _children = new DataNodeCollection(this);
+            _dataModified = value;
+            CalculateChildModifiedState();
         }
-
-        public DataNode Parent
-        {
-            get { return _parent; }
-            internal set { _parent = value; }
-        }
-
-        public DataNode Root
-        {
-            get { return (_parent == null) ? this : _parent.Root; }
-        }
-
-        public DataNodeCollection Nodes
-        {
-            get { return _children; }
-        }
-
-        public bool IsModified
-        {
-            get { return _dataModified || _childModified; }
-        }
-
-        protected bool IsDataModified
-        {
-            get { return _dataModified; }
-            set
-            {
-                _dataModified = value;
-                CalculateChildModifiedState();
-            }
-        }
-
-        protected bool IsChildModified
-        {
-            get { return _childModified; }
-            set
-            {
-                _childModified = value;
-                CalculateChildModifiedState();                
-            }
-        }
-
-        protected bool IsParentModified
-        {
-            get { return Parent != null && Parent.IsModified; }
-            set
-            {
-                if (Parent != null)
-                    Parent.IsDataModified = value;
-            }
-        }
-
-        private void CalculateChildModifiedState ()
-        {
-            _childModified = false;
-            foreach (DataNode child in Nodes)
-                if (child.IsModified)
-                    _childModified = true;
-
-            if (Parent != null)
-                Parent.CalculateChildModifiedState();
-        }
-
-        public bool IsExpanded
-        {
-            get { return _expanded; }
-            private set { _expanded = value; }
-        }
-
-        public void Expand ()
-        {
-            if (!IsExpanded) {
-                ExpandCore();
-                IsExpanded = true;
-            }
-        }
-
-        protected virtual void ExpandCore () { }
-
-        public void Collapse ()
-        {
-            if (IsExpanded && !IsModified) {
-                Release();
-                IsExpanded = false;
-            }
-        }
-
-        public void Release ()
-        {
-            foreach (DataNode node in Nodes)
-                node.Release();
-
-            ReleaseCore();
-            IsExpanded = false;
-            IsDataModified = false;
-        }
-
-        protected virtual void ReleaseCore ()
-        {
-            Nodes.Clear();
-        }
-
-        public void Save ()
-        {
-            foreach (DataNode node in Nodes)
-                if (node.IsModified)
-                    node.Save();
-
-            SaveCore();
-            IsDataModified = false;
-        }
-
-        protected virtual void SaveCore ()
-        {
-        }
-
-        public virtual string NodeName
-        {
-            get { return ""; }
-        }
-
-        public string NodePath
-        {
-            get {
-                string name = NodePathName;
-                if (string.IsNullOrEmpty(name))
-                    name = "*";
-
-                return (Parent != null) ? Parent.NodePath + '/' + name : '/' + name;
-            }
-        }
-
-        public virtual string NodePathName
-        {
-            get { return NodeName; }
-        }
-
-        public virtual string NodeDisplay
-        {
-            get { return ""; }
-        }
-
-        public virtual bool IsContainerType
-        {
-            get { return false; }
-        }
-
-        public virtual bool HasUnexpandedChildren
-        {
-            get { return false; }
-        }
-
-        protected Dictionary<string, object> BuildExpandSet (DataNode node)
-        {
-            if (node == null || !node.IsExpanded)
-                return null;
-
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            foreach (DataNode child in node.Nodes) {
-                Dictionary<string, object> childDict = BuildExpandSet(child);
-                if (childDict != null) {
-                    dict[child.NodePathName] = childDict;
-                }
-            }
-
-            return dict;
-        }
-
-        protected void RestoreExpandSet (DataNode node, Dictionary<string, object> expandSet)
-        {
-            if (expandSet == null)
-                return;
-
-            node.Expand();
-
-            foreach (DataNode child in node.Nodes) {
-                if (expandSet.ContainsKey(child.NodePathName)) {
-                    Dictionary<string, object> childDict = (Dictionary<string, object>)expandSet[child.NodePathName];
-                    if (childDict != null)
-                        RestoreExpandSet(child, childDict);
-                }
-            }
-        }
-
-        #region Node Capabilities
-
-        protected virtual NodeCapabilities Capabilities
-        {
-            get { return NodeCapabilities.None; }
-        }
-
-        public virtual bool CanRenameNode
-        {
-            get { return (Capabilities & NodeCapabilities.Rename) != NodeCapabilities.None; }
-        }
-
-        public virtual bool CanEditNode
-        {
-            get { return (Capabilities & NodeCapabilities.Edit) != NodeCapabilities.None; }
-        }
-
-        public virtual bool CanDeleteNode
-        {
-            get { return (Capabilities & NodeCapabilities.Delete) != NodeCapabilities.None; }
-        }
-
-        public virtual bool CanCopyNode
-        {
-            get { return (Capabilities & NodeCapabilities.Copy) != NodeCapabilities.None; }
-        }
-
-        public virtual bool CanCutNode
-        {
-            get { return (Capabilities & NodeCapabilities.Cut) != NodeCapabilities.None; }
-        }
-
-        public virtual Task<bool> CanPasteIntoNode ()
-        {
-            try
-            {
-                return Task.FromResult((Capabilities & NodeCapabilities.PasteInto) != NodeCapabilities.None);
-            }
-            catch (Exception exception)
-            {
-                return Task.FromException<bool>(exception);
-            }
-        }
-
-        public virtual bool CanSearchNode
-        {
-            get { return (Capabilities & NodeCapabilities.Search) != NodeCapabilities.None; }
-        }
-
-        public virtual bool CanReoderNode
-        {
-            get { return (Capabilities & NodeCapabilities.Reorder) != NodeCapabilities.None; }
-        }
-
-        public virtual bool CanRefreshNode
-        {
-            get { return (Capabilities & NodeCapabilities.Refresh) != NodeCapabilities.None; }
-        }
-
-        public virtual bool CanMoveNodeUp
-        {
-            get { return false; }
-        }
-
-        public virtual bool CanMoveNodeDown
-        {
-            get { return false; }
-        }
-
-        public virtual bool CanCreateTag (TagType type)
-        {
-            return false;
-        }
-
-        #endregion
-
-        #region Group Capabilities
-
-        public virtual GroupCapabilities RenameNodeCapabilities
-        {
-            get { return GroupCapabilities.Single; }
-        }
-
-        public virtual GroupCapabilities EditNodeCapabilities
-        {
-            get { return GroupCapabilities.Single; }
-        }
-
-        public virtual GroupCapabilities DeleteNodeCapabilities
-        {
-            get { return GroupCapabilities.MultiMixedType | GroupCapabilities.ElideChildren; }
-        }
-
-        public virtual GroupCapabilities CutNodeCapabilities
-        {
-            get { return GroupCapabilities.Single; } //SiblingMixedType
-        }
-
-        public virtual GroupCapabilities CopyNodeCapabilities
-        {
-            get { return GroupCapabilities.Single; } //SiblingMixedType
-        }
-
-        public virtual GroupCapabilities PasteIntoNodeCapabilities
-        {
-            get { return GroupCapabilities.Single; }
-        }
-
-        public virtual GroupCapabilities SearchNodeCapabilites
-        {
-            get { return GroupCapabilities.Single; }
-        }
-
-        public virtual GroupCapabilities ReorderNodeCapabilities
-        {
-            get { return GroupCapabilities.Single; } //SiblingMixedType
-        }
-
-        public virtual GroupCapabilities RefreshNodeCapabilites
-        {
-            get { return GroupCapabilities.Single; } // MultiMixedType | ElideChildren
-        }
-
-        #endregion
-
-        #region Operations
-
-        public virtual bool CreateNode (TagType type)
-        {
-            return false;
-        }
-
-        public virtual bool RenameNode ()
-        {
-            return false;
-        }
-
-        public virtual bool EditNode ()
-        {
-            return false;
-        }
-
-        public virtual bool DeleteNode ()
-        {
-            return false;
-        }
-
-        public virtual Task<bool> CopyNode ()
-        {
-            return Task.FromResult(false);
-        }
-
-        public virtual Task<bool> CutNode ()
-        {
-            return Task.FromResult(false);
-        }
-
-        public virtual Task<bool> PasteNode ()
-        {
-            return Task.FromResult(false);
-        }
-
-        public virtual bool ChangeRelativePosition (int offset)
-        {
-            return false;
-        }
-
-        public virtual bool RefreshNode ()
-        {
-            return false;
-        }
-
-        #endregion
     }
+
+    protected bool IsParentModified
+    {
+        set => Parent?.IsDataModified = value;
+    }
+
+    protected bool IsExpanded { get; private set; }
+
+    public virtual string NodeName => "";
+
+    public string NodePath
+    {
+        get
+        {
+            var name = NodePathName;
+            if (string.IsNullOrEmpty(name))
+                name = "*";
+
+            return Parent != null ? Parent.NodePath + '/' + name : '/' + name;
+        }
+    }
+
+    public virtual string NodePathName => NodeName;
+
+    public virtual string NodeDisplay => "";
+
+    public virtual bool IsContainerType => false;
+
+    public virtual bool HasUnexpandedChildren => false;
+
+    private void CalculateChildModifiedState()
+    {
+        _childModified = false;
+        foreach (var child in Nodes)
+            if (child.IsModified)
+                _childModified = true;
+
+        Parent?.CalculateChildModifiedState();
+    }
+
+    public void Expand()
+    {
+        if (IsExpanded) return;
+        ExpandCore();
+        IsExpanded = true;
+    }
+
+    protected virtual void ExpandCore()
+    {
+    }
+
+    protected void Release()
+    {
+        foreach (var node in Nodes)
+            node.Release();
+
+        ReleaseCore();
+        IsExpanded = false;
+        IsDataModified = false;
+    }
+
+    protected virtual void ReleaseCore()
+    {
+        Nodes.Clear();
+    }
+
+    public void Save()
+    {
+        foreach (var node in Nodes)
+            if (node.IsModified)
+                node.Save();
+
+        SaveCore();
+        IsDataModified = false;
+    }
+
+    protected virtual void SaveCore()
+    {
+    }
+
+    protected static Dictionary<string, object>? BuildExpandSet(DataNode node)
+    {
+        if (node is not { IsExpanded: true })
+            return null;
+
+        var dict = new Dictionary<string, object>();
+        foreach (var child in node.Nodes)
+        {
+            var childDict = BuildExpandSet(child);
+            if (childDict != null) dict[child.NodePathName] = childDict;
+        }
+
+        return dict;
+    }
+
+    protected static void RestoreExpandSet(DataNode node, Dictionary<string, object>? expandSet)
+    {
+        if (expandSet == null)
+            return;
+
+        node.Expand();
+
+        foreach (var child in node.Nodes)
+        {
+            if (!expandSet.TryGetValue(child.NodePathName, out var value)) continue;
+            var childDict = (Dictionary<string, object>)value;
+            RestoreExpandSet(child, childDict);
+        }
+    }
+
+    #region Node Capabilities
+
+    protected virtual NodeCapabilities Capabilities => NodeCapabilities.None;
+
+    public virtual bool CanRenameNode => (Capabilities & NodeCapabilities.Rename) != NodeCapabilities.None;
+
+    public virtual bool CanEditNode => (Capabilities & NodeCapabilities.Edit) != NodeCapabilities.None;
+
+    public bool CanDeleteNode => (Capabilities & NodeCapabilities.Delete) != NodeCapabilities.None;
+
+    public bool CanCopyNode => (Capabilities & NodeCapabilities.Copy) != NodeCapabilities.None;
+
+    public bool CanCutNode => (Capabilities & NodeCapabilities.Cut) != NodeCapabilities.None;
+
+    public virtual Task<bool> CanPasteIntoNode()
+    {
+        try
+        {
+            return Task.FromResult((Capabilities & NodeCapabilities.PasteInto) != NodeCapabilities.None);
+        }
+        catch (Exception exception)
+        {
+            return Task.FromException<bool>(exception);
+        }
+    }
+
+    public bool CanSearchNode => (Capabilities & NodeCapabilities.Search) != NodeCapabilities.None;
+
+    public bool CanReoderNode => (Capabilities & NodeCapabilities.Reorder) != NodeCapabilities.None;
+
+    public bool CanRefreshNode => (Capabilities & NodeCapabilities.Refresh) != NodeCapabilities.None;
+
+    public virtual bool CanMoveNodeUp => false;
+
+    public virtual bool CanMoveNodeDown => false;
+
+    public virtual bool CanCreateTag(TagType type)
+    {
+        return false;
+    }
+
+    #endregion
+
+    #region Operations
+
+    public virtual bool CreateNode(TagType type)
+    {
+        return false;
+    }
+
+    public virtual bool RenameNode()
+    {
+        return false;
+    }
+
+    public virtual bool EditNode()
+    {
+        return false;
+    }
+
+    public virtual bool DeleteNode()
+    {
+        return false;
+    }
+
+    public virtual Task<bool> CopyNode()
+    {
+        return Task.FromResult(false);
+    }
+
+    public virtual Task<bool> CutNode()
+    {
+        return Task.FromResult(false);
+    }
+
+    public virtual Task<bool> PasteNode()
+    {
+        return Task.FromResult(false);
+    }
+
+    public virtual bool ChangeRelativePosition(int offset)
+    {
+        return false;
+    }
+
+    public virtual bool RefreshNode()
+    {
+        return false;
+    }
+
+    #endregion
 }

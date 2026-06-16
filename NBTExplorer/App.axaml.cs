@@ -19,10 +19,7 @@ public class App : Application
     {
         var mainWindow = new MainWindow();
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            desktop.MainWindow = mainWindow;
-        }
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) desktop.MainWindow = mainWindow;
 
         // Exception handling for non-AppCommands.
         Dispatcher.UIThread.UnhandledException += (_, e) =>

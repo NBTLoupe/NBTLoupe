@@ -1,90 +1,62 @@
-﻿using System.IO;
-using System.Collections.Generic;
-using System;
+﻿using System;
+using System.IO;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public class DirectoryDataNode(string path) : DataNode
 {
-    public class DirectoryDataNode : DataNode
+    protected override NodeCapabilities Capabilities =>
+        NodeCapabilities.Search
+        | NodeCapabilities.Refresh;
+
+    public string NodeDirPath => path;
+
+    public override string NodePathName
     {
-        private string _path;
-
-        public DirectoryDataNode (string path)
+        get
         {
-            _path = path;
-        }
+            var path1 = path.EndsWith('/') || path.EndsWith('\\') ? path : path + '/';
 
-        protected override NodeCapabilities Capabilities
+            var name = Path.GetDirectoryName(path1) ?? path1[..^1];
+            var sepIndex = Math.Max(name.LastIndexOf('/'), name.LastIndexOf('\\'));
+
+            return sepIndex > 0 ? name[(sepIndex + 1)..] : name;
+        }
+    }
+
+    public override string NodeDisplay => Path.GetFileName(path);
+
+    public override bool HasUnexpandedChildren => !IsExpanded;
+
+    public override bool IsContainerType => true;
+
+    protected override void ExpandCore()
+    {
+        foreach (var dirpath in Directory.GetDirectories(path)) Nodes.Add(new DirectoryDataNode(dirpath));
+
+        foreach (var filepath in Directory.GetFiles(path))
         {
-            get
-            {
-                return NodeCapabilities.Search
-                    | NodeCapabilities.Refresh;
-            }
+            DataNode? node = null;
+            foreach (var item in FileTypeRegistry.RegisteredTypes)
+                if (item.Value.NamePatternTest(filepath))
+                    node = item.Value.NodeCreate(filepath);
+
+            if (node != null)
+                Nodes.Add(node);
         }
+    }
 
-        public string NodeDirPath
-        {
-            get { return _path; }
-        }
+    protected override void ReleaseCore()
+    {
+        Nodes.Clear();
+    }
 
-        public override string NodePathName
-        {
-            get
-            {
-                string path = (_path.EndsWith("/") || _path.EndsWith("\\")) ? _path : _path + '/';
-                
-                string name = Path.GetDirectoryName(path) ?? path.Substring(0, path.Length - 1);
-                int sepIndex = Math.Max(name.LastIndexOf('/'), name.LastIndexOf('\\'));
+    public override bool RefreshNode()
+    {
+        var expandSet = BuildExpandSet(this);
+        Release();
+        RestoreExpandSet(this, expandSet);
 
-                return (sepIndex > 0) ? name.Substring(sepIndex + 1) : name;
-            }
-        }
-
-        public override string NodeDisplay
-        {
-            get { return Path.GetFileName(_path); }
-        }
-
-        public override bool HasUnexpandedChildren
-        {
-            get { return !IsExpanded; }
-        }
-
-        public override bool IsContainerType
-        {
-            get { return true; }
-        }
-
-        protected override void ExpandCore ()
-        {
-            foreach (string dirpath in Directory.GetDirectories(_path)) {
-                Nodes.Add(new DirectoryDataNode(dirpath));
-            }
-
-            foreach (string filepath in Directory.GetFiles(_path)) {
-                DataNode node = null;
-                foreach (var item in FileTypeRegistry.RegisteredTypes) {
-                    if (item.Value.NamePatternTest(filepath))
-                        node = item.Value.NodeCreate(filepath);
-                }
-
-                if (node != null)
-                    Nodes.Add(node);
-            }
-        }
-
-        protected override void ReleaseCore ()
-        {
-            Nodes.Clear();
-        }
-
-        public override bool RefreshNode ()
-        {
-            Dictionary<string, object> expandSet = BuildExpandSet(this);
-            Release();
-            RestoreExpandSet(this, expandSet);
-
-            return expandSet != null;
-        }
+        return expandSet != null;
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using NBTExplorer.Model;
+using NBTModel.Data.Nodes;
 
 namespace NBTUtil.Ops;
 

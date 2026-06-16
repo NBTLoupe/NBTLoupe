@@ -1,36 +1,24 @@
-﻿using System;
-using Substrate.Nbt;
+﻿using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public class TagByteArrayDataNode(TagNodeByteArray tag) : TagDataNode(tag)
 {
-    public class TagByteArrayDataNode : TagDataNode
+    private new TagNodeByteArray Tag => (TagNodeByteArray)base.Tag;
+
+    public override bool CanEditNode
     {
-        public TagByteArrayDataNode (TagNodeByteArray tag)
-            : base(tag)
-        { }
-
-        protected new TagNodeByteArray Tag
-        {
-            get { return base.Tag as TagNodeByteArray; }
-        }
-
-        public override bool CanEditNode
-        {
 #if WINDOWS
             get { return true; }
 #else
-            get { return false; }
+        get { return false; }
 #endif
-        }
+    }
 
-        public override bool EditNode ()
-        {
-            return EditByteHexValue(Tag);
-        }
+    public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " bytes";
 
-        public override string NodeDisplay
-        {
-            get { return NodeDisplayPrefix + Tag.Data.Length + " bytes"; }
-        }
+    public override bool EditNode()
+    {
+        return EditByteHexValue(Tag);
     }
 }

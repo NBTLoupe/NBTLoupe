@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using NBTExplorer.Model;
+using NBTModel;
 using NBTUtil.Ops;
 
 namespace NBTUtil;
@@ -27,21 +27,6 @@ internal static class ConsoleRunner
     {
         Description = "Show data types when printing tags"
     };
-
-    public static int Run(string[] args)
-    {
-        var rootCommand = new RootCommand("neoNBTUtil - A modernised version of the unfinished NBTUtil")
-        {
-            PathOption,
-            PrintCommand,
-            PrintTreeCommand,
-            SetValueCommand,
-            SetListCommand,
-            JsonCommand
-        };
-
-        return rootCommand.Parse(args).Invoke();
-    }
 
     private static Command PrintCommand
     {
@@ -100,7 +85,10 @@ internal static class ConsoleRunner
                     Command = ConsoleCommand.SetValue,
                     Path = parsed.GetRequiredValue(PathOption)
                 };
-                options.Values.AddRange(parsed.GetValue(valueArg));
+
+                var value = parsed.GetValue(valueArg);
+                if (value is null) return;
+                options.Values.AddRange(value);
                 Execute(options);
             });
 
@@ -125,7 +113,10 @@ internal static class ConsoleRunner
                     Command = ConsoleCommand.SetList,
                     Path = parsed.GetRequiredValue(PathOption)
                 };
-                options.Values.AddRange(parsed.GetValue(valuesArg));
+
+                var value = parsed.GetValue(valuesArg);
+                if (value is null) return;
+                options.Values.AddRange(value);
                 Execute(options);
             });
 
@@ -150,12 +141,30 @@ internal static class ConsoleRunner
                     Command = ConsoleCommand.Json,
                     Path = parsed.GetRequiredValue(PathOption)
                 };
-                options.Values.Add(parsed.GetValue(outputArg));
+
+                var value = parsed.GetValue(outputArg);
+                if (value is null) return;
+                options.Values.Add(value);
                 Execute(options);
             });
 
             return command;
         }
+    }
+
+    public static int Run(string[] args)
+    {
+        var rootCommand = new RootCommand("neoNBTUtil - A modernised version of the unfinished NBTUtil")
+        {
+            PathOption,
+            PrintCommand,
+            PrintTreeCommand,
+            SetValueCommand,
+            SetListCommand,
+            JsonCommand
+        };
+
+        return rootCommand.Parse(args).Invoke();
     }
 
     private static void Execute(ConsoleOptions options)

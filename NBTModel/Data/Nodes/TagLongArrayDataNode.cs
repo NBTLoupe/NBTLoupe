@@ -1,36 +1,24 @@
-﻿using System;
-using Substrate.Nbt;
+﻿using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public class TagLongArrayDataNode(TagNodeLongArray tag) : TagDataNode(tag)
 {
-    public class TagLongArrayDataNode : TagDataNode
+    private new TagNodeLongArray Tag => (TagNodeLongArray)base.Tag;
+
+    public override bool CanEditNode
     {
-        public TagLongArrayDataNode(TagNodeLongArray tag)
-            : base(tag)
-        { }
-
-        protected new TagNodeLongArray Tag
-        {
-            get { return base.Tag as TagNodeLongArray; }
-        }
-
-        public override bool CanEditNode
-        {
 #if WINDOWS
             get { return true; }
 #else
-            get { return false; }
+        get { return false; }
 #endif
-        }
+    }
 
-        public override bool EditNode()
-        {
-            return EditLongHexValue(Tag);
-        }
+    public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " long integers";
 
-        public override string NodeDisplay
-        {
-            get { return NodeDisplayPrefix + Tag.Data.Length + " long integers"; }
-        }
+    public override bool EditNode()
+    {
+        return EditLongHexValue(Tag);
     }
 }

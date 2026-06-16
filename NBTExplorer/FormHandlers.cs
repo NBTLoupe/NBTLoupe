@@ -17,7 +17,7 @@ public partial class MainWindow
             try
             {
                 // We just assign the value of the EditTagTextBox, pretty simple.
-                data.Value = (CurrentDialog as EditTagDialogState)?.TagName;
+                data.Value = (CurrentDialog as EditTagDialogState)?.TagName ?? "";
                 return true;
             }
             catch
@@ -71,7 +71,7 @@ public partial class MainWindow
             try
             {
                 // We just assign the value of the EditTagTextBox, pretty simple.
-                data.Value = (CurrentDialog as EditTagDialogState)?.TagValue;
+                data.Value = (CurrentDialog as EditTagDialogState)?.TagValue ?? "";
                 return true;
             }
             catch

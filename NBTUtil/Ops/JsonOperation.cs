@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using NBTExplorer.Model;
+using NBTModel.Data.Nodes;
 using Substrate.Nbt;
 
 namespace NBTUtil.Ops;
@@ -36,7 +36,7 @@ internal class JsonOperation : ConsoleOperation
                     if (child is not TagDataNode childTagNode)
                         continue;
 
-                    if (childTagNode.Tag != null)
+                    if (childTagNode.NodeName != null)
                         root.Add(childTagNode.NodeName, childTagNode.Tag);
                 }
 
@@ -50,9 +50,6 @@ internal class JsonOperation : ConsoleOperation
 
     private static void WriteNbtTag(StreamWriter writer, TagNode tag)
     {
-        if (tag == null)
-            return;
-
         writer.Write(JSONSerializer.Serialize(tag));
     }
 }

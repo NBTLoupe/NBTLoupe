@@ -2,5 +2,5 @@
   <Project Path="NBTExplorer/NBTExplorer.csproj" />
   <Project Path="NBTModel/NBTModel.csproj" />
   <Project Path="NBTUtil/NBTUtil.csproj" />
-  <Project Path="Substrate/SubstrateCS/Substrate.csproj" />
+  <Project Path="Substrate/Substrate/Substrate.csproj" />
 </Solution>

@@ -1,33 +1,24 @@
 ﻿using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public class TagShortDataNode(TagNodeShort tag) : TagDataNode(tag)
 {
-    public class TagShortDataNode : TagDataNode
+    private new TagNodeShort Tag => (TagNodeShort)base.Tag;
+
+    public override bool Parse(string value)
     {
-        public TagShortDataNode (TagNodeShort tag)
-            : base(tag)
-        { }
+        if (!short.TryParse(value, out var data))
+            return false;
 
-        protected new TagNodeShort Tag
-        {
-            get { return base.Tag as TagNodeShort; }
-        }
+        Tag.Data = data;
+        IsDataModified = true;
 
-        public override bool Parse (string value)
-        {
-            short data;
-            if (!short.TryParse(value, out data))
-                return false;
+        return true;
+    }
 
-            Tag.Data = data;
-            IsDataModified = true;
-
-            return true;
-        }
-
-        public override bool EditNode ()
-        {
-            return EditScalarValue(Tag);
-        }
+    public override bool EditNode()
+    {
+        return EditScalarValue(Tag);
     }
 }

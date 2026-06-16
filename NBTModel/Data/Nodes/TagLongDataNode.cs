@@ -1,33 +1,24 @@
 ﻿using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data.Nodes;
+
+public class TagLongDataNode(TagNodeLong tag) : TagDataNode(tag)
 {
-    public class TagLongDataNode : TagDataNode
+    private new TagNodeLong Tag => (TagNodeLong)base.Tag;
+
+    public override bool Parse(string value)
     {
-        public TagLongDataNode (TagNodeLong tag)
-            : base(tag)
-        { }
+        if (!long.TryParse(value, out var data))
+            return false;
 
-        protected new TagNodeLong Tag
-        {
-            get { return base.Tag as TagNodeLong; }
-        }
+        Tag.Data = data;
+        IsDataModified = true;
 
-        public override bool Parse (string value)
-        {
-            long data;
-            if (!long.TryParse(value, out data))
-                return false;
+        return true;
+    }
 
-            Tag.Data = data;
-            IsDataModified = true;
-
-            return true;
-        }
-
-        public override bool EditNode ()
-        {
-            return EditScalarValue(Tag);
-        }
+    public override bool EditNode()
+    {
+        return EditScalarValue(Tag);
     }
 }

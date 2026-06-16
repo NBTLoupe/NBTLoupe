@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using NBTExplorer.Model;
+using NBTModel.Data.Nodes;
 
 namespace NBTUtil;
 

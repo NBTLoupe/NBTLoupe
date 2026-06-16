@@ -2,69 +2,55 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace NBTExplorer.Utility
+namespace NBTModel.Utility;
+// NaturalComparer implementation by Justin.Jones
+// Licensed under The Code Project Open License (CPOL) (http://www.codeproject.com/info/cpol10.aspx)
+
+public partial class NaturalComparer : Comparer<string>, IDisposable
 {
-    // NaturalComparer implementation by Justin.Jones
-    // Licensed under The Code Project Open License (CPOL) (http://www.codeproject.com/info/cpol10.aspx)
+    private readonly Dictionary<string, string[]> _table = new();
 
-    public class NaturalComparer : Comparer<string>, IDisposable
+    public void Dispose()
     {
-        private Dictionary<string, string[]> table;
+        _table.Clear();
+        GC.SuppressFinalize(this);
+    }
 
-        public NaturalComparer ()
+    public override int Compare(string? x, string? y)
+    {
+        if (x == y) return 0;
+
+        if (!_table.TryGetValue(x ?? throw new ArgumentNullException(nameof(x)), out var x1))
         {
-            table = new Dictionary<string, string[]>();
+            x1 = MyRegex().Split(x.Replace(" ", ""));
+            _table.Add(x, x1);
         }
 
-        public void Dispose ()
+        if (!_table.TryGetValue(y ?? throw new ArgumentNullException(nameof(y)), out var y1))
         {
-            table.Clear();
-            table = null;
+            y1 = MyRegex().Split(y.Replace(" ", ""));
+            _table.Add(y, y1);
         }
 
-        public override int Compare (string x, string y)
-        {
-            if (x == y) {
-                return 0;
-            }
-            string[] x1, y1;
-            if (!table.TryGetValue(x, out x1)) {
-                x1 = Regex.Split(x.Replace(" ", ""), "(-?[0-9]+)");
-                table.Add(x, x1);
-            }
-            if (!table.TryGetValue(y, out y1)) {
-                y1 = Regex.Split(y.Replace(" ", ""), "(-?[0-9]+)");
-                table.Add(y, y1);
-            }
+        for (var i = 0; i < x1.Length && i < y1.Length; i++)
+            if (x1[i] != y1[i])
+                return PartCompare(x1[i], y1[i]);
 
-            for (int i = 0; i < x1.Length && i < y1.Length; i++) {
-                if (x1[i] != y1[i]) {
-                    return PartCompare(x1[i], y1[i]);
-                }
-            }
-            if (y1.Length > x1.Length) {
-                return 1;
-            }
-            else if (x1.Length > y1.Length) {
-                return -1;
-            }
-            else {
-                return 0;
-            }
-        }
+        if (y1.Length > x1.Length) return 1;
 
-        private static int PartCompare (string left, string right)
-        {
-            int x, y;
-            if (!int.TryParse(left, out x)) {
-                return left.CompareTo(right);
-            }
+        if (x1.Length > y1.Length) return -1;
 
-            if (!int.TryParse(right, out y)) {
-                return left.CompareTo(right);
-            }
+        return 0;
+    }
 
-            return x.CompareTo(y);
-        }
-    } 
+    private static int PartCompare(string left, string right)
+    {
+        if (!int.TryParse(left, out var x) || !int.TryParse(right, out var y))
+            return string.Compare(left, right, StringComparison.Ordinal);
+
+        return x.CompareTo(y);
+    }
+
+    [GeneratedRegex("(-?[0-9]+)")]
+    private static partial Regex MyRegex();
 }

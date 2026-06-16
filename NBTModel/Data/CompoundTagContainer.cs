@@ -1,86 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data;
+
+public class CompoundTagContainer(TagNodeCompound tag) : INamedTagContainer
 {
-    public class CompoundTagContainer : INamedTagContainer
+    public int TagCount => tag.Count;
+
+    public IEnumerable<string> TagNamesInUse => tag.Keys;
+
+    public string GetTagName(TagNode tag1)
     {
-        private TagNodeCompound _tag;
+        return tag.Keys.First(name => tag[name] == tag1);
+    }
 
-        public CompoundTagContainer (TagNodeCompound tag)
-        {
-            _tag = tag;
-        }
-
-        public int TagCount
-        {
-            get { return _tag.Count; }
-        }
-
-        public IEnumerable<string> TagNamesInUse
-        {
-            get { return _tag.Keys; }
-        }
-
-        public string GetTagName (TagNode tag)
-        {
-            foreach (String name in _tag.Keys)
-                if (_tag[name] == tag)
-                    return name;
-
-            return null;
-        }
-
-        public TagNode GetTagNode (string name)
-        {
-            TagNode tag;
-            if (_tag.TryGetValue(name, out tag))
-                return tag;
-            return null;
-        }
-
-        public bool AddTag (TagNode tag, string name)
-        {
-            if (_tag.ContainsKey(name))
-                return false;
-
-            _tag.Add(name, tag);
-            return true;
-        }
-
-        public bool RenameTag (TagNode tag, string name)
-        {
-            if (_tag.ContainsKey(name))
-                return false;
-
-            string oldName = GetTagName(tag);
-            _tag.Remove(oldName);
-            _tag.Add(name, tag);
-
-            return true;
-        }
-
-        public bool DeleteTag (TagNode tag)
-        {
-            foreach (String name in _tag.Keys)
-                if (_tag[name] == tag)
-                    return _tag.Remove(name);
-
+    public bool RenameTag(TagNode tag1, string name)
+    {
+        if (tag.ContainsKey(name))
             return false;
-        }
 
-        public bool DeleteTag (string name)
-        {
-            if (!_tag.ContainsKey(name))
-                return false;
+        var oldName = GetTagName(tag1);
+        tag.Remove(oldName);
+        tag.Add(name, tag1);
 
-            return DeleteTag(_tag[name]);
-        }
+        return true;
+    }
 
-        public bool ContainsTag (string name)
-        {
-            return _tag.ContainsKey(name);
-        }
+    public bool DeleteTag(TagNode tag1)
+    {
+        return (from name in tag.Keys where tag[name] == tag1 select tag.Remove(name)).FirstOrDefault();
+    }
+
+    public void AddTag(TagNode tag1, string name)
+    {
+        tag.TryAdd(name, tag1);
     }
 }

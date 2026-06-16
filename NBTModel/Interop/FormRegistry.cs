@@ -1,81 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using Substrate.Nbt;
 
-namespace NBTModel.Interop
+namespace NBTModel.Interop;
+
+public static class FormRegistry
 {
-    public static class FormRegistry
-    {
-        public delegate bool EditStringAction (StringFormData data);
-        public delegate bool EditRestrictedStringAction (RestrictedStringFormData data);
-        public delegate bool EditTagScalarAction (TagScalarFormData data);
-        public delegate bool EditByteArrayAction (ByteArrayFormData data);
-        public delegate bool CreateNodeAction (CreateTagFormData data);
+    public delegate bool CreateNodeAction(CreateTagFormData data);
 
-        public static EditStringAction EditString { get; set; }
-        public static EditRestrictedStringAction RenameTag { get; set; }
-        public static EditTagScalarAction EditTagScalar { get; set; }
-        public static EditByteArrayAction EditByteArray { get; set; }
-        public static CreateNodeAction CreateNode { get; set; }
+    public delegate bool EditByteArrayAction(ByteArrayFormData data);
 
-        public static Action<string> MessageBox { get; set; }
-    }
+    public delegate bool EditRestrictedStringAction(RestrictedStringFormData data);
 
-    public class TagScalarFormData
-    {
-        public TagScalarFormData (TagNode tag)
-        {
-            Tag = tag;
-        }
-        
-        public TagNode Tag { get; private set; }
-    }
+    public delegate bool EditStringAction(StringFormData data);
 
-    public class StringFormData
-    {
-        public StringFormData (String value)
-        {
-            Value = value;
-        }
+    public delegate bool EditTagScalarAction(TagScalarFormData data);
 
-        public String Value { get; set; }
-        public bool AllowEmpty { get; set; }
-    }
+    public static EditStringAction? EditString { get; set; }
 
-    public class RestrictedStringFormData : StringFormData
-    {
-        private List<String> _restricted = new List<string>();
+    public static EditRestrictedStringAction? RenameTag { get; set; }
 
-        public RestrictedStringFormData (String value)
-            : base(value)
-        {
-        }
+    public static EditTagScalarAction? EditTagScalar { get; set; }
 
-        public List<String> RestrictedValues
-        {
-            get { return _restricted; }
-        }
-    }
+    public static EditByteArrayAction? EditByteArray { get; set; }
 
-    public class CreateTagFormData
-    {
-        public CreateTagFormData ()
-        {
-            RestrictedNames = new List<string>();
-        }
+    public static CreateNodeAction? CreateNode { get; set; }
 
-        public TagType TagType { get; set; }
-        public bool HasName { get; set; }
-        public List<String> RestrictedNames { get; private set; }
+    public static Action<string>? MessageBox { get; set; }
+}
 
-        public TagNode TagNode { get; set; }
-        public string TagName { get; set; }
-    }
+public class TagScalarFormData(TagNode tag)
+{
+    public TagNode Tag { get; private set; } = tag;
+}
 
-    public class ByteArrayFormData
-    {
-        public string NodeName { get; set; }
-        public int BytesPerElement { get; set; }
-        public byte[] Data { get; set; }
-    }
+public class StringFormData(string value)
+{
+    public string Value { get; set; } = value;
+}
+
+public class RestrictedStringFormData(string value) : StringFormData(value);
+
+public class CreateTagFormData
+{
+    public TagType TagType { get; init; }
+
+    public TagNode? TagNode { get; set; }
+
+    public string? TagName { get; set; }
+}
+
+public class ByteArrayFormData
+{
+    public required byte[] Data { get; set; }
 }

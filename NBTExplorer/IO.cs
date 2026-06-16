@@ -6,7 +6,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using NBTExplorer.Model;
+using NBTModel.Data;
+using NBTModel.Data.Nodes;
 using Serilog;
 
 namespace NBTExplorer;
@@ -34,7 +35,7 @@ internal class RecentItem
             var antiWindowsPath = Path.Replace('\\', '/');
 
             // If it isn't stored in the Minecraft world saves folder...
-            var savesIndex = antiWindowsPath.IndexOf("/saves/", StringComparison.InvariantCultureIgnoreCase);
+            var savesIndex = antiWindowsPath.IndexOf("/saves/", StringComparison.OrdinalIgnoreCase);
             if (savesIndex < 0)
             {
                 // ...we just cut to the parent directory.
@@ -188,10 +189,7 @@ public partial class MainWindow
 
             // We add it to our Recent Files list, and update the UI!
             RecentFiles.Clear();
-            foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder))
-            {
-                RecentFiles.Add(item);
-            }
+            foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder)) RecentFiles.Add(item);
 
             // And we can begin the lazy-loading!
             await TreeNode.ExpandNodeAsync([node], TreeNodes);
@@ -212,10 +210,7 @@ public partial class MainWindow
 
             // We add it to our Recent Folders list, and update the UI!
             RecentFolders.Clear();
-            foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder))
-            {
-                RecentFolders.Add(item);
-            }
+            foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder)) RecentFolders.Add(item);
 
             // And we can begin the lazy-loading!
             await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes);

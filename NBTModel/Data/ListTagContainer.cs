@@ -1,66 +1,43 @@
 ﻿using System;
 using Substrate.Nbt;
 
-namespace NBTExplorer.Model
+namespace NBTModel.Data;
+
+public class ListTagContainer(TagNodeList tag) : IOrderedTagContainer
 {
-    public class ListTagContainer : IOrderedTagContainer
+    private readonly Action<bool>? _modifyHandler = null;
+
+    public int TagCount => tag.Count;
+
+    public bool DeleteTag(TagNode tag1)
     {
-        private TagNodeList _tag;
-        private Action<bool> _modifyHandler = null;
-
-        public ListTagContainer (TagNodeList tag, Action<bool> modifyHandler)
-        {
-            _tag = tag;
-        }
-
-        public int TagCount
-        {
-            get { return _tag.Count; }
-        }
-
-        public bool DeleteTag (TagNode tag)
-        {
-            bool result = _tag.Remove(tag);
-            if (result)
-                SetModified();
-
-            return result;
-        }
-
-        public int GetTagIndex (TagNode tag)
-        {
-            return _tag.IndexOf(tag);
-        }
-
-        public bool InsertTag (TagNode tag, int index)
-        {
-            if (index < 0 || index > _tag.Count)
-                return false;
-
-            if (_tag.ValueType != tag.GetTagType())
-                return false;
-
-            _tag.Insert(index, tag);
-
+        var result = tag.Remove(tag1);
+        if (result)
             SetModified();
-            return true;
-        }
 
-        public bool AppendTag (TagNode tag)
-        {
-            if (_tag.ValueType != tag.GetTagType())
-                return false;
+        return result;
+    }
 
-            _tag.Add(tag);
+    public int GetTagIndex(TagNode tag1)
+    {
+        return tag.IndexOf(tag1);
+    }
 
-            SetModified();
-            return true;
-        }
+    public void InsertTag(TagNode tag1, int index)
+    {
+        if (index < 0 || index > tag.Count)
+            return;
 
-        private void SetModified ()
-        {
-            if (_modifyHandler != null)
-                _modifyHandler(true);
-        }
+        if (tag.ValueType != tag1.GetTagType())
+            return;
+
+        tag.Insert(index, tag1);
+
+        SetModified();
+    }
+
+    private void SetModified()
+    {
+        _modifyHandler?.Invoke(true);
     }
 }

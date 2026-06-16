@@ -1,210 +1,134 @@
-﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
-namespace NBTExplorer.Utility
+namespace NBTModel.Utility;
+
+public class SnapshotList<T>(IList<T> snapshot) : Collection<T>(new ProxyList<T>())
 {
-    public class SnapshotState<T> : IDisposable
+    private IList<T>? _recycled;
+
+    private new ProxyList<T> Items => (ProxyList<T>)base.Items;
+
+    private void Modified()
     {
-        private SnapshotList<T> _list;
+        if (!Equals(snapshot, Items.InnerList))
+            return;
 
-        internal SnapshotState (SnapshotList<T> list)
+        // Snapshot is in use, copy backing array to recycled array or create new backing array
+        if (_recycled != null)
         {
-            _list = list;
-            _list.Begin();
+            for (var i = 0; i < Count; i++)
+                _recycled.Add(Items[i]);
+            Items.InnerList = _recycled;
+            _recycled = null;
         }
-
-        public void Dispose ()
+        else
         {
-            _list.End();
-            GC.SuppressFinalize(this);
+            Resize(Items.Count);
         }
     }
 
-    public class SnapshotList<T> : Collection<T>
+    private void Resize(int newSize)
     {
-        private IList<T> _snapshot;
-        private IList<T> _recycled;
-        private int _snapshots;
+        var oldList = Items.InnerList;
+        var newList = new List<T>(newSize);
+        for (int i = 0, n = oldList.Count; i < n; i++)
+            newList.Add(oldList[i]);
 
-        public SnapshotList ()
-            : base(new ProxyList<T>())
-        { }
+        Items.InnerList = newList;
+    }
 
-        public SnapshotList (IList<T> list)
-            : base(new ProxyList<T>(new List<T>(list)))
-        { }
+    protected override void InsertItem(int index, T item)
+    {
+        Modified();
+        base.InsertItem(index, item);
+    }
 
-        public SnapshotList (int capacity)
-            : base(new ProxyList<T>(new List<T>(capacity)))
-        { }
+    protected override void SetItem(int index, T item)
+    {
+        Modified();
+        base.SetItem(index, item);
+    }
 
-        private new ProxyList<T> Items
+    protected override void RemoveItem(int index)
+    {
+        Modified();
+        base.RemoveItem(index);
+    }
+
+    protected override void ClearItems()
+    {
+        Modified();
+        base.ClearItems();
+    }
+
+    private class ProxyList<TK>(IList<TK> list) : IList<TK>
+    {
+        public ProxyList() : this(new List<TK>())
         {
-            get { return base.Items as ProxyList<T>; }
         }
 
-        public IList<T> Begin ()
+        public IList<TK> InnerList { get; set; } = list;
+
+        public int IndexOf(TK item)
         {
-            Modified();
-            _snapshot = Items.InnerList;
-            _snapshots++;
-            return _snapshot;
+            return InnerList.IndexOf(item);
         }
 
-        public void End ()
+        public void Insert(int index, TK item)
         {
-            _snapshots = Math.Max(0, _snapshots - 1);
-            if (_snapshot == null)
-                return;
-
-            // The backing array was copied, keep around the old array
-            if (_snapshot != Items.InnerList && _snapshots == 0) {
-                _recycled = _snapshot;
-                _recycled.Clear();
-                //for (int i = 0, n = _recycled.Count; i < n; i++)
-                //    _recycled[i] = default(T);
-            }
-
-            _snapshot = null;
+            InnerList.Insert(index, item);
         }
 
-        public SnapshotState<T> Snapshot ()
+        public void RemoveAt(int index)
         {
-            return new SnapshotState<T>(this);
+            InnerList.RemoveAt(index);
         }
 
-        private void Modified ()
+        public TK this[int index]
         {
-            if (_snapshot == null || _snapshot != Items.InnerList)
-                return;
-
-            // Snapshot is in use, copy backing array to recycled array or create new backing array
-            if (_recycled != null) {
-                for (int i = 0; i < Count; i++)
-                    _recycled.Add(Items[i]);
-                Items.InnerList = _recycled;
-                _recycled = null;
-            }
-            else
-                Resize(Items.Count);
+            get => InnerList[index];
+            set => InnerList[index] = value;
         }
 
-        private void Resize (int newSize)
+        public void Add(TK item)
         {
-            IList<T> oldList = Items.InnerList;
-            List<T> newList = new List<T>(newSize);
-            for (int i = 0, n = oldList.Count; i < n; i++)
-                newList.Add(oldList[i]);
-
-            Items.InnerList = newList;
+            InnerList.Add(item);
         }
 
-        protected override void InsertItem (int index, T item)
+        public void Clear()
         {
-            Modified();
-            base.InsertItem(index, item);
+            InnerList.Clear();
         }
 
-        protected override void SetItem (int index, T item)
+        public bool Contains(TK item)
         {
-            Modified();
-            base.SetItem(index, item);
+            return InnerList.Contains(item);
         }
 
-        protected override void RemoveItem (int index)
+        public void CopyTo(TK[] array, int arrayIndex)
         {
-            Modified();
-            base.RemoveItem(index);
+            InnerList.CopyTo(array, arrayIndex);
         }
 
-        protected override void ClearItems ()
+        public int Count => InnerList.Count;
+
+        public bool IsReadOnly => InnerList.IsReadOnly;
+
+        public bool Remove(TK item)
         {
-            Modified();
-            base.ClearItems();
+            return InnerList.Remove(item);
         }
 
-        private class ProxyList<K> : IList<K>
+        public IEnumerator<TK> GetEnumerator()
         {
-            public IList<K> InnerList { get; set; }
+            return InnerList.GetEnumerator();
+        }
 
-            public ProxyList ()
-            {
-                InnerList = new List<K>();
-            }
-
-            public ProxyList (IList<K> list)
-            {
-                InnerList = list;
-            }
-
-            public int IndexOf (K item)
-            {
-                return InnerList.IndexOf(item);
-            }
-
-            public void Insert (int index, K item)
-            {
-                InnerList.Insert(index, item);
-            }
-
-            public void RemoveAt (int index)
-            {
-                InnerList.RemoveAt(index);
-            }
-
-            public K this[int index]
-            {
-                get { return InnerList[index]; }
-                set { InnerList[index] = value; }
-            }
-
-            public void Add (K item)
-            {
-                InnerList.Add(item);
-            }
-
-            public void Clear ()
-            {
-                InnerList.Clear();
-            }
-
-            public bool Contains (K item)
-            {
-                return InnerList.Contains(item);
-            }
-
-            public void CopyTo (K[] array, int arrayIndex)
-            {
-                InnerList.CopyTo(array, arrayIndex);
-            }
-
-            public int Count
-            {
-                get { return InnerList.Count; }
-            }
-
-            public bool IsReadOnly
-            {
-                get { return InnerList.IsReadOnly; }
-            }
-
-            public bool Remove (K item)
-            {
-                return InnerList.Remove(item);
-            }
-
-            public IEnumerator<K> GetEnumerator ()
-            {
-                return InnerList.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator ()
-            {
-                return InnerList.GetEnumerator();
-            }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return InnerList.GetEnumerator();
         }
     }
 }

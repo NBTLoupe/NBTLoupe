@@ -14,7 +14,7 @@ public enum ConsoleCommand
 
 internal class ConsoleOptions
 {
-    public string Path { get; init; }
+    public required string Path { get; init; }
     public ConsoleCommand Command { get; init; } = ConsoleCommand.None;
     public List<string> Values { get; } = [];
     public bool ShowTypes { get; init; }

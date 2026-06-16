@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using NBTExplorer.Model;
+using NBTModel.Data.Nodes;
 using Substrate.Nbt;
 
 namespace NBTExplorer;
@@ -63,7 +63,10 @@ public partial class MainWindow
     }
 
     // This is how we tell the AppCommand the OK Button's state changed.
-    internal void RefreshOkButton() => DialogOk.Toggle(_currentDialog is { IsOkEnabled: true });
+    internal void RefreshOkButton()
+    {
+        DialogOk.Toggle(_currentDialog is { IsOkEnabled: true });
+    }
 
     // I extracted the AddTag function over here because it's shared by a lot of AppCommands.
     private async Task AddTag(TagType tagType)
@@ -102,12 +105,14 @@ internal abstract class DialogState : INotifyPropertyChanged
     // OK is always needed, but it needs to be Toggled based on validation!
     internal virtual bool IsOkEnabled => true;
 
-    // And if the user clicks it... Here we go! Well, every Dialog defines where we go...
-    internal abstract Task ExecuteAsync();
-
     // Add an event handler that fires if the state changed.
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
+    // And if the user clicks it... Here we go! Well, every Dialog defines where we go...
+    internal abstract Task ExecuteAsync();
+
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
+    {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
 }
