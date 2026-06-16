@@ -458,7 +458,7 @@
                                                         <TextBox Loaded="DialogTextBox_Loaded"
                                                                  Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  VerticalAlignment="Center"
-                                                                 PlaceholderText="Name">
+                                                                 PlaceholderText="Name" IsVisible="{Binding NameVisible}">
                                                             <TextBox.KeyBindings>
                                                                 <KeyBinding Gesture="Enter"
                                                                             Command="{Binding $parent[local:MainWindow].DialogOk}" />

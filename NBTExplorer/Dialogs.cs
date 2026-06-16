@@ -123,7 +123,7 @@ internal class EditTagDialogState : DialogState
         DialogTagType = tagDataNode?.Tag.GetTagType() ?? TagType.TAG_END;
 
         // Set the context-accurate Title and Type.
-        TitleText = $"Edit {MainWindow.GetFriendlyTag(tagDataNode?.Tag.GetTagType())}: \"{nodeName}\"";
+        TitleText = $"Edit {MainWindow.GetFriendlyTag(tagDataNode?.Tag.GetTagType())} {(!string.IsNullOrEmpty(nodeName) ? $": \"{nodeName}\"" : "Value")}";
 
         // If the TreeNode is a NbtFileDataNode, its Renameable Name is different.
         _oldTagName = (selectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
@@ -162,6 +162,9 @@ internal class EditTagDialogState : DialogState
             _window.RefreshOkButton();
         }
     }
+    
+    // ...(which is only visible in certain cases, by the way)
+    internal bool NameVisible => _window.SelectedTreeNodes.FirstOrDefault()?.DataNode.CanRenameNode ?? false;
 
     // ... and the new Value TextBox
     internal string? TagValue
