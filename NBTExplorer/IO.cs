@@ -35,7 +35,7 @@ internal class RecentItem
             var antiWindowsPath = Path.Replace('\\', '/');
 
             // If it isn't stored in the Minecraft world saves folder...
-            var savesIndex = antiWindowsPath.IndexOf("/saves/", StringComparison.OrdinalIgnoreCase);
+            var savesIndex = antiWindowsPath.IndexOf(Program.MinecraftSaveFolder, StringComparison.OrdinalIgnoreCase);
             if (savesIndex < 0)
             {
                 // ...we just cut to the parent directory.
@@ -46,7 +46,7 @@ internal class RecentItem
             // But if it is stored in the Minecraft world saves folder...
 
             // We cut the path up to the name.
-            var relativePath = antiWindowsPath[(savesIndex + 7)..];
+            var relativePath = antiWindowsPath[(savesIndex + Program.MinecraftSaveFolder.Length)..];
 
             // Then we find the first slash after the world name.
             var firstSlash = relativePath.IndexOfAny(['/', '\\']);
@@ -208,9 +208,12 @@ public partial class MainWindow
             // We disable the Save button, as the postExecute task may not be instant for this specific case.
             Save.Toggle(false);
 
-            // We add it to our Recent Folders list, and update the UI!
-            RecentFolders.Clear();
-            foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder)) RecentFolders.Add(item);
+            // If it isn't the Minecraft Saves folder; we add it to our Recent Folders list, and update the UI!
+            if (path != Program.MinecraftSaveFolder)
+            {
+                RecentFolders.Clear();
+                foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder)) RecentFolders.Add(item);
+            }
 
             // And we can begin the lazy-loading!
             await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes);
