@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -31,12 +32,17 @@ public partial class MainWindow
             // Check if SubNodes is null.
             if (treeNode.SubNodes is null) throw new UnreachableException();
 
-            // First we clear our stubby/lazy SubNodes...
-            await Dispatcher.UIThread.InvokeAsync(() => treeNode.SubNodes.Clear(), DispatcherPriority.Background);
-
-            // ...then we Expand its real children lazily.
+            // We Expand its real children lazily, and Stage them...
+            var staged = new ObservableCollection<TreeNode>();
             await WithBlock(
-                async () => await TreeNode.ExpandNodeAsync(treeNode.DataNode.Nodes, treeNode.SubNodes, treeNode), true);
+                async () => await TreeNode.ExpandNodeAsync(treeNode.DataNode.Nodes, staged, treeNode), true);
+
+            // ...so we can replace our stubby/lazy SubNodes with the Staged ones.
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                treeNode.SubNodes.Clear();
+                foreach (var node in staged) treeNode.SubNodes.Add(node);
+            }, DispatcherPriority.Background);
         }
         catch (Exception ex)
         {
