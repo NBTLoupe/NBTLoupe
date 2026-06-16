@@ -32,11 +32,11 @@ internal static class Program
 
     // We get the platform-dependent Minecraft Save Folder, to allow the user to easily open it from the app.
     internal static string MinecraftSaveFolder => OperatingSystem.IsWindows()
-        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "saves")
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "saves/")
         : OperatingSystem.IsMacOS()
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "minecraft",
-                "saves")
-            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".minecraft", "saves");
+                "saves/")
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".minecraft", "saves/");
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
