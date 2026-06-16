@@ -58,21 +58,19 @@ public partial class MainWindow
     // I had to factor these out as MainWindow.axaml.cs was getting messy.
     private void OnError(Exception e, bool fatal)
     {
-        // Certain MenuItems (like the Recent Files/Folders ones)...
-        // and the CommandBar Overflow Menu don't want to close for some reason, so we force them to...
-        if (TopMenu.IsOpen) TopMenu.Close();
-        if (CommandBar.IsOpen) CommandBar.IsOpen = false;
-
         OpenDialog(new ErrorDialogState(e, fatal));
     }
 
-    private void PostExecute()
+    private void PreExecute()
     {
         // Certain MenuItems (like the Recent Files/Folders ones)...
         // and the CommandBar Overflow Menu don't want to close for some reason, so we force them to...
         if (TopMenu.IsOpen) TopMenu.Close();
         if (CommandBar.IsOpen) CommandBar.IsOpen = false;
+    }
 
+    private void PostExecute()
+    {
         // ...and we toggle the Save Button if we can Save and a Node was modified. 
         Save.Toggle(StorageProvider.CanSave && TreeNodes.Any(node => node.DataNode.IsModified));
     }
@@ -80,12 +78,12 @@ public partial class MainWindow
     // So this is how you CreateAppCommands now.
     private AppCommand CreateAppCommand(Action<object?> execute, bool enabledByDefault = false)
     {
-        return new AppCommand(execute, OnError, PostExecute, enabledByDefault);
+        return new AppCommand(execute, OnError, PreExecute, PostExecute, enabledByDefault);
     }
 
     private AppCommand CreateAppCommand(Func<object?, Task> executeAsync, bool enabledByDefault = false)
     {
-        return new AppCommand(executeAsync, OnError, PostExecute, enabledByDefault);
+        return new AppCommand(executeAsync, OnError, PreExecute, PostExecute, enabledByDefault);
     }
 
     // This is a very simple ICommand implementation, because full MVVM felt like too much for this project.
@@ -96,25 +94,30 @@ public partial class MainWindow
         private readonly Func<object?, Task>? _executeAsync;
         private readonly Action<Exception, bool> _onError;
         private readonly Action _postExecute;
+        private readonly Action _preExecute;
         private bool _isExecutable;
 
         // Support Synchronous AppCommands...
-        internal AppCommand(Action<object?> execute, Action<Exception, bool> onError, Action postExecute,
+        internal AppCommand(Action<object?> execute, Action<Exception, bool> onError, Action preExecute,
+            Action postExecute,
             bool enabledByDefault = false)
         {
             _execute = execute;
             _onError = onError;
+            _preExecute = preExecute;
             _postExecute = postExecute;
             _isExecutable = enabledByDefault;
         }
 
         // ...and Asynchronous ones.
         internal AppCommand(Func<object?, Task> executeAsync, Action<Exception, bool> onError,
+            Action preExecute,
             Action postExecute,
             bool enabledByDefault = false)
         {
             _executeAsync = executeAsync;
             _onError = onError;
+            _preExecute = preExecute;
             _postExecute = postExecute;
             _isExecutable = enabledByDefault;
         }
@@ -129,9 +132,13 @@ public partial class MainWindow
         {
             try
             {
+                // Here go to the MainWindow to do some stuff...
+                _preExecute();
+
                 if (_execute is not null) _execute(parameter);
                 else if (_executeAsync is not null) await _executeAsync(parameter);
-                // And here go back to the MainWindow to do some stuff!
+
+                // ...and here go back again!
                 _postExecute();
             }
             catch (Exception e)
