@@ -3,7 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using NBTExplorer.Model;
+using NBTModel.Data;
+using NBTModel.Data.Nodes;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
@@ -15,6 +16,16 @@ internal class AddTagDialogState : DialogState
 {
     // We need to access the Window somehow!
     private readonly MainWindow _window;
+
+    // Here we set up the Dialog!
+    internal AddTagDialogState(MainWindow window, TagType tagType)
+    {
+        DialogTagType = tagType;
+        _window = window;
+
+        // Set the context-accurate Title and Type.
+        TitleText = $"Add {MainWindow.GetFriendlyTag(DialogTagType)}";
+    }
 
     // Here's all the fields we bind to in the XAML...
     // The Title TextBlock...
@@ -47,16 +58,6 @@ internal class AddTagDialogState : DialogState
     // ...(which is only enabled in certain cases, by the way)
     internal bool SizeEnabled => DialogTagType is TagType.TAG_BYTE_ARRAY or TagType.TAG_SHORT_ARRAY
         or TagType.TAG_INT_ARRAY or TagType.TAG_LONG_ARRAY;
-
-    // Here we set up the Dialog!
-    internal AddTagDialogState(MainWindow window, TagType tagType)
-    {
-        DialogTagType = tagType;
-        _window = window;
-
-        // Set the context-accurate Title and Type.
-        TitleText = $"Add {MainWindow.GetFriendlyTag(DialogTagType)}";
-    }
 
     // And here's where our Validation magic happens!
     internal override bool IsOkEnabled
@@ -102,48 +103,13 @@ internal class AddTagDialogState : DialogState
 // Here we define the EditTag Dialog!
 internal class EditTagDialogState : DialogState
 {
-    // We need to access the Window somehow!
-    private readonly MainWindow _window;
-
-    // This is so we focus on the Name TextBox if clicking the Rename button!
-    internal bool IsRename { get; }
-
-    // Here's all the fields we bind to in the XAML...
-    // The Title TextBlock...
-    internal string TitleText { get; }
-
     // The old Name and Value...
     private readonly string _oldTagName;
+
     private readonly string _oldTagValue;
 
-    // The new Name TextBox...
-    internal string? TagName
-    {
-        get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsOkEnabled));
-            _window.RefreshOkButton();
-        }
-    }
-
-    // ... and the new Value TextBox
-    internal string? TagValue
-    {
-        get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsOkEnabled));
-            _window.RefreshOkButton();
-        }
-    }
-
-    // ...(which is only visible in certain cases, by the way)
-    internal bool ValueVisible => _window.SelectedTreeNodes.FirstOrDefault()?.DataNode.CanEditNode ?? false;
+    // We need to access the Window somehow!
+    private readonly MainWindow _window;
 
     // Here we set up the Dialog!
     internal EditTagDialogState(MainWindow window, bool isRename = false)
@@ -176,6 +142,42 @@ internal class EditTagDialogState : DialogState
         } ?? "";
         TagValue = _oldTagValue;
     }
+
+    // This is so we focus on the Name TextBox if clicking the Rename button!
+    internal bool IsRename { get; }
+
+    // Here's all the fields we bind to in the XAML...
+    // The Title TextBlock...
+    internal string TitleText { get; }
+
+    // The new Name TextBox...
+    internal string? TagName
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+        }
+    }
+
+    // ... and the new Value TextBox
+    internal string? TagValue
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+        }
+    }
+
+    // ...(which is only visible in certain cases, by the way)
+    internal bool ValueVisible => _window.SelectedTreeNodes.FirstOrDefault()?.DataNode.CanEditNode ?? false;
 
     // And here's where our Validation magic happens!
     internal override bool IsOkEnabled
@@ -219,17 +221,17 @@ internal class EditTagDialogState : DialogState
         {
             return tagType switch
             {
-                TagType.TAG_STRING => FormRegistry.EditString(new StringFormData("")),
+                TagType.TAG_STRING => FormRegistry.EditString!(new StringFormData("")),
 
-                TagType.TAG_BYTE => FormRegistry.EditTagScalar(new TagScalarFormData(new TagNodeByte())),
-                TagType.TAG_SHORT => FormRegistry.EditTagScalar(new TagScalarFormData(new TagNodeShort())),
-                TagType.TAG_INT => FormRegistry.EditTagScalar(new TagScalarFormData(new TagNodeInt())),
-                TagType.TAG_LONG => FormRegistry.EditTagScalar(new TagScalarFormData(new TagNodeLong())),
-                TagType.TAG_FLOAT => FormRegistry.EditTagScalar(new TagScalarFormData(new TagNodeFloat())),
-                TagType.TAG_DOUBLE => FormRegistry.EditTagScalar(new TagScalarFormData(new TagNodeDouble())),
+                TagType.TAG_BYTE => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeByte())),
+                TagType.TAG_SHORT => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeShort())),
+                TagType.TAG_INT => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeInt())),
+                TagType.TAG_LONG => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeLong())),
+                TagType.TAG_FLOAT => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeFloat())),
+                TagType.TAG_DOUBLE => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeDouble())),
 
                 TagType.TAG_BYTE_ARRAY or TagType.TAG_SHORT_ARRAY or TagType.TAG_INT_ARRAY
-                    or TagType.TAG_LONG_ARRAY => FormRegistry.EditByteArray(new ByteArrayFormData()),
+                    or TagType.TAG_LONG_ARRAY => FormRegistry.EditByteArray!(new ByteArrayFormData { Data = [] }),
 
                 _ => false
             };
@@ -268,7 +270,8 @@ internal class EditTagDialogState : DialogState
             if (savedSelectedTreeNodes is null) return;
             var restoredSelectedTreeNode =
                 MainWindow.TreeNode.GetByIndexPath(_window.TreeNodes, savedSelectedTreeNodes);
-            var foundNode = restoredSelectedTreeNode?.Parent?.SubNodes?.FirstOrDefault(node => node.DataNode.NodeName == TagName);
+            var foundNode =
+                restoredSelectedTreeNode?.Parent?.SubNodes?.FirstOrDefault(node => node.DataNode.NodeName == TagName);
             if (foundNode is not null) _window.SelectedTreeNodes.Add(foundNode);
         }
     }
@@ -280,6 +283,18 @@ internal class FindDialogState : DialogState
 {
     // We need to access the Window somehow!
     private readonly MainWindow _window;
+
+    // Here we set up the Dialog!
+    internal FindDialogState(MainWindow window, string? findName, string? findValue)
+    {
+        _window = window;
+
+        // We restore the values from the MainWindow.
+        NameEnabled = findName is not null;
+        NameText = findName;
+        ValueEnabled = findValue is not null;
+        ValueText = findValue;
+    }
 
     // Here's all the fields we bind to in the XAML...
     // The Name CheckBox...
@@ -334,18 +349,6 @@ internal class FindDialogState : DialogState
         }
     }
 
-    // Here we set up the Dialog!
-    internal FindDialogState(MainWindow window, string? findName, string? findValue)
-    {
-        _window = window;
-
-        // We restore the values from the MainWindow.
-        NameEnabled = findName is not null;
-        NameText = findName;
-        ValueEnabled = findValue is not null;
-        ValueText = findValue;
-    }
-
     // And here's where our Validation magic happens!
     // Only enable the OK button if:
     // - At least one TextBox has its CheckBox enabled. 
@@ -383,19 +386,6 @@ internal class UserErrorException(string message) : Exception(message);
 
 internal class ErrorDialogState : DialogState
 {
-    // Here's all the fields we bind to in the XAML...
-    // The Exception TextBlock...
-    internal string ExceptionText { get; }
-
-    // ...whether to suggest to open an issue...
-    internal bool PotentialBug { get; }
-
-    // ...and whether the user should be forced to restart the app.
-    internal bool FatalException { get; }
-
-    // This is just how we force the user to restart the app, by not letting them close the Dialog!
-    internal override bool IsOkEnabled => !FatalException;
-
     // Here we set up the Dialog!
     internal ErrorDialogState(Exception exception, bool fatal = false)
     {
@@ -409,6 +399,19 @@ internal class ErrorDialogState : DialogState
         // This is just so people running NAOT builds (AKA everyone on RELEASE) don't get a confusing StackTrace. 
         ExceptionText = RuntimeFeature.IsDynamicCodeSupported ? exception.ToString() : exception.Message;
     }
+
+    // Here's all the fields we bind to in the XAML...
+    // The Exception TextBlock...
+    internal string ExceptionText { get; }
+
+    // ...whether to suggest to open an issue...
+    internal bool PotentialBug { get; }
+
+    // ...and whether the user should be forced to restart the app.
+    internal bool FatalException { get; }
+
+    // This is just how we force the user to restart the app, by not letting them close the Dialog!
+    internal override bool IsOkEnabled => !FatalException;
 
     internal override Task ExecuteAsync()
     {

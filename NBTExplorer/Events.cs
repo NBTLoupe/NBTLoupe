@@ -9,7 +9,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using NBTExplorer.Model;
+using NBTModel.Data.Nodes;
 using Serilog;
 using Substrate.Nbt;
 
@@ -20,44 +20,6 @@ public partial class MainWindow
     // We need a way to disable the Clipboard-based features if they wouldn't work.
     private bool ClipboardAvailable => Clipboard is not null;
 
-    // ReSharper disable UnusedMember.Global
-    // Our Drag support... (AKA the effect that tells the user they can drag a file into the app)
-    internal void TreeView_OnDragOver(object? sender, DragEventArgs e)
-    {
-        e.DragEffects = e.DataTransfer.Items.Count == 1 && e.DataTransfer.Formats.Contains(DataFormat.File)
-            ? DragDropEffects.Copy
-            : DragDropEffects.None;
-    }
-
-    // ...and our Drop support! (AKA actually processing what they dropped into the app)
-    internal async void TreeView_OnDrop(object? sender, DragEventArgs e)
-    {
-        try
-        {
-            var item = e.DataTransfer.TryGetFiles();
-            if (item?.Length != 1) return;
-
-            switch (item[0])
-            {
-                case null:
-                    return;
-                case IStorageFile file:
-                    await OpenFileAsync(file.Path.LocalPath);
-                    break;
-                case IStorageFolder folder:
-                    await OpenFolderAsync(folder.Path.LocalPath);
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            // If something goes wrong, we log it and show a Dialog to the user. :C
-            Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
-            OpenDialog(new ErrorDialogState(ex));
-        }
-    }
-    // ReSharper restore UnusedMember.Global
-    
     // This is how when lazily load items when the user expands them UI-wise.
     internal async void TreeViewItem_OnExpanded(object? sender, RoutedEventArgs e)
     {
@@ -65,15 +27,16 @@ public partial class MainWindow
         {
             // We get the TreeViewItem that was expanded, and its related TreeNode.
             if (e.Source is not TreeViewItem { DataContext: TreeNode treeNode }) return;
-            
+
             // Check if SubNodes is null.
             if (treeNode.SubNodes is null) throw new UnreachableException();
-            
+
             // First we clear our stubby/lazy SubNodes...
             await Dispatcher.UIThread.InvokeAsync(() => treeNode.SubNodes.Clear(), DispatcherPriority.Background);
-            
+
             // ...then we Expand its real children lazily.
-            await WithBlock(async () => await TreeNode.ExpandNodeAsync(treeNode.DataNode.Nodes, treeNode.SubNodes, treeNode), true);
+            await WithBlock(
+                async () => await TreeNode.ExpandNodeAsync(treeNode.DataNode.Nodes, treeNode.SubNodes, treeNode), true);
         }
         catch (Exception ex)
         {
@@ -150,9 +113,9 @@ public partial class MainWindow
     internal void InputElement_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         // We check if the user is double-clicking a true item.
-        var treeViewItem = (e.Source as Control)?.FindAncestorOfType<TreeViewItem>(includeSelf: true);
+        var treeViewItem = (e.Source as Control)?.FindAncestorOfType<TreeViewItem>(true);
         if (treeViewItem is null) return;
-        
+
         if (EditValue.CanExecute(null)) EditValue.Execute(null);
         else if (Rename.CanExecute(null)) Rename.Execute(null);
     }
@@ -172,7 +135,7 @@ public partial class MainWindow
 
         // If we're on a Rename Dialog, and the Loaded TextBox is the Value one, we ignore it.
         if (CurrentDialog is EditTagDialogState { IsRename: true } && textBox?.Name == "EditValueTextBox") return;
-        
+
         // If not, we Focus it and Select its text.
         textBox?.Focus();
         textBox?.SelectAll();
@@ -188,4 +151,42 @@ public partial class MainWindow
         OpenDialog(new UnsavedChangesDialogState(this));
         e.Cancel = true;
     }
+
+    // ReSharper disable UnusedMember.Global
+    // Our Drag support... (AKA the effect that tells the user they can drag a file into the app)
+    internal void TreeView_OnDragOver(object? sender, DragEventArgs e)
+    {
+        e.DragEffects = e.DataTransfer.Items.Count == 1 && e.DataTransfer.Formats.Contains(DataFormat.File)
+            ? DragDropEffects.Copy
+            : DragDropEffects.None;
+    }
+
+    // ...and our Drop support! (AKA actually processing what they dropped into the app)
+    internal async void TreeView_OnDrop(object? sender, DragEventArgs e)
+    {
+        try
+        {
+            var item = e.DataTransfer.TryGetFiles();
+            if (item?.Length != 1) return;
+
+            switch (item[0])
+            {
+                case null:
+                    return;
+                case IStorageFile file:
+                    await OpenFileAsync(file.Path.LocalPath);
+                    break;
+                case IStorageFolder folder:
+                    await OpenFolderAsync(folder.Path.LocalPath);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // If something goes wrong, we log it and show a Dialog to the user. :C
+            Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
+            OpenDialog(new ErrorDialogState(ex));
+        }
+    }
+    // ReSharper restore UnusedMember.Global
 }

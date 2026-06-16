@@ -1,7 +1,7 @@
-﻿using Avalonia;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Avalonia;
 using Avalonia.Logging;
 using Serilog;
 
@@ -34,7 +34,8 @@ internal static class Program
     internal static string MinecraftSaveFolder => OperatingSystem.IsWindows()
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "saves")
         : OperatingSystem.IsMacOS()
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "minecraft", "saves")
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "minecraft",
+                "saves")
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".minecraft", "saves");
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
@@ -68,6 +69,23 @@ internal static class Program
         }
     }
 
+    private static AppBuilder LogToSerilog(this AppBuilder builder, LogEventLevel level = LogEventLevel.Warning,
+        params string[] areas)
+    {
+        Logger.Sink = new SerilogSink(level, areas);
+        return builder;
+    }
+
+// Avalonia configuration, don't remove; also used by visual designer.
+    private static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+#if DEBUG
+            .WithDeveloperTools()
+#endif
+            .WithInterFont()
+            .LogToSerilog();
+
     // We need a way to "connect" Avalonia's logging with our Serilog. This is how. 
     private class SerilogSink(LogEventLevel minLevel, IList<string> areas) : ILogSink
     {
@@ -88,21 +106,4 @@ internal static class Program
                 propertyValues);
         }
     }
-
-    private static AppBuilder LogToSerilog(this AppBuilder builder, LogEventLevel level = LogEventLevel.Warning,
-        params string[] areas)
-    {
-        Logger.Sink = new SerilogSink(level, areas);
-        return builder;
-    }
-
-// Avalonia configuration, don't remove; also used by visual designer.
-    private static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-#if DEBUG
-            .WithDeveloperTools()
-#endif
-            .WithInterFont()
-            .LogToSerilog();
 }

@@ -22,7 +22,7 @@ internal class NbtClipboardControllerAvalonia(IClipboard clipboard) : INbtClipbo
         await using var writer = new BinaryWriter(ms);
 
         // ...which consists of the Tag Name, if it isn't a NbtFileDataNode...
-        writer.Write(data.Name ?? "");
+        writer.Write(data.Name);
         // ...and its serialized Data.
         writer.Write(NbtClipboardData.SerializeNode(data.Node));
 
@@ -59,7 +59,8 @@ internal class NbtClipboardControllerAvalonia(IClipboard clipboard) : INbtClipbo
         var data = reader.ReadBytes((int)(ms.Length - ms.Position));
 
         // Finally, we return this parsed data.
-        return new NbtClipboardData(name, NbtClipboardData.DeserializeNode(data));
+        var parsedData = NbtClipboardData.DeserializeNode(data);
+        return parsedData is not null ? new NbtClipboardData(name, parsedData) : null;
     }
 
     // Check if the Clipboard actually contains data.
