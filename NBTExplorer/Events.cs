@@ -31,7 +31,7 @@ public partial class MainWindow
             if (treeNode.SubNodes is null) throw new UnreachableException();
 
             // We lazy-load its children.
-            await WithBlock(() => treeNode.LazyLoadAsync(), true);
+            await WithBlock(() => treeNode.LazyLoadAsync());
         }
         catch (Exception ex)
         {

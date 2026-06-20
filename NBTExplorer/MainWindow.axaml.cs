@@ -170,7 +170,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     node.DataNode.Save();
 
                 return Task.CompletedTask;
-            }, true);
+            });
         });
 
         // This one is executed when the user chooses to Refresh a TreeNode.
@@ -203,7 +203,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
-            });
+            }, true);
         });
 
         // This one is executed when the user chooses to Exit through the Button.
@@ -249,7 +249,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
-            }, true);
+            });
         });
 
         // This one is executed when the user chooses to Copy a TreeNode.
@@ -261,7 +261,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
                 if (selectedTreeNode?.DataNode is null || !await selectedTreeNode.DataNode.CopyNode())
                     throw new UnreachableException();
-            }, true);
+            });
         });
 
         // This one is executed when the user chooses to Paste a TreeNode.
@@ -289,7 +289,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
-            }, true);
+            });
         });
 
         // This one is executed when the user chooses to Rename a TreeNode.
@@ -346,7 +346,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                     if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
                 }
-            }, true);
+            });
         });
 
         // This one is executed when the user chooses to Move Up a TreeNode.
@@ -447,7 +447,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
             if (selectedTreeNode is null) throw new UnreachableException();
 
-            await WithBlock(async () => await selectedTreeNode.ExpandTreeAsync());
+            await WithBlock(async () => await selectedTreeNode.ExpandTreeAsync(), true);
         });
 
         // This one is executed when the user OKs a Dialog.
@@ -580,13 +580,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    private async Task WithBlock(Func<Task> execute, bool usuallyFast = false)
+    private async Task WithBlock(Func<Task> execute, bool usuallySlow = false)
     {
         // We create a CancellationTokenSource...
         using var source = new CancellationTokenSource();
 
         // ...and use its token here.
-        _ = Task.Delay(usuallyFast ? 250 : 0, source.Token).ContinueWith(_ => IsBlocked = true, source.Token);
+        _ = Task.Delay(usuallySlow ? 0 : 250, source.Token).ContinueWith(_ => IsBlocked = true, source.Token);
 
         // This allows us to have several WithBlocks run at once, and not unblock the UI early.
         _blockDepth++;
