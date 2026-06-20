@@ -224,7 +224,7 @@ public partial class MainWindow
                     await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(existing), DispatcherPriority.Background);
                 }
 
-            if (SubNodes.Count < 1)
+            if (DataNode.Nodes.Count > 0)
             {
                 // If we didn't add any children, we prepare the parent for lazy-loading.
                 var placeholder = new TreeNode(new TagStringDataNode(""), [], true);
