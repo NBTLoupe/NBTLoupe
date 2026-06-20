@@ -140,15 +140,14 @@ public partial class MainWindow
                 treeNode.SetParent(parent);
 
                 // And finally, we can add the Expanded one back to its parent.
-                await Dispatcher.UIThread.InvokeAsync(() => treeNodes.Add(treeNode),
-                    DispatcherPriority.Background);
+                treeNodes.Add(treeNode);
 
                 // We do need to add a Placeholder so the arrow shows, though!
                 if (dataNode.Nodes.Count < 1) continue;
 
                 var placeholder = new TreeNode(new TagStringDataNode(""), [], true);
                 placeholder.SetParent(parent);
-                await Dispatcher.UIThread.InvokeAsync(() => subNodes.Add(placeholder), DispatcherPriority.Background);
+                subNodes.Add(placeholder);
             }
         }
 

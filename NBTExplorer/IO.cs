@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using NBTModel.Data;
 using NBTModel.Data.Nodes;
 using Serilog;
@@ -192,7 +193,7 @@ public partial class MainWindow
             foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder)) RecentFiles.Add(item);
 
             // And we can begin the lazy-loading!
-            await TreeNode.ExpandNodeAsync([node], TreeNodes);
+            await Dispatcher.UIThread.InvokeAsync(async () => await TreeNode.ExpandNodeAsync([node], TreeNodes), DispatcherPriority.Background);
         });
     }
 
@@ -216,7 +217,7 @@ public partial class MainWindow
             }
 
             // And we can begin the lazy-loading!
-            await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes);
+            await Dispatcher.UIThread.InvokeAsync(async () => await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes), DispatcherPriority.Background);
         });
     }
 }
