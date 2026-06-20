@@ -223,6 +223,21 @@ public partial class MainWindow
                     if (!child.HasUnexpandedChildren) await existing.RefreshChildNodesAsync();
                     await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(existing), DispatcherPriority.Background);
                 }
+                // ...and if the child isn't expanded...
+                else if (!child.IsExpanded)
+                {
+                    // ...we expand it...
+                    child.Expand();
+
+                    // ...then create a TreeNode from scratch for it....
+                    var newSubNodes = new ObservableCollection<TreeNode>();
+                    var newTreeNode = new TreeNode(child, newSubNodes);
+                    newTreeNode.SetParent(this);
+
+                    // ...and add it to the SubNodes.
+                    await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(newTreeNode),
+                        DispatcherPriority.Background);
+                }
 
             if (DataNode.Nodes.Count > 0)
             {
