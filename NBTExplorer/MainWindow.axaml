@@ -421,12 +421,7 @@
                                                     <StackPanel Grid.Row="1" Spacing="4">
                                                         <TextBox Loaded="DialogTextBox_Loaded"
                                                                  Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                 PlaceholderText="Name">
-                                                            <TextBox.KeyBindings>
-                                                                <KeyBinding Gesture="Enter"
-                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                            </TextBox.KeyBindings>
-                                                        </TextBox>
+                                                                 PlaceholderText="Name" />
                                                         <NumericUpDown Value="{Binding TagSize, Mode=TwoWay}"
                                                                        IsEnabled="{Binding SizeEnabled}"
                                                                        Minimum="0"
@@ -435,11 +430,6 @@
                                                                 <TextBlock Text="Size:" VerticalAlignment="Center"
                                                                            Margin="10 0 0 0" />
                                                             </NumericUpDown.InnerLeftContent>
-
-                                                            <NumericUpDown.KeyBindings>
-                                                                <KeyBinding Gesture="Enter"
-                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                            </NumericUpDown.KeyBindings>
                                                         </NumericUpDown>
                                                     </StackPanel>
                                                 </Grid>
@@ -459,12 +449,7 @@
                                                                  Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  VerticalAlignment="Center"
                                                                  PlaceholderText="Name"
-                                                                 IsVisible="{Binding NameVisible}">
-                                                            <TextBox.KeyBindings>
-                                                                <KeyBinding Gesture="Enter"
-                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                            </TextBox.KeyBindings>
-                                                        </TextBox>
+                                                                 IsVisible="{Binding NameVisible}" />
 
                                                         <TextBox x:Name="EditValueTextBox"
                                                                  Loaded="DialogTextBox_Loaded"
@@ -476,11 +461,6 @@
                                                                 <TextBlock Text="Value:" VerticalAlignment="Top"
                                                                            Margin="10 6 0 0" />
                                                             </TextBox.InnerLeftContent>
-
-                                                            <TextBox.KeyBindings>
-                                                                <KeyBinding Gesture="Enter"
-                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                            </TextBox.KeyBindings>
                                                         </TextBox>
                                                     </StackPanel>
                                                 </Grid>
@@ -504,11 +484,6 @@
                                                                     <TextBlock Text="Name:" VerticalAlignment="Center"
                                                                                Margin="10 0 0 0" />
                                                                 </TextBox.InnerLeftContent>
-
-                                                                <TextBox.KeyBindings>
-                                                                    <KeyBinding Gesture="Enter"
-                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                                </TextBox.KeyBindings>
                                                             </TextBox>
                                                         </CheckBox>
                                                         <CheckBox HorizontalAlignment="Stretch"
@@ -521,11 +496,6 @@
                                                                     <TextBlock Text="Value:" VerticalAlignment="Center"
                                                                                Margin="10 0 0 0" />
                                                                 </TextBox.InnerLeftContent>
-
-                                                                <TextBox.KeyBindings>
-                                                                    <KeyBinding Gesture="Enter"
-                                                                            Command="{Binding $parent[local:MainWindow].DialogOk}" />
-                                                                </TextBox.KeyBindings>
                                                             </TextBox>
                                                         </CheckBox>
                                                     </StackPanel>
@@ -618,17 +588,29 @@
                                         <Button Name="DialogImportButton" Content="Import"
                                                 Command="{Binding DialogImport}"
                                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                            <Button.KeyBindings>
+                                                <KeyBinding Gesture="Enter" Command="{Binding DialogImport}" />
+                                            </Button.KeyBindings>
+                                        </Button>
                                         <Button Name="DialogExportButton" Content="Export"
                                                 Command="{Binding DialogExport}"
                                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                            <Button.KeyBindings>
+                                                <KeyBinding Gesture="Enter" Command="{Binding DialogExport}" />
+                                            </Button.KeyBindings>
+                                        </Button>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Spacing="4" DockPanel.Dock="Right">
                                         <Button Name="DialogCancelButton" Content="Cancel"
                                                 Command="{Binding DialogCancel}"
                                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                            <Button.KeyBindings>
+                                                <KeyBinding Gesture="Enter" Command="{Binding DialogCancel}" />
+                                            </Button.KeyBindings>
+                                        </Button>
                                         <!-- ReSharper disable once Xaml.StyleClassNotFound -->
                                         <Button Name="DialogOkButton" Content="OK" Command="{Binding DialogOk}"
                                                 HorizontalAlignment="Stretch"
@@ -643,8 +625,8 @@
                 </Border>
             </Panel>
 
-            <!-- Only Cancel is Dialog-global, as I don't want users trying to Enter on the "Cancel" Button to end up "Ok"ing -->
             <Border.KeyBindings>
+                <KeyBinding Gesture="Enter" Command="{Binding DialogOk}" />
                 <KeyBinding Gesture="Escape" Command="{Binding DialogCancel}" />
             </Border.KeyBindings>
 
