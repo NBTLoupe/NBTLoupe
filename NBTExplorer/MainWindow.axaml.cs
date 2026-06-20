@@ -188,14 +188,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // Then we back up our SelectedTreeNodes' IndexPath.
                 var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
 
+                // Then we unIsExpand the SelectedTreeNode, to allow for its lazy-loading.
+                selectedTreeNode.IsExpanded = false;
+
                 // Then NBTModel deals with the main TreeNode Refreshing...
                 if (!selectedTreeNode.DataNode.RefreshNode()) throw new UnreachableException();
 
-                // ...and we deal with its children.
+                // ...and we deal with its children....
                 await selectedTreeNode.RefreshChildNodesAsync();
 
+                // ...making sure they're lazy-loaded.
+                await selectedTreeNode.LazyLoadAsync();
+
                 // Then we can restore the IsExpanded (UI-wise) backup.
-                selectedTreeNode.RestoreExpandedNodes(savedExpandedNodes);
+                selectedTreeNode.IsExpanded = true;
+                await selectedTreeNode.RestoreExpandedNodes(savedExpandedNodes);
 
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
@@ -203,7 +210,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
-            }, true);
+            });
         });
 
         // This one is executed when the user chooses to Exit through the Button.

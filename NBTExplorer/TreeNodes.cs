@@ -223,24 +223,44 @@ public partial class MainWindow
                     if (!child.HasUnexpandedChildren) await existing.RefreshChildNodesAsync();
                     await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(existing), DispatcherPriority.Background);
                 }
-                else
-                {
-                    // And if it's a new child, we lazy-load it.
-                    await LazyLoadAsync([child]);
-                }
+
+            if (SubNodes.Count < 1)
+            {
+                // If we didn't add any children, we prepare the parent for lazy-loading.
+                var placeholder = new TreeNode(new TagStringDataNode(""), [], true);
+                placeholder.SetParent(this);
+                await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(placeholder), DispatcherPriority.Background);
+            }
 
             // Then we refresh its Title. Usually not necessary, but useful when the root is being Refreshed.
             RefreshTitle();
         }
 
         // When a Refresh occurs, the IsExpanded (UI-wise) TreeNodes are lost. This function backs them all up...
-        internal HashSet<string> SaveExpandedNodes()
+        internal HashSet<string> SaveExpandedNodes(bool checkParents = true)
         {
             // ...by creating a HashSet...
             var expandedNodes = new HashSet<string>();
 
             // Immediately return if it doesn't have SubNodes.
             if (SubNodes is null) return expandedNodes;
+
+            if (checkParents)
+            {
+                // We save the current node...
+                var current = this;
+
+                // ...and while the current TreeNode is not null (AKA we haven't reached the root yet)...
+                while (current is not null)
+                {
+                    // ...if it IsExpanded (which it should), we add it to our HashSet...
+                    if (!current.IsExpanded) continue;
+                    expandedNodes.Add(current.DataNode.NodePath);
+
+                    // ...and we keep climbing to the next parent.
+                    current = current.Parent;
+                }
+            }
 
             foreach (var child in SubNodes)
             {
@@ -249,7 +269,7 @@ public partial class MainWindow
                 expandedNodes.Add(child.DataNode.NodePath);
 
                 // ...and their children, for which we loop.
-                expandedNodes.UnionWith(child.SaveExpandedNodes());
+                expandedNodes.UnionWith(child.SaveExpandedNodes(false));
             }
 
             // And finally, we return the completed backup.
@@ -257,7 +277,7 @@ public partial class MainWindow
         }
 
         // This function restores the backup created by the previous function...
-        internal void RestoreExpandedNodes(HashSet<string> expandedNodes)
+        internal async Task RestoreExpandedNodes(HashSet<string> expandedNodes)
         {
             // Immediately return if it doesn't have SubNodes.
             if (SubNodes is null) return;
@@ -265,12 +285,15 @@ public partial class MainWindow
             // ...by looping through all the TreeNode children...
             foreach (var child in SubNodes)
             {
+                // ...making sure they're lazy-loaded...
+                await child.LazyLoadAsync();
+
                 // ...and only IsExpanded them if they're in the HashNet. 
                 if (!expandedNodes.Contains(child.DataNode.NodePath)) continue;
                 child.IsExpanded = true;
 
                 // If that's the case, we loop and continue checking and IsExpanding their children.
-                child.RestoreExpandedNodes(expandedNodes);
+                await child.RestoreExpandedNodes(expandedNodes);
             }
         }
 
