@@ -239,7 +239,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     throw new UnreachableException();
 
                 // We isolate the parent because its child is going to be Cut...
-                var parent = selectedTreeNode.Parent.Parent ?? TreeNodes.FirstOrDefault();
+                var parent = selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
 
                 // Then we back up our SelectedTreeNodes' IndexPath.
                 var savedSelectedTreeNodes = selectedTreeNode.GetIndexPath(TreeNodes);
@@ -286,9 +286,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // ...and paste the copied TreeNode into the selected Parent if not...
                 if (!await selectedTreeNode.DataNode.PasteNode()) throw new UnreachableException();
 
-                // ...then we refresh the TreeNode's grandparent to make sure the title is accurate.
-                var grandParent = selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
-                if (grandParent is not null) await grandParent.RefreshChildNodesAsync();
+                // ...then we refresh the parent.
+                await selectedTreeNode.RefreshChildNodesAsync();
 
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
@@ -326,7 +325,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             await WithBlock(async () =>
             {
-                var grandparents = new HashSet<TreeNode?>();
+                var parents = new HashSet<TreeNode?>();
 
                 // We back up the last SelectedTreeNode's IndexPath.
                 var savedSelectedTreeNodes = SelectedTreeNodes.LastOrDefault()?.GetIndexPath(TreeNodes);
@@ -337,12 +336,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     // ...and the actual deleting is dealt with by NBTModel, convenient!
                     if (!selectedTreeNode.DataNode.DeleteNode()) throw new UnreachableException();
 
-                    // We make sure we don't refresh the same grandparent twice.
-                    grandparents.Add(selectedTreeNode.Parent?.Parent ?? TreeNodes.FirstOrDefault());
+                    // We make sure we don't refresh the same parent twice.
+                    parents.Add(selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault());
                 }
 
-                // We do have to deal with refreshing the grandparent ourselves, though...
-                foreach (var grandparent in grandparents.OfType<TreeNode>()) await grandparent.RefreshChildNodesAsync();
+                // We do have to deal with refreshing the parent ourselves, though...
+                foreach (var parent in parents.OfType<TreeNode>()) await parent.RefreshChildNodesAsync();
 
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
