@@ -43,6 +43,19 @@ public partial class RegionFileDataNode : DataNode
         return NamePattern.IsMatch(path);
     }
 
+    public static bool RegionCoordinates(string path, out int rx, out int rz)
+    {
+        rx = 0;
+        rz = 0;
+
+        var match = NamePattern.Match(path);
+        if (match is not { Success: true, Groups.Count: > 3 }) return match.Success;
+        rx = int.Parse(match.Groups[1].Value);
+        rz = int.Parse(match.Groups[2].Value);
+
+        return match.Success;
+    }
+
     protected override void ExpandCore()
     {
         try

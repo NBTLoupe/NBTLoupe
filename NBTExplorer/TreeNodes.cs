@@ -48,16 +48,18 @@ public partial class MainWindow
         private static readonly NodeTreeComparer NodeComparer = new();
 
         // And here's how you create the actual TreeNode!
-        private TreeNode(DataNode dataNode, ObservableCollection<TreeNode> subNodes)
+        private TreeNode(DataNode dataNode, ObservableCollection<TreeNode> subNodes, bool isPlaceholder = false)
         {
             DataNode = dataNode;
             SubNodes = subNodes;
+            IsPlaceholder = isPlaceholder;
         }
 
         // ...it includes its children (SubNodes), its data (DataNode), and its Parent.
         internal ObservableCollection<TreeNode>? SubNodes { get; }
         internal DataNode DataNode { get; }
         internal TreeNode? Parent { get; private set; }
+        internal bool IsPlaceholder { get; }
 
         // Oh, but all that data is for our fun. Avalonia cares about its Title and its Icon, which is here.
         internal string Title => DataNode.NodeDisplay;
@@ -120,7 +122,7 @@ public partial class MainWindow
 
         // Nodes in NBTModel have to be "Expanded" to be able to access their children. This does that in a sorted manner.
         internal static async Task ExpandNodeAsync(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
-            TreeNode? parent = null, bool finalExpand = false)
+            TreeNode? parent = null)
         {
             // First we sort the NodeTree...
             var sortedNodeTree = nodeTree.OrderBy(dataNode => dataNode, NodeComparer);
@@ -140,23 +142,62 @@ public partial class MainWindow
                 // And finally, we can add the Expanded one back to its parent.
                 await Dispatcher.UIThread.InvokeAsync(() => treeNodes.Add(treeNode),
                     DispatcherPriority.Background);
-                // But if we find out one of its children has their own children, we do it once more. That's so the UI lets us continue Expanding.
-                if (!finalExpand && dataNode.Nodes.Count > 0)
-                    await ExpandNodeAsync(dataNode.Nodes, subNodes, treeNode, true);
+
+                // We do need to add a Placeholder so the arrow shows, though!
+                if (dataNode.Nodes.Count < 1) continue;
+
+                var placeholder = new TreeNode(new TagStringDataNode(""), [], true);
+                placeholder.SetParent(parent);
+                await Dispatcher.UIThread.InvokeAsync(() => subNodes.Add(placeholder), DispatcherPriority.Background);
             }
+        }
+
+        // This function helps with lazy-loading, mainly ensuring the Placeholder gets deleted.
+        internal async Task LazyLoadAsync(IList<DataNode>? dataNode = null)
+        {
+            if (SubNodes is not [{ IsPlaceholder: true }]) return;
+
+            // We Expand its real children lazily, and Stage them...
+            var staged = new ObservableCollection<TreeNode>();
+            await ExpandNodeAsync(dataNode ?? DataNode.Nodes, staged, this);
+
+            // ...so we can replace our stubby/lazy SubNodes with the Staged ones.
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                SubNodes.Clear();
+                foreach (var node in staged) SubNodes.Add(node);
+            }, DispatcherPriority.Background);
         }
 
         // This IsExpands (UI-wise) an entire TreeNode. Related to the ExpandTree AppCommand. 
         internal async Task ExpandTreeAsync()
         {
-            // We first expand the TreeNode itself...
+            switch (SubNodes)
+            {
+                // We immediately return if it doesn't have SubNodes...
+                case null:
+                    return;
+                // ...then we lazy-load its children...
+                case [{ IsPlaceholder: true }]:
+                    await LazyLoadAsync();
+                    break;
+            }
+
+            // ... then we expand the TreeNode itself...
             await Dispatcher.UIThread.InvokeAsync(() => IsExpanded = true, DispatcherPriority.Background);
 
-            // ...immediately return if it doesn't have SubNodes...
-            if (SubNodes is null) return;
+            // ...and we loop until the entire TreeNode IsExpanded (UI-wise).
+            foreach (var child in SubNodes.ToList()) await child.ExpandTreeAsync();
+        }
 
-            // ...but if it does, we loop until the entire TreeNode IsExpanded (UI-wise).
-            foreach (var child in SubNodes) await child.ExpandTreeAsync();
+        // This IsExpands (UI-wise) an entire TreeNode, but the other way around. 
+        internal async Task ExpandTreeReverseAsync()
+        {
+            // If it has a Parent, we loop until the entire TreeNode IsExpanded (UI-wise).
+            if (Parent is not null) await Parent.ExpandTreeReverseAsync();
+
+            // And this is how we expand the TreeNode itself.
+            await Dispatcher.UIThread.InvokeAsync(() => IsExpanded = true, DispatcherPriority.Background);
         }
 
         // This refreshes a TreeNode. Required to display in the UI any change in it.
@@ -184,8 +225,8 @@ public partial class MainWindow
                 }
                 else
                 {
-                    // And if it's a new child, we Expand it.
-                    await ExpandNodeAsync([child], SubNodes, this);
+                    // And if it's a new child, we lazy-load it.
+                    await LazyLoadAsync([child]);
                 }
 
             // Then we refresh its Title. Usually not necessary, but useful when the root is being Refreshed.
@@ -290,6 +331,89 @@ public partial class MainWindow
 
             // Once we finish climbing, we return the best TreeNode we found.
             return current;
+        }
+
+        // This function allows us to Search for a specific child TreeNode.
+        internal async Task<TreeNode?> SearchAsync(int regionX, int regionZ, int localChunkX, int localChunkZ)
+        {
+            // Starting at our root DataNode...
+            switch (DataNode)
+            {
+                // ...if it's a Directory...
+                case DirectoryDataNode:
+                {
+                    switch (SubNodes)
+                    {
+                        // Immediately return if it doesn't have SubNodes.
+                        case null:
+                            return null;
+
+                        // And, if we didn't yet, we lazy-load it.
+                        case [{ IsPlaceholder: true }]:
+                            await LazyLoadAsync();
+                            break;
+                    }
+
+                    // Afterwards, we loop through its children...
+                    foreach (var subNode in SubNodes)
+                    {
+                        // ...to keep searching on them...
+                        var resultNode = await subNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
+
+                        // ...until one of them is the result.
+                        if (resultNode != null) return resultNode;
+                    }
+
+                    break;
+                }
+
+                // ...if it's a RegionFile...
+                case RegionFileDataNode regionNode:
+                {
+                    // ...if we aren't in the right Region, we immediately return.
+                    if (!RegionFileDataNode.RegionCoordinates(regionNode.NodePathName, out var rx, out var rz))
+                        return null;
+                    if (rx != regionX || rz != regionZ)
+                        return null;
+
+                    // But if it is the right Region...
+                    switch (SubNodes)
+                    {
+                        // Immediately return if it doesn't have SubNodes.
+                        case null:
+                            return null;
+
+                        // And, if we didn't yet, we lazy-load it.
+                        case [{ IsPlaceholder: true }]:
+                            await LazyLoadAsync();
+                            break;
+                    }
+
+                    // Afterwards, we loop through its children...
+                    foreach (var subNode in SubNodes)
+                    {
+                        // ...to keep searching on them...
+                        var resultNode = await subNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
+
+                        // ...until one of them is the result.
+                        if (resultNode != null) return resultNode;
+                    }
+
+                    break;
+                }
+
+                // ...if it's a Chunk...
+                // ...it either isn't the right one...
+                case RegionChunkDataNode chunkNode when chunkNode.X != localChunkX || chunkNode.Z != localChunkZ:
+                    break;
+
+                // ...or we found it! In which case, we return it.
+                case RegionChunkDataNode:
+                    return this;
+            }
+
+            // And if we didn't find anything, we tell the user through an exception.
+            throw new UserErrorException("We couldn't find the specified chunk.");
         }
 
         private class NodeTreeComparer : IComparer<DataNode>

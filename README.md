@@ -71,7 +71,7 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 </details>
 <details>
   <summary><b>Wait, "reach full feature parity"? What are you missing?</b></summary>
-  From the original NBTExplorer, only one thing as far as I'm aware: the <b>find functionality</b>. With this I'm grouping both <b>searching and replacing tag values</b>, and the more specialised <b>Chunk Finder</b>.
+  From the original NBTExplorer, only one thing as far as I'm aware: the <b>find functionality</b>. With this I'm grouping both <b>searching</b> and <b>replacing</b> tag values.
   <br>
   But I'm also supposing there are certain things that the game introduced over the years that the original NBTExplorer never supported. We're reusing the same backend, so we don't support these either. That's the next step after we reach feature parity with the original, though!
 </details>

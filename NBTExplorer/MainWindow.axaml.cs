@@ -22,6 +22,9 @@ namespace NBTExplorer;
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
+    // This helps us set the variable above only when it's truly needed. So if an operation is unlikely to take long, we can make sure the UI is only locked if it is taking exceptionally long. This prevents flashing the UI. 
+    private int _blockDepth;
+
     public MainWindow()
     {
         // We initialize everything we'll need...
@@ -392,10 +395,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             throw new NotImplementedException(
                 "Find functionality, including the Replace AppCommand, isn't implemented yet."));
 
-        /* TODO: Implement Chunk Finder */
-        ChunkFinder = CreateAppCommand(_ =>
-            throw new NotImplementedException(
-                "Find functionality, including the ChunkFinder AppCommand, isn't implemented yet."));
+        ChunkFinder = CreateAppCommand(_ => OpenDialog(new ChunkFinderDialogState(this)));
 
         // This one is executed when the user chooses to learn about us. <3
         About = CreateAppCommand(_ => OpenDialog(new AboutDialogState()), true);
@@ -447,7 +447,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var selectedTreeNode = SelectedTreeNodes.FirstOrDefault();
             if (selectedTreeNode is null) throw new UnreachableException();
 
-            await selectedTreeNode.ExpandTreeAsync();
+            await WithBlock(async () => await selectedTreeNode.ExpandTreeAsync());
         });
 
         // This one is executed when the user OKs a Dialog.
@@ -555,7 +555,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     internal string? FindName { get; set; }
     internal string? FindValue { get; set; }
 
-    // This is how we block the main UI when something is happening. We only do this in IO-related tasks as these take the longest.
+    // This is how we block the main UI when something is happening.
     internal bool IsBlocked
     {
         get;
@@ -570,17 +570,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     }
 
     // And this is just so Dialogs (which also block the UI) don't show a progress bar.
-    internal bool ShowProgressBar => IsBlocked && CurrentDialog is null;
+    internal bool ShowProgressBar => IsBlocked && CurrentDialog is null or ChunkFinderDialogState { InProgress: true };
 
     // This is how we tell the UI our Dialogs changed.
     public new event PropertyChangedEventHandler? PropertyChanged;
 
-    private void OnPropertyChanged([CallerMemberName] string? name = null)
+    internal void OnPropertyChanged([CallerMemberName] string? name = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    // This helps us set the variable above only when it's truly needed. So if an operation is unlikely to take long, we can make sure the UI is only locked if it is taking exceptionally long. This prevents flashing the UI. 
     private async Task WithBlock(Func<Task> execute, bool usuallyFast = false)
     {
         // We create a CancellationTokenSource...
@@ -588,6 +587,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         // ...and use its token here.
         _ = Task.Delay(usuallyFast ? 250 : 0, source.Token).ContinueWith(_ => IsBlocked = true, source.Token);
+
+        // This allows us to have several WithBlocks run at once, and not unblock the UI early.
+        _blockDepth++;
 
         try
         {
@@ -600,7 +602,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             await source.CancelAsync();
 
             // But if it did take more, we need to make sure we unblock it.
-            IsBlocked = false;
+            if (--_blockDepth < 1) IsBlocked = false;
         }
     }
 }

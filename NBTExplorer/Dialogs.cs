@@ -44,7 +44,7 @@ internal class AddTagDialogState : DialogState
         }
     }
 
-    // The Tag Size TextBox...
+    // The Tag Size NumericUpDown...
     internal decimal TagSize
     {
         get;
@@ -369,6 +369,524 @@ internal class FindDialogState : DialogState
 
         // Then we make sure the user knows this is not done yet!
         throw new NotImplementedException("Find functionality, including the Find Dialog, isn't implemented yet.");
+    }
+}
+
+// Here we define the ChunkFinder Dialog!
+internal class ChunkFinderDialogState : DialogState
+{
+    // We need to access the Window somehow!
+    private readonly MainWindow _window;
+
+    // We don't want to cascade into infinite updates when the user inputs something!
+    private bool _isUpdating;
+
+    // Here we set up the Dialog!
+    internal ChunkFinderDialogState(MainWindow window)
+    {
+        _window = window;
+    }
+
+    // Here's all the fields we bind to in the XAML...
+    // The UI locker...
+    internal bool InProgress
+    {
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.OnPropertyChanged(nameof(_window.ShowProgressBar));
+            _window.RefreshOkButton();
+        }
+    }
+
+    // The Region X's Placeholder TextBox...
+    internal string? RegionXPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "Type here";
+
+    // The Region X's NumericUpDown...
+    internal string? RegionX
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            if (!int.TryParse(value, out var regionX)) return;
+            ChunkXPlaceholder = $"({regionX * 32} to {(regionX + 1) * 32 - 1})";
+            BlockXPlaceholder = $"({regionX * 32 * 16} to {(regionX + 1) * 32 * 16 - 1})";
+            LocalChunkXPlaceholder = "(0 to 31)";
+            LocalBlockXPlaceholder = "(0 to 15)";
+
+            if (int.TryParse(LocalChunkX, out var localChunkX))
+            {
+                ChunkX = (regionX * 32 + localChunkX).ToString();
+                if (int.TryParse(LocalBlockX, out var localBlockX))
+                    BlockX = (regionX * 32 * 16 + localChunkX * 16 + localBlockX).ToString();
+                else
+                    BlockXPlaceholder =
+                        $"({(regionX * 32 + localChunkX) * 16} to {(regionX * 32 + localChunkX + 1) * 16 - 1})";
+            }
+
+            // And we finished!
+            _isUpdating = false;
+        }
+    } = "0";
+
+    // The Region Z's Placeholder TextBox...
+    internal string? RegionZPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "Type here";
+
+    // The Region Z's NumericUpDown...
+    internal string? RegionZ
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var regionZ)) return;
+                ChunkZPlaceholder = $"({regionZ * 32} to {(regionZ + 1) * 32 - 1})";
+                BlockZPlaceholder = $"({regionZ * 32 * 16} to {(regionZ + 1) * 32 * 16 - 1})";
+                LocalChunkZPlaceholder = "(0 to 31)";
+                LocalBlockZPlaceholder = "(0 to 15)";
+
+                if (!int.TryParse(LocalChunkZ, out var localChunkZ)) return;
+                ChunkZ = (regionZ * 32 + localChunkZ).ToString();
+                if (int.TryParse(LocalBlockZ, out var localBlockZ))
+                    BlockZ = (regionZ * 32 * 16 + localChunkZ * 16 + localBlockZ).ToString();
+                else
+                    BlockZPlaceholder =
+                        $"({(regionZ * 32 + localChunkZ) * 16} to {(regionZ * 32 + localChunkZ + 1) * 16 - 1})";
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    } = "0";
+
+    // The Chunk X's Placeholder TextBox...
+    internal string? ChunkXPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 31)";
+
+    // The Chunk X's NumericUpDown...
+    internal string? ChunkX
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var chunkX)) return;
+                RegionX = (chunkX >> 5).ToString();
+
+                if (int.TryParse(LocalBlockX, out var localBlockX)) BlockX = (chunkX * 16 + localBlockX).ToString();
+                LocalChunkX = ((chunkX % 32 + 32) % 32).ToString();
+
+                BlockXPlaceholder = $"({chunkX * 16} to {(chunkX + 1) * 16 - 1})";
+                LocalBlockXPlaceholder = "(0 to 15)";
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // The Chunk Z's Placeholder TextBox...
+    internal string? ChunkZPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 31)";
+
+    // The Chunk Z's NumericUpDown...
+    internal string? ChunkZ
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var chunkZ)) return;
+                RegionZ = (chunkZ >> 5).ToString();
+
+                if (int.TryParse(LocalBlockZ, out var localBlockZ)) BlockZ = (chunkZ * 16 + localBlockZ).ToString();
+                LocalChunkZ = ((chunkZ % 32 + 32) % 32).ToString();
+
+                BlockZPlaceholder = $"({chunkZ * 16} to {(chunkZ + 1) * 16 - 1})";
+                LocalBlockZPlaceholder = "(0 to 15)";
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // The Block X's Placeholder TextBox...
+    internal string? BlockXPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 511)";
+
+    // The Block X's NumericUpDown...
+    internal string? BlockX
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var blockX)) return;
+                RegionX = (blockX >> 4 >> 5).ToString();
+                ChunkX = (blockX >> 4).ToString();
+                LocalChunkX = (((blockX >> 4) % 32 + 32) % 32).ToString();
+                LocalBlockX = ((blockX % 16 + 16) % 16).ToString();
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // The Block Z's Placeholder TextBox...
+    internal string? BlockZPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 511)";
+
+    // The Block Z's NumericUpDown...
+    internal string? BlockZ
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var blockZ)) return;
+                RegionZ = (blockZ >> 4 >> 5).ToString();
+                ChunkZ = (blockZ >> 4).ToString();
+                LocalChunkZ = (((blockZ >> 4) % 32 + 32) % 32).ToString();
+                LocalBlockZ = ((blockZ % 16 + 16) % 16).ToString();
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // The Local Chunk X's Placeholder TextBox...
+    internal string? LocalChunkXPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 31)";
+
+    // The Local Chunk X's NumericUpDown...
+    internal string? LocalChunkX
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var localChunkX)) return;
+                RegionXPlaceholder = "(ANY)";
+                ChunkXPlaceholder = "(ANY)";
+                BlockXPlaceholder = "(ANY)";
+                LocalBlockXPlaceholder = "(0 to 15)";
+
+                if (!int.TryParse(RegionX, out var regionX)) return;
+                ChunkX = (regionX * 32 + localChunkX).ToString();
+
+                if (int.TryParse(LocalBlockX, out var localBlockX))
+                    BlockX = (regionX * 32 * 16 + localChunkX * 16 + localBlockX).ToString();
+                else
+                    BlockXPlaceholder =
+                        $"({(regionX * 32 + localChunkX) * 16} to {(regionX * 32 + localChunkX + 1) * 16 - 1})";
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // The Local Chunk Z's Placeholder TextBox...
+    internal string? LocalChunkZPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 31)";
+
+    // The Local Chunk Z's NumericUpDown...
+    internal string? LocalChunkZ
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var localChunkZ)) return;
+                RegionZPlaceholder = "(ANY)";
+                ChunkZPlaceholder = "(ANY)";
+                BlockZPlaceholder = "(ANY)";
+                LocalBlockZPlaceholder = "(0 to 15)";
+
+                if (!int.TryParse(RegionZ, out var regionZ)) return;
+                ChunkZ = (regionZ * 32 + localChunkZ).ToString();
+
+                if (int.TryParse(LocalBlockZ, out var localBlockZ))
+                    BlockZ = (regionZ * 32 * 16 + localChunkZ * 16 + localBlockZ).ToString();
+                else
+                    BlockZPlaceholder =
+                        $"({(regionZ * 32 + localChunkZ) * 16} to {(regionZ * 32 + localChunkZ + 1) * 16 - 1})";
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // The Local Block X's Placeholder TextBox...
+    internal string? LocalBlockXPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 15)";
+
+    // The Local Block X's NumericUpDown...
+    internal string? LocalBlockX
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var localBlockX)) return;
+                RegionXPlaceholder = "(ANY)";
+                ChunkXPlaceholder = "(ANY)";
+                BlockXPlaceholder = "(ANY)";
+
+                if (!int.TryParse(RegionX, out var regionX) || !int.TryParse(LocalChunkX, out var localChunkX)) return;
+                ChunkX = (regionX * 32 + localChunkX).ToString();
+                BlockX = (regionX * 32 * 16 + localChunkX * 16 + localBlockX).ToString();
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // The Local Block Z's Placeholder TextBox...
+    internal string? LocalBlockZPlaceholder
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "(0 to 15)";
+
+    // The Local Block Z's NumericUpDown...
+    internal string? LocalBlockZ
+    {
+        get;
+        set
+        {
+            field = int.TryParse(value, out _) ? value : field;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+
+            // We make sure we don't trigger cascading updates.
+            if (_isUpdating) return;
+            _isUpdating = true;
+
+            try
+            {
+                if (!int.TryParse(value, out var localBlockZ)) return;
+                RegionZPlaceholder = "(ANY)";
+                ChunkZPlaceholder = "(ANY)";
+                BlockZPlaceholder = "(ANY)";
+
+                if (!int.TryParse(RegionZ, out var regionZ) || !int.TryParse(LocalChunkZ, out var localChunkZ)) return;
+                ChunkZ = (regionZ * 32 + localChunkZ).ToString();
+                BlockZ = (regionZ * 32 * 16 + localChunkZ * 16 + localBlockZ).ToString();
+            }
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
+        }
+    }
+
+    // And here's where our Validation magic happens!
+    internal override bool IsOkEnabled =>
+        !InProgress && !string.IsNullOrEmpty(LocalChunkX) && !string.IsNullOrEmpty(LocalChunkZ);
+
+    // And here's the actual magic! The OK button!
+    internal override async Task ExecuteAsync()
+    {
+        InProgress = true;
+
+        var selectedTreeNode = _window.SelectedTreeNodes.FirstOrDefault();
+
+        if (selectedTreeNode is null || !int.TryParse(RegionX, out var regionX) ||
+            !int.TryParse(RegionZ, out var regionZ) ||
+            !int.TryParse(LocalChunkX, out var localChunkX) ||
+            !int.TryParse(LocalChunkZ, out var localChunkZ)) throw new UnreachableException();
+
+        var foundNode = await selectedTreeNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
+
+        if (foundNode is null) return;
+        await foundNode.ExpandTreeReverseAsync();
+        _window.SelectedTreeNodes.Clear();
+        _window.SelectedTreeNodes.Add(foundNode);
     }
 }
 

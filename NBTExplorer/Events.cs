@@ -1,5 +1,4 @@
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +7,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using Avalonia.Threading;
 using Avalonia.VisualTree;
 using NBTModel.Data.Nodes;
 using Serilog;
@@ -21,7 +19,7 @@ public partial class MainWindow
     // We need a way to disable the Clipboard-based features if they wouldn't work.
     private bool ClipboardAvailable => Clipboard is not null;
 
-    // This is how when lazily load items when the user expands them UI-wise.
+    // This is how we lazily load items when the user expands them UI-wise.
     internal async void TreeViewItem_OnExpanded(object? sender, RoutedEventArgs e)
     {
         try
@@ -32,17 +30,8 @@ public partial class MainWindow
             // Check if SubNodes is null.
             if (treeNode.SubNodes is null) throw new UnreachableException();
 
-            // We Expand its real children lazily, and Stage them...
-            var staged = new ObservableCollection<TreeNode>();
-            await WithBlock(
-                async () => await TreeNode.ExpandNodeAsync(treeNode.DataNode.Nodes, staged, treeNode), true);
-
-            // ...so we can replace our stubby/lazy SubNodes with the Staged ones.
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                treeNode.SubNodes.Clear();
-                foreach (var node in staged) treeNode.SubNodes.Add(node);
-            }, DispatcherPriority.Background);
+            // We lazy-load its children.
+            await WithBlock(() => treeNode.LazyLoadAsync(), true);
         }
         catch (Exception ex)
         {
@@ -83,6 +72,8 @@ public partial class MainWindow
         var single = SelectedTreeNodes.Count == 1 ? SelectedTreeNodes[0] : null;
 
         ToggleExpand.Toggle(single?.SubNodes?.Count > 0);
+
+        ChunkFinder.Toggle(single?.DataNode is DirectoryDataNode or RegionFileDataNode or RegionChunkDataNode);
 
         OpenInExplorer.Toggle(single?.DataNode is DirectoryDataNode);
 

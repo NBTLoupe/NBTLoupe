@@ -11,6 +11,9 @@ public class RegionChunkDataNode(RegionFile regionFile, int x, int z) : DataNode
 
     private RegionFileDataNode? RegionParent => (RegionFileDataNode?)Parent;
 
+    public int X => x;
+    public int Z => z;
+
     protected override NodeCapabilities Capabilities =>
         NodeCapabilities.CreateTag
         | NodeCapabilities.PasteInto
