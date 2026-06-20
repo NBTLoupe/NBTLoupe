@@ -254,8 +254,7 @@ public partial class MainWindow
                 while (current is not null)
                 {
                     // ...if it IsExpanded (which it should), we add it to our HashSet...
-                    if (!current.IsExpanded) continue;
-                    expandedNodes.Add(current.DataNode.NodePath);
+                    if (current.IsExpanded) expandedNodes.Add(current.DataNode.NodePath);
 
                     // ...and we keep climbing to the next parent.
                     current = current.Parent;
