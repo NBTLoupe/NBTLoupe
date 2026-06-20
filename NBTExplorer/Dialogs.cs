@@ -883,7 +883,7 @@ internal class ChunkFinderDialogState : DialogState
 
         var foundNode = await selectedTreeNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
         if (foundNode is null) return;
-        
+
         await foundNode.ExpandTreeReverseAsync();
         _window.SelectedTreeNodes.Clear();
         _window.SelectedTreeNodes.Add(foundNode);
