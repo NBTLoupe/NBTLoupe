@@ -882,8 +882,8 @@ internal class ChunkFinderDialogState : DialogState
             !int.TryParse(LocalChunkZ, out var localChunkZ)) throw new UnreachableException();
 
         var foundNode = await selectedTreeNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
-
         if (foundNode is null) return;
+        
         await foundNode.ExpandTreeReverseAsync();
         _window.SelectedTreeNodes.Clear();
         _window.SelectedTreeNodes.Add(foundNode);
