@@ -6,14 +6,7 @@ public class TagIntArrayDataNode(TagNodeIntArray tag) : TagDataNode(tag)
 {
     private new TagNodeIntArray Tag => (TagNodeIntArray)base.Tag;
 
-    public override bool CanEditNode
-    {
-#if WINDOWS
-            get { return true; }
-#else
-        get { return false; }
-#endif
-    }
+    public override bool CanEditNode => true;
 
     public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " integers";
 

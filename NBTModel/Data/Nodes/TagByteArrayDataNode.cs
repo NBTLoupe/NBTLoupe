@@ -6,14 +6,7 @@ public class TagByteArrayDataNode(TagNodeByteArray tag) : TagDataNode(tag)
 {
     private new TagNodeByteArray Tag => (TagNodeByteArray)base.Tag;
 
-    public override bool CanEditNode
-    {
-#if WINDOWS
-            get { return true; }
-#else
-        get { return false; }
-#endif
-    }
+    public override bool CanEditNode => true;
 
     public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " bytes";
 
