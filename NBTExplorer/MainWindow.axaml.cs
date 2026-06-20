@@ -202,7 +202,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 // Then we can restore the IsExpanded (UI-wise) backup.
                 selectedTreeNode.IsExpanded = true;
-                await selectedTreeNode.RestoreExpandedNodes(savedExpandedNodes);
+                await selectedTreeNode.RestoreExpandedNodesAsync(savedExpandedNodes);
 
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();

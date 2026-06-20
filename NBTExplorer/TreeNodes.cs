@@ -276,7 +276,7 @@ public partial class MainWindow
         }
 
         // This function restores the backup created by the previous function...
-        internal async Task RestoreExpandedNodes(HashSet<string> expandedNodes)
+        internal async Task RestoreExpandedNodesAsync(HashSet<string> expandedNodes)
         {
             // Immediately return if it doesn't have SubNodes.
             if (SubNodes is null) return;
@@ -292,7 +292,7 @@ public partial class MainWindow
                 child.IsExpanded = true;
 
                 // If that's the case, we loop and continue checking and IsExpanding their children.
-                await child.RestoreExpandedNodes(expandedNodes);
+                await child.RestoreExpandedNodesAsync(expandedNodes);
             }
         }
 
