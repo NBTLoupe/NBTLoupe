@@ -347,7 +347,7 @@ public partial class MainWindow
                         // Immediately return if it doesn't have SubNodes.
                         case null:
                             return null;
-                        
+
                         // And, if we didn't yet, we lazy-load it.
                         case [{ IsPlaceholder: true }]:
                             await LazyLoadAsync();
@@ -359,14 +359,14 @@ public partial class MainWindow
                     {
                         // ...to keep searching on them...
                         var resultNode = await subNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
-                        
+
                         // ...until one of them is the result.
                         if (resultNode != null) return resultNode;
                     }
 
                     break;
                 }
-                
+
                 // ...if it's a RegionFile...
                 case RegionFileDataNode regionNode:
                 {
@@ -382,7 +382,7 @@ public partial class MainWindow
                         // Immediately return if it doesn't have SubNodes.
                         case null:
                             return null;
-                        
+
                         // And, if we didn't yet, we lazy-load it.
                         case [{ IsPlaceholder: true }]:
                             await LazyLoadAsync();
@@ -394,19 +394,19 @@ public partial class MainWindow
                     {
                         // ...to keep searching on them...
                         var resultNode = await subNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
-                        
+
                         // ...until one of them is the result.
                         if (resultNode != null) return resultNode;
                     }
 
                     break;
                 }
-                
+
                 // ...if it's a Chunk...
                 // ...it either isn't the right one...
                 case RegionChunkDataNode chunkNode when chunkNode.X != localChunkX || chunkNode.Z != localChunkZ:
                     break;
-                
+
                 // ...or we found it! In which case, we return it.
                 case RegionChunkDataNode:
                     return this;
