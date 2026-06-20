@@ -213,6 +213,9 @@ public partial class MainWindow
 
             // Then we sort the NodeTree...
             var sortedNodeTree = DataNode.Nodes.OrderBy(dataNode => dataNode, NodeComparer);
+            
+            // And we stage our SubNodes...
+            var staged = new ObservableCollection<TreeNode>();
 
             foreach (var child in sortedNodeTree)
                 // Then for each already-Expanded child (from the currentNodes)...
@@ -221,7 +224,7 @@ public partial class MainWindow
                     // ...we readd it to the SubNodes, and Refresh it if needed.
                     existing.SetParent(this);
                     if (!child.HasUnexpandedChildren) await existing.RefreshChildNodesAsync();
-                    await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(existing), DispatcherPriority.Background);
+                    await Dispatcher.UIThread.InvokeAsync(() => staged.Add(existing), DispatcherPriority.Background);
                 }
                 // ...and if the child isn't expanded...
                 else if (!child.IsExpanded)
@@ -235,7 +238,7 @@ public partial class MainWindow
                     newTreeNode.SetParent(this);
 
                     // ...and add it to the SubNodes.
-                    await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(newTreeNode),
+                    await Dispatcher.UIThread.InvokeAsync(() => staged.Add(newTreeNode),
                         DispatcherPriority.Background);
                 }
 
@@ -244,8 +247,15 @@ public partial class MainWindow
                 // If we didn't add any children, we prepare the parent for lazy-loading.
                 var placeholder = new TreeNode(new TagStringDataNode(""), [], true);
                 placeholder.SetParent(this);
-                await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Add(placeholder), DispatcherPriority.Background);
+                await Dispatcher.UIThread.InvokeAsync(() => staged.Add(placeholder), DispatcherPriority.Background);
             }
+            
+            // ...and add the staged ones all at once.
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                SubNodes.Clear();
+                foreach (var node in staged) SubNodes.Add(node);
+            }, DispatcherPriority.Background);
 
             // Then we refresh its Title. Usually not necessary, but useful when the root is being Refreshed.
             RefreshTitle();
