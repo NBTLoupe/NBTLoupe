@@ -208,12 +208,10 @@ public partial class MainWindow
 
             // First we back up the current SubNodes...
             var currentNodes = SubNodes.ToDictionary(treeNode => treeNode.DataNode, treeNode => treeNode);
-            // ...as we're going to clear the original's.
-            await Dispatcher.UIThread.InvokeAsync(() => SubNodes.Clear(), DispatcherPriority.Background);
 
             // Then we sort the NodeTree...
             var sortedNodeTree = DataNode.Nodes.OrderBy(dataNode => dataNode, NodeComparer);
-            
+
             // And we stage our SubNodes...
             var staged = new ObservableCollection<TreeNode>();
 
@@ -224,7 +222,7 @@ public partial class MainWindow
                     // ...we readd it to the SubNodes, and Refresh it if needed.
                     existing.SetParent(this);
                     if (!child.HasUnexpandedChildren) await existing.RefreshChildNodesAsync();
-                    await Dispatcher.UIThread.InvokeAsync(() => staged.Add(existing), DispatcherPriority.Background);
+                    staged.Add(existing);
                 }
                 // ...and if the child isn't expanded...
                 else if (!child.IsExpanded)
@@ -238,8 +236,7 @@ public partial class MainWindow
                     newTreeNode.SetParent(this);
 
                     // ...and add it to the SubNodes.
-                    await Dispatcher.UIThread.InvokeAsync(() => staged.Add(newTreeNode),
-                        DispatcherPriority.Background);
+                    staged.Add(newTreeNode);
                 }
 
             if (DataNode.Nodes.Count > 0)
@@ -247,9 +244,9 @@ public partial class MainWindow
                 // If we didn't add any children, we prepare the parent for lazy-loading.
                 var placeholder = new TreeNode(new TagStringDataNode(""), [], true);
                 placeholder.SetParent(this);
-                await Dispatcher.UIThread.InvokeAsync(() => staged.Add(placeholder), DispatcherPriority.Background);
+                staged.Add(placeholder);
             }
-            
+
             // ...and add the staged ones all at once.
             await Dispatcher.UIThread.InvokeAsync(() =>
             {

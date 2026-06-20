@@ -257,8 +257,8 @@ internal class EditTagDialogState : DialogState
 
         var success = false;
         // ...we let the FormHandlers deal with it.
-        if (hasNewTagName) success = dataNode?.RenameNode() == true;
-        if (hasNewTagValue) success = dataNode?.EditNode() == true;
+        if (hasNewTagName) success &= dataNode?.RenameNode() == true;
+        if (hasNewTagValue) success &= dataNode?.EditNode() == true;
 
         if (!success) throw new UnreachableException();
 
