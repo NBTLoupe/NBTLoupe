@@ -213,7 +213,7 @@ public partial class MainWindow
 
             // Then we sort the NodeTree...
             var sortedNodeTree = DataNode.Nodes.OrderBy(dataNode => dataNode, NodeComparer);
-            
+
             // And we stage our SubNodes...
             var staged = new ObservableCollection<TreeNode>();
 
@@ -249,7 +249,7 @@ public partial class MainWindow
                 placeholder.SetParent(this);
                 await Dispatcher.UIThread.InvokeAsync(() => staged.Add(placeholder), DispatcherPriority.Background);
             }
-            
+
             // ...and add the staged ones all at once.
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
