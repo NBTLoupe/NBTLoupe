@@ -428,14 +428,15 @@ internal class ChunkFinderDialogState : DialogState
             if (_isUpdating) return;
             _isUpdating = true;
 
-            if (!int.TryParse(value, out var regionX)) return;
-            ChunkXPlaceholder = $"({regionX * 32} to {(regionX + 1) * 32 - 1})";
-            BlockXPlaceholder = $"({regionX * 32 * 16} to {(regionX + 1) * 32 * 16 - 1})";
-            LocalChunkXPlaceholder = "(0 to 31)";
-            LocalBlockXPlaceholder = "(0 to 15)";
-
-            if (int.TryParse(LocalChunkX, out var localChunkX))
+            try
             {
+                if (!int.TryParse(value, out var regionX)) return;
+                ChunkXPlaceholder = $"({regionX * 32} to {(regionX + 1) * 32 - 1})";
+                BlockXPlaceholder = $"({regionX * 32 * 16} to {(regionX + 1) * 32 * 16 - 1})";
+                LocalChunkXPlaceholder = "(0 to 31)";
+                LocalBlockXPlaceholder = "(0 to 15)";
+
+                if (!int.TryParse(LocalChunkX, out var localChunkX)) return;
                 ChunkX = (regionX * 32 + localChunkX).ToString();
                 if (int.TryParse(LocalBlockX, out var localBlockX))
                     BlockX = (regionX * 32 * 16 + localChunkX * 16 + localBlockX).ToString();
@@ -443,9 +444,11 @@ internal class ChunkFinderDialogState : DialogState
                     BlockXPlaceholder =
                         $"({(regionX * 32 + localChunkX) * 16} to {(regionX * 32 + localChunkX + 1) * 16 - 1})";
             }
-
-            // And we finished!
-            _isUpdating = false;
+            finally
+            {
+                // And we finished!
+                _isUpdating = false;
+            }
         }
     } = "0";
 
