@@ -193,7 +193,7 @@ public partial class MainWindow
 
             // And we can begin the lazy-loading!
             await TreeNode.ExpandNodeAsync([node], TreeNodes);
-        }, true);
+        });
     }
 
     // This function Opens a Folder from a Path.
@@ -217,6 +217,6 @@ public partial class MainWindow
 
             // And we can begin the lazy-loading!
             await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes);
-        }, true);
+        });
     }
 }
