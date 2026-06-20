@@ -255,7 +255,7 @@ internal class EditTagDialogState : DialogState
         var hasNewTagName = _oldTagName != TagName;
         var hasNewTagValue = _oldTagValue != TagValue;
 
-        var success = false;
+        var success = true;
         // ...we let the FormHandlers deal with it.
         if (hasNewTagName) success &= dataNode?.RenameNode() == true;
         if (hasNewTagValue) success &= dataNode?.EditNode() == true;
