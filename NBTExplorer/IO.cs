@@ -167,6 +167,16 @@ public partial class MainWindow
     // This function Opens a File from a Path.
     private async Task OpenFileAsync(string path)
     {
+        // If the user has unsaved changes...
+        var shouldContinue = !Save.CanExecute(null);
+        
+        // ...we open a Dialog to warn them.
+        var state = new UnsavedChangesDialogState(this);
+        if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
+
+        // And if the user Cancelled, we return.
+        if (!shouldContinue) return;
+        
         await WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.
@@ -200,6 +210,16 @@ public partial class MainWindow
     // This function Opens a Folder from a Path.
     private async Task OpenFolderAsync(string path)
     {
+        // If the user has unsaved changes...
+        var shouldContinue = !Save.CanExecute(null);
+        
+        // ...we open a Dialog to warn them.
+        var state = new UnsavedChangesDialogState(this);
+        if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
+
+        // And if the user Cancelled, we return.
+        if (!shouldContinue) return;
+        
         await WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.

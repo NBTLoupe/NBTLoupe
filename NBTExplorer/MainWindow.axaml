@@ -770,7 +770,7 @@
                                                                    FontSize="20" FontWeight="SemiBold"
                                                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                         <TextBlock
-                                                            Text="Are you sure you want to close the app? Unsaved changes will be lost!"
+                                                            Text="Are you sure you want to continue? Unsaved changes will be lost!"
                                                             TextWrapping="Wrap" FontSize="14"
                                                             HorizontalAlignment="Left" VerticalAlignment="Top" />
                                                     </StackPanel>
