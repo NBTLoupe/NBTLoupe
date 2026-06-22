@@ -46,13 +46,11 @@ jobs:
         shell: bash
         run: |
           dotnet publish NBTExplorer -r ${{ matrix.target.rid }} -c Release -o publish/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION}
-          dotnet publish NBTUtil -r ${{ matrix.target.rid }} -c Release -o publish/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION}
 
       - name: Publish (Debug)
         shell: bash
         run: |
           dotnet publish NBTExplorer -r ${{ matrix.target.rid }} -c Debug -o publish-DEBUG/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION-DEBUG}
-          dotnet publish NBTUtil -r ${{ matrix.target.rid }} -c Debug -o publish-DEBUG/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION-DEBUG}
 
 
       - name: Bundle .app (macOS)
@@ -63,7 +61,7 @@ jobs:
 
           mv publish/${{ matrix.target.rid }}/*.icns "publish/neoNBTExplorer.app/Contents/Resources/"
 
-          mv publish/${{ matrix.target.rid }}/neoNBTExplorer publish/${{ matrix.target.rid }}/neoNBTUtil publish/${{ matrix.target.rid }}/*.dylib "publish/neoNBTExplorer.app/Contents/MacOS/"
+          mv publish/${{ matrix.target.rid }}/neoNBTExplorer publish/${{ matrix.target.rid }}/*.dylib "publish/neoNBTExplorer.app/Contents/MacOS/"
           chmod +x "publish/neoNBTExplorer.app/Contents/MacOS/neoNBTExplorer"
 
           cat > "publish/neoNBTExplorer.app/Contents/Info.plist" << EOF
@@ -106,13 +104,13 @@ jobs:
         shell: bash
         run: |
           cd publish/${{ matrix.target.rid }}
-          zip "../neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.zip" neoNBTExplorer neoNBTUtil *.so
+          zip "../neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.zip" neoNBTExplorer *.so
 
 
       - name: Zip artifact (Windows)
         if: startsWith(matrix.target.rid, 'win-')
         shell: pwsh
-        run: Compress-Archive -Path "publish/${{ matrix.target.rid }}/neoNBTExplorer.exe", "publish/${{ matrix.target.rid }}/neoNBTUtil.exe", "publish/${{ matrix.target.rid }}/*.dll" -DestinationPath "publish/neoNBTExplorer-v$env:VERSION-RELEASE-${{ matrix.target.rid }}.zip"
+        run: Compress-Archive -Path "publish/${{ matrix.target.rid }}/neoNBTExplorer.exe", "publish/${{ matrix.target.rid }}/*.dll" -DestinationPath "publish/neoNBTExplorer-v$env:VERSION-RELEASE-${{ matrix.target.rid }}.zip"
 
 
       - name: Upload artifacts (Release)
