@@ -133,7 +133,7 @@ jobs:
           [Desktop Entry]
           Type=Application
           Name=NBTLoupe
-          Comment=MallardLuna's native cross-platform fork of NBTExplorer
+          Comment=A native cross-platform fork of NBTExplorer
           Icon=NBTLoupe
           Categories=Utility;FileTools;
           Exec=NBTLoupe
@@ -148,7 +148,7 @@ jobs:
             <metadata_license>MIT</metadata_license>
             <project_license>MIT</project_license>
             <name>NBTLoupe</name>
-            <summary>MallardLuna's native cross-platform fork of NBTExplorer</summary>
+            <summary>A native cross-platform fork of NBTExplorer</summary>
             <description>
               <p>NBTLoupe is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself
                 based on NBTEdit by copygirl).</p>
