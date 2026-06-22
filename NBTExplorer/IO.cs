@@ -169,14 +169,14 @@ public partial class MainWindow
     {
         // If the user has unsaved changes...
         var shouldContinue = !Save.CanExecute(null);
-        
+
         // ...we open a Dialog to warn them.
         var state = new UnsavedChangesDialogState(this);
         if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
 
         // And if the user Cancelled, we return.
         if (!shouldContinue) return;
-        
+
         await WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.
@@ -203,7 +203,8 @@ public partial class MainWindow
             foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder)) RecentFiles.Add(item);
 
             // And we can begin the lazy-loading!
-            await Dispatcher.UIThread.InvokeAsync(async () => await TreeNode.ExpandNodeAsync([node], TreeNodes), DispatcherPriority.Background);
+            await Dispatcher.UIThread.InvokeAsync(async () => await TreeNode.ExpandNodeAsync([node], TreeNodes),
+                DispatcherPriority.Background);
         });
     }
 
@@ -212,14 +213,14 @@ public partial class MainWindow
     {
         // If the user has unsaved changes...
         var shouldContinue = !Save.CanExecute(null);
-        
+
         // ...we open a Dialog to warn them.
         var state = new UnsavedChangesDialogState(this);
         if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
 
         // And if the user Cancelled, we return.
         if (!shouldContinue) return;
-        
+
         await WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.
@@ -237,7 +238,9 @@ public partial class MainWindow
             }
 
             // And we can begin the lazy-loading!
-            await Dispatcher.UIThread.InvokeAsync(async () => await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes), DispatcherPriority.Background);
+            await Dispatcher.UIThread.InvokeAsync(
+                async () => await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes),
+                DispatcherPriority.Background);
         });
     }
 }

@@ -178,14 +178,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             // If the user has unsaved changes...
             var shouldContinue = !Save.CanExecute(null);
-        
+
             // ...we open a Dialog to warn them.
             var state = new UnsavedChangesDialogState(this);
             if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
 
             // And if the user Cancelled, we return.
             if (!shouldContinue) return;
-            
+
             await WithBlock(async () =>
             {
                 // Check if DataNode is null.
@@ -487,7 +487,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             // We set the Result....
             _currentDialog?.CompletionSource.TrySetResult(false);
-            
+
             // ...then close the Dialog.
             CloseDialog();
         });
