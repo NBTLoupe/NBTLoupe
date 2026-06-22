@@ -1,11 +1,11 @@
 <p align="center">
-  <img width="128" src="NBTExplorer/neoNBTExplorer.png">
+  <img width="128" src="ASSETS/icons/neoNBTExplorer.png">
   <br>
   <br>
   <b>neoNBTExplorer</b><br>
   A native cross-platform fork of NBTExplorer.<br><br>
-  <img src="Screenshots/light.png#gh-light-mode-only">
-  <img src="Screenshots/dark.png#gh-dark-mode-only">
+  <img src="ASSETS/screenshots/light.png#gh-light-mode-only">
+  <img src="ASSETS/screenshots/dark.png#gh-dark-mode-only">
   <br><br>
 </p>
 

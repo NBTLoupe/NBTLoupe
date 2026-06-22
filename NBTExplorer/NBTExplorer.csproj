@@ -37,13 +37,15 @@
         <ProjectReference Include="..\NBTModel\NBTModel.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <AvaloniaResource Include="neoNBTExplorer.png"/>
-        <None Remove="neoNBTExplorer.ico"/>
-        <AvaloniaResource Include="neoNBTExplorer.ico"/>
+    <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
+        <ItemGroup>
+            <Icons Include="..\ASSETS\icons\neoNBTExplorer.png;..\ASSETS\icons\neoNBTExplorer.ico" />
+        </ItemGroup>
+        <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)" SkipUnchangedFiles="true" />
+    </Target>
 
-        <Content Include="neoNBTExplorer.icns">
-            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-        </Content>
+    <ItemGroup>
+        <AvaloniaResource Include="neoNBTExplorer.png" />
+        <AvaloniaResource Include="neoNBTExplorer.ico" />
     </ItemGroup>
 </Project>
