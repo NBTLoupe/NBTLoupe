@@ -13,15 +13,14 @@ jobs:
     name: Build (${{ matrix.target.rid }})
     runs-on: ${{ matrix.target.os }}
     strategy:
-      fail-fast: false
       matrix:
         target:
-          - { rid: osx-x64, os: macos-latest }
-          - { rid: osx-arm64, os: macos-latest }
-          - { rid: linux-x64, os: ubuntu-latest }
-          - { rid: linux-arm64, os: ubuntu-24.04-arm } # Cross-compiling doesn't work on GNU/Linux by default, and using an ARM64 runner is quicker than installing the required dependencies on an x86_64 runner.
-          - { rid: win-x64, os: windows-latest }
-          - { rid: win-arm64, os: windows-11-arm } # On Windows cross-compiling works fine, but this is here for consistency reasons.
+          - { rid: osx-x64, os: macos-26 }
+          - { rid: osx-arm64, os: macos-26 }
+          - { rid: win-x64, os: windows-2025 }
+          - { rid: win-arm64, os: windows-2025 }
+          - { rid: linux-x64, os: ubuntu-26.04 }
+          - { rid: linux-arm64, os: ubuntu-26.04-arm } # Cross-compiling doesn't work on GNU/Linux by default, and using an ARM64 runner is quicker than installing the required dependencies on an x86_64 runner.
           
 
     steps:
@@ -57,14 +56,14 @@ jobs:
         if: startsWith(matrix.target.rid, 'osx-')
         shell: bash
         run: |
-          mkdir -p "publish/neoNBTExplorer.app/Contents/MacOS" "publish/neoNBTExplorer.app/Contents/Resources"
+          mkdir -p "publish/dmg/neoNBTExplorer.app/Contents/MacOS" "publish/dmg/neoNBTExplorer.app/Contents/Resources"
 
-          mv publish/${{ matrix.target.rid }}/*.icns "publish/neoNBTExplorer.app/Contents/Resources/"
+          cp ASSETS/icons/neoNBTExplorer.icns "publish/dmg/neoNBTExplorer.app/Contents/Resources/"
 
-          mv publish/${{ matrix.target.rid }}/neoNBTExplorer publish/${{ matrix.target.rid }}/*.dylib "publish/neoNBTExplorer.app/Contents/MacOS/"
-          chmod +x "publish/neoNBTExplorer.app/Contents/MacOS/neoNBTExplorer"
+          mv publish/${{ matrix.target.rid }}/neoNBTExplorer publish/${{ matrix.target.rid }}/*.dylib "publish/dmg/neoNBTExplorer.app/Contents/MacOS/"
+          chmod +x "publish/dmg/neoNBTExplorer.app/Contents/MacOS/neoNBTExplorer"
 
-          cat > "publish/neoNBTExplorer.app/Contents/Info.plist" << EOF
+          cat > "publish/dmg/neoNBTExplorer.app/Contents/Info.plist" << EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -72,7 +71,7 @@ jobs:
           <key>CFBundleExecutable</key>
           <string>neoNBTExplorer</string>
           <key>CFBundleIdentifier</key>
-          <string>MallardLuna.neoNBTExplorer</string>
+          <string>com.github.neonbtexplorer.neonbtexplorer</string>
           <key>CFBundleName</key>
           <string>neoNBTExplorer</string>
           <key>CFBundleIconFile</key>
@@ -91,20 +90,103 @@ jobs:
           </plist>
           EOF
 
-      - name: Zip artifact (macOS)
+      - name: DMG .app (macOS)
         if: startsWith(matrix.target.rid, 'osx-')
         shell: bash
         run: |
           cd publish
-          zip -r "neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.zip" "neoNBTExplorer.app"
+          ln -s /Applications dmg/Applications
+          diskutil image create from dmg "neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.dmg" --volumeName "neoNBTExplorer v$VERSION" -f UDZO
 
 
-      - name: Zip artifact (GNU/Linux)
+      - name: Prepare .AppImage (GNU/Linux)
         if: startsWith(matrix.target.rid, 'linux-')
         shell: bash
         run: |
-          cd publish/${{ matrix.target.rid }}
-          zip "../neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.zip" neoNBTExplorer *.so
+          mkdir -p "publish/neoNBTExplorer.AppDir/usr/bin" "publish/neoNBTExplorer.AppDir/usr/share/applications" "publish/neoNBTExplorer.AppDir/usr/share/metainfo" "publish/neoNBTExplorer.AppDir/usr/share/icons"
+
+          cp -R ASSETS/icons/xdg "publish/neoNBTExplorer.AppDir/usr/share/icons/hicolor"
+          cp "publish/neoNBTExplorer.AppDir/usr/share/icons/hicolor/256x256/apps/neoNBTExplorer.png" "publish/neoNBTExplorer.AppDir/"
+
+          mv publish/${{ matrix.target.rid }}/neoNBTExplorer publish/${{ matrix.target.rid }}/*.so "publish/neoNBTExplorer.AppDir/usr/bin/"
+          chmod +x "publish/neoNBTExplorer.AppDir/usr/bin/neoNBTExplorer"
+
+
+          cat > "publish/neoNBTExplorer.AppDir/AppRun" << 'EOF'
+          #!/bin/sh
+          #
+          # Copyright (c) 2004-20 Simon Peter
+          # SPDX-License-Identifier: MIT
+          #
+          # Derived from https://github.com/AppImage/AppImageKit/wiki/Bundling-.NET-Core-apps
+          #
+
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          export PATH="${HERE}"/usr/bin/:"${PATH}"
+          EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
+          exec "${EXEC}" $@
+          EOF
+          chmod +x "publish/neoNBTExplorer.AppDir/AppRun"
+
+
+          cat > "publish/neoNBTExplorer.AppDir/usr/share/applications/com.github.neonbtexplorer.neonbtexplorer.desktop" << 'EOF'
+          [Desktop Entry]
+          Type=Application
+          Name=neoNBTExplorer
+          Comment=MallardLuna's native cross-platform fork of NBTExplorer
+          Icon=neoNBTExplorer
+          Categories=Utility;FileTools;
+          Exec=neoNBTExplorer
+          EOF
+          cp "publish/neoNBTExplorer.AppDir/usr/share/applications/com.github.neonbtexplorer.neonbtexplorer.desktop" "publish/neoNBTExplorer.AppDir/com.github.neonbtexplorer.neonbtexplorer.desktop"
+
+
+          cat > "publish/neoNBTExplorer.AppDir/usr/share/metainfo/com.github.neonbtexplorer.neonbtexplorer.appdata.xml" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <component type="desktop-application">
+            <id>com.github.neonbtexplorer.neonbtexplorer</id>
+            <metadata_license>MIT</metadata_license>
+            <project_license>MIT</project_license>
+            <name>neoNBTExplorer</name>
+            <summary>MallardLuna's native cross-platform fork of NBTExplorer</summary>
+            <description>
+              <p>neoNBTExplorer is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself
+                based on NBTEdit by copygirl).</p>
+              <p>A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this
+                shows its excellence, it's also starting to show its age and limited native platform
+                support.</p>
+              <p>neoNBTExplorer tries to close that gap with the help of .NET 10 and a GUI written from
+                the ground up in Avalonia.</p>
+            </description>
+            <launchable type="desktop-id">com.github.neonbtexplorer.neonbtexplorer.desktop</launchable>
+            <url type="homepage">https://github.com/neoNBTExplorer/neoNBTExplorer</url>
+            <screenshots>
+              <screenshot type="default">
+                <caption>neoNBTExplorer with an example level.dat open.</caption>
+                <image>https://raw.githubusercontent.com/neoNBTExplorer/neoNBTExplorer/refs/heads/master/ASSETS/screenshots/KDE-Plasma.png</image>
+              </screenshot>
+            </screenshots>
+            <releases>
+              <release version="$VERSION" date="$(date +%F)" />
+            </releases>
+            <content_rating type="oars-1.0" />
+            <developer id="com.github.neonbtexplorer">
+              <name>MallardLuna</name>
+            </developer>
+            <provides>
+              <id>com.github.neonbtexplorer.neonbtexplorer.desktop</id>
+            </provides>
+          </component>
+          EOF
+
+      - name: Bundle .AppImage (GNU/Linux)
+        if: startsWith(matrix.target.rid, 'linux-')
+        shell: bash
+        run: |
+          cd publish
+          curl -Lo ./appimagetool.AppImage "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$(uname -m).AppImage"
+          chmod +x ./appimagetool.AppImage
+          ./appimagetool.AppImage neoNBTExplorer.AppDir "neoNBTExplorer-v$VERSION-RELEASE-${{ matrix.target.rid }}.AppImage"
 
 
       - name: Zip artifact (Windows)
@@ -117,7 +199,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: neoNBTExplorer-v${{ env.VERSION }}-RELEASE-${{ matrix.target.rid }}
-          path: publish/neoNBTExplorer-v${{ env.VERSION }}-RELEASE-${{ matrix.target.rid }}.zip
+          path: publish/neoNBTExplorer-v${{ env.VERSION }}-RELEASE-${{ matrix.target.rid }}.*
           archive: false
 
       - name: Upload artifacts (Debug)
@@ -150,3 +232,5 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/*.zip
+            artifacts/*.dmg
+            artifacts/*.AppImage
