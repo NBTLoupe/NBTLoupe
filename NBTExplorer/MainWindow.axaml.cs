@@ -176,6 +176,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         // This one is executed when the user chooses to Refresh a TreeNode.
         Refresh = CreateAppCommand(async _ =>
         {
+            // If the user has unsaved changes...
+            var shouldContinue = !Save.CanExecute(null);
+        
+            // ...we open a Dialog to warn them.
+            var state = new UnsavedChangesDialogState(this);
+            if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
+
+            // And if the user Cancelled, we return.
+            if (!shouldContinue) return;
+            
             await WithBlock(async () =>
             {
                 // Check if DataNode is null.
@@ -465,12 +475,22 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             // Once the Dialog-specific actions are done, we can Refresh the Selected TreeNode's Title just in case... 
             SelectedTreeNodes.FirstOrDefault()?.RefreshTitle();
 
+            // ...we set the Result....
+            _currentDialog?.CompletionSource.TrySetResult(true);
+
             // ...then close the Dialog.
             CloseDialog();
         });
 
         // This one is executed when the user Cancels a Dialog.
-        DialogCancel = CreateAppCommand(_ => CloseDialog());
+        DialogCancel = CreateAppCommand(_ =>
+        {
+            // We set the Result....
+            _currentDialog?.CompletionSource.TrySetResult(false);
+            
+            // ...then close the Dialog.
+            CloseDialog();
+        });
 
         // This one is executed when the user chooses to Import a new Tag Value.
         DialogImport = CreateAppCommand(async _ =>

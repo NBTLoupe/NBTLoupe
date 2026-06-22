@@ -950,11 +950,15 @@ internal class UnsavedChangesDialogState : DialogState
 {
     // We need to access the Window somehow!
     private readonly MainWindow _window;
+    
+    // This allows use to reuse this dialog for other operations which could result in data loss.
+    private readonly bool _isExit;
 
     // Here we set up the Dialog!
-    internal UnsavedChangesDialogState(MainWindow window)
+    internal UnsavedChangesDialogState(MainWindow window, bool isExit = false)
     {
         _window = window;
+        _isExit = isExit;
     }
 
     // And here's the actual magic! The OK button!
@@ -962,9 +966,13 @@ internal class UnsavedChangesDialogState : DialogState
     {
         // We disable the Save button to bypass the dialog...
         _window.Save.Toggle(false);
-        // ...and immediately exit!
-        _window.Exit.Execute(null);
 
+        if (_isExit)
+        {
+            // ...and immediately exit!
+            _window.Exit.Execute(null);
+        }
+        
         return Task.CompletedTask;
     }
 }

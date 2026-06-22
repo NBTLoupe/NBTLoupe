@@ -49,6 +49,16 @@ public partial class MainWindow
         // Also yes, the way we disable Cancel on the About and Error Dialog is kind of ugly... sorry.
         DialogCancel.Toggle(CurrentDialog is not AboutDialogState && CurrentDialog is not ErrorDialogState);
     }
+    
+    // This is an Async-wrapped for the code above! This lets us wait for the Dialog to finish being continuing.
+    private Task<bool> OpenDialogAsync(DialogState state)
+    {
+        // We just call the function above!
+        OpenDialog(state);
+        
+        // And this waits until its Result is set.
+        return state.CompletionSource.Task;
+    }
 
     // And this is how the close the Dialog! It's literally the same as above but in reverse.
     private void CloseDialog()
@@ -93,6 +103,9 @@ internal abstract class DialogState : INotifyPropertyChanged
 
     // OK is always needed, but it needs to be Toggled based on validation!
     internal virtual bool IsOkEnabled => true;
+    
+    // This allows us to wait for Dialog completion.
+    internal TaskCompletionSource<bool> CompletionSource { get; } = new();
 
     // Add an event handler that fires if the state changed.
     public event PropertyChangedEventHandler? PropertyChanged;

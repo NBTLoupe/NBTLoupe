@@ -145,7 +145,7 @@ public partial class MainWindow
         if (!Save.CanExecute(null)) return;
 
         // ...we open a Dialog to warn them and abort the Closing.
-        OpenDialog(new UnsavedChangesDialogState(this));
+        OpenDialog(new UnsavedChangesDialogState(this, true));
         e.Cancel = true;
     }
 
