@@ -118,19 +118,18 @@ internal class EditTagDialogState : DialogState
         IsRename = isRename;
 
         var selectedTreeNode = window.SelectedTreeNodes.FirstOrDefault();
-        var nodeName = selectedTreeNode?.DataNode.NodeName;
         var tagDataNode = selectedTreeNode?.DataNode as TagDataNode;
         DialogTagType = tagDataNode?.Tag.GetTagType() ?? TagType.TAG_END;
 
-        // Set the context-accurate Title and Type.
-        TitleText =
-            $"Edit {MainWindow.GetFriendlyTag(tagDataNode?.Tag.GetTagType())} {(!string.IsNullOrEmpty(nodeName) ? $": \"{nodeName}\"" : "Value")}";
-
         // If the TreeNode is a NbtFileDataNode, its Renameable Name is different.
         _oldTagName = (selectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
-            ? nodeName
+            ? selectedTreeNode?.DataNode?.NodeName
             : fileDataNode.TreeName) ?? "";
         TagName = _oldTagName;
+
+        // Set the context-accurate Title and Type.
+        TitleText =
+            $"Edit {MainWindow.GetFriendlyTag(tagDataNode?.Tag.GetTagType())}{(!string.IsNullOrEmpty(_oldTagName) ? $": \"{_oldTagName}\"" : " Value")}";
 
         // If the TreeNode is an Array, we parse it depending on which kind it is.
         _oldTagValue = tagDataNode?.Tag.GetTagType() switch
@@ -948,11 +947,11 @@ internal class ErrorDialogState : DialogState
 // Here we define the UnsavedChanges Dialog!
 internal class UnsavedChangesDialogState : DialogState
 {
-    // We need to access the Window somehow!
-    private readonly MainWindow _window;
-    
     // This allows use to reuse this dialog for other operations which could result in data loss.
     private readonly bool _isExit;
+
+    // We need to access the Window somehow!
+    private readonly MainWindow _window;
 
     // Here we set up the Dialog!
     internal UnsavedChangesDialogState(MainWindow window, bool isExit = false)
@@ -968,11 +967,9 @@ internal class UnsavedChangesDialogState : DialogState
         _window.Save.Toggle(false);
 
         if (_isExit)
-        {
             // ...and immediately exit!
             _window.Exit.Execute(null);
-        }
-        
+
         return Task.CompletedTask;
     }
 }
