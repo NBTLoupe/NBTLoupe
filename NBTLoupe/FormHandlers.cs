@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 public partial class MainWindow
 {

@@ -5,7 +5,7 @@ using Avalonia;
 using Avalonia.Logging;
 using Serilog;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 internal static class Program
 {
@@ -16,16 +16,16 @@ internal static class Program
         {
             var version = typeof(Program).Assembly.GetName().Version?.ToString(3);
 #if DEBUG
-            return $"neoNBTExplorer v{version} (DEBUG)";
+            return $"NBTLoupe v{version} (DEBUG)";
 #else
-            return $"neoNBTExplorer v{version}";
+            return $"NBTLoupe v{version}";
 #endif
         }
     }
 
     // We get our app's LocalAppData Directory Path...
     private static string LocalAppDataPath =>
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "neoNBTExplorer");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NBTLoupe");
 
     // ...and use it set the Path for our RecentItems data file, as we'll use it a lot.
     internal static string RecentItemsFile => Path.Combine(LocalAppDataPath, "recent_items.json");
@@ -55,16 +55,16 @@ internal static class Program
 
         try
         {
-            Log.Information("[neoNBTExplorer]: Starting up...");
+            Log.Information("[NBTLoupe]: Starting up...");
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)
         {
-            Log.Fatal(e, "[neoNBTExplorer]: Application terminated unexpectedly");
+            Log.Fatal(e, "[NBTLoupe]: Application terminated unexpectedly");
         }
         finally
         {
-            Log.Information("[neoNBTExplorer]: Shutting down...");
+            Log.Information("[NBTLoupe]: Shutting down...");
             Log.CloseAndFlush();
         }
     }

@@ -6,7 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Serilog;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 public class App : Application
 {
@@ -25,7 +25,7 @@ public class App : Application
         Dispatcher.UIThread.UnhandledException += (_, e) =>
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
-            Log.Error(e.Exception, "[neoNBTExplorer]: Unhandled UI thread exception");
+            Log.Error(e.Exception, "[NBTLoupe]: Unhandled UI thread exception");
             mainWindow.OpenDialog(new ErrorDialogState(e.Exception));
 
             e.Handled = true;
@@ -33,7 +33,7 @@ public class App : Application
         TaskScheduler.UnobservedTaskException += (_, e) =>
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
-            Log.Error(e.Exception, "[neoNBTExplorer]: Unobserved task exception");
+            Log.Error(e.Exception, "[NBTLoupe]: Unobserved task exception");
             mainWindow.OpenDialog(new ErrorDialogState(e.Exception));
 
             e.SetObserved();
@@ -43,7 +43,7 @@ public class App : Application
             // If something goes wrong, we log it and show a Dialog to the user. :C
             var exception = e.ExceptionObject as Exception;
 
-            Log.Error(exception, "[neoNBTExplorer]: Unhandled domain exception (terminating: {IsTerminating})",
+            Log.Error(exception, "[NBTLoupe]: Unhandled domain exception (terminating: {IsTerminating})",
                 e.IsTerminating);
             if (exception is not null && !e.IsTerminating)
                 mainWindow.OpenDialog(new ErrorDialogState(exception));

@@ -12,7 +12,7 @@ using NBTModel.Data.Nodes;
 using Serilog;
 using Substrate.Nbt;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 public partial class MainWindow
 {
@@ -36,7 +36,7 @@ public partial class MainWindow
         catch (Exception ex)
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
-            Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
+            Log.Error(ex, "[NBTLoupe]: Unhandled UI thread exception");
             OpenDialog(new ErrorDialogState(ex));
         }
     }
@@ -181,7 +181,7 @@ public partial class MainWindow
         catch (Exception ex)
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
-            Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
+            Log.Error(ex, "[NBTLoupe]: Unhandled UI thread exception");
             OpenDialog(new ErrorDialogState(ex));
         }
     }

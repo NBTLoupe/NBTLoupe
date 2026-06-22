@@ -1,4 +1,4 @@
-## neoNBTExplorer
+## NBTLoupe
 
 ### This project contains code derived from the following works:
 

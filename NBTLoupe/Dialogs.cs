@@ -8,7 +8,7 @@ using NBTModel.Data.Nodes;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 // And here's the actual Dialog definitions! If some comments are in a different style, that's because I moved them from MainWindow.axaml.cs. Sorry!
 // Here we define the AddTag Dialog!

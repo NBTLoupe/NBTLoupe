@@ -2,13 +2,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="using:NBTExplorer"
+        xmlns:local="using:NBTLoupe"
         xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="NBTExplorer.MainWindow"
+        x:Class="NBTLoupe.MainWindow"
         x:DataType="local:MainWindow"
-        Title="neoNBTExplorer"
-        Icon="neoNBTExplorer.ico"
+        Title="NBTLoupe"
+        Icon="NBTLoupe.ico"
         Width="1100" Height="750"
         Closing="Window_OnClosing">
     <Grid>
@@ -708,7 +708,7 @@
                                             <DataTemplate DataType="{x:Type local:AboutDialogState}">
                                                 <Grid RowDefinitions="Auto,*" Loaded="InformationalDialog_OnLoaded">
                                                     <DockPanel LastChildFill="True">
-                                                        <Image Width="64" Height="64" Source="neoNBTExplorer.png" />
+                                                        <Image Width="64" Height="64" Source="NBTLoupe.png" />
                                                         <StackPanel Margin="24,0,0,0">
                                                             <TextBlock TextWrapping="Wrap"
                                                                        Text="{Binding AboutTitle}" FontSize="20"
@@ -722,11 +722,11 @@
                                                                 <LineBreak />
                                                                 Copyright (c) 2011-2017 Justin Aquadro
                                                                 <LineBreak /><LineBreak />
-                                                                neoNBTExplorer is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself based on NBTEdit by copygirl).
+                                                                NBTLoupe is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself based on NBTEdit by copygirl).
                                                                 <LineBreak /><LineBreak />
                                                                 A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this shows its excellence, it's also starting to show its age and limited native platform support.
                                                                 <LineBreak /><LineBreak />
-                                                                neoNBTExplorer tries to close that gap with the help of .NET 10 and a GUI written from the ground up in Avalonia.
+                                                                NBTLoupe tries to close that gap with the help of .NET 10 and a GUI written from the ground up in Avalonia.
                                                                 <LineBreak /><LineBreak />
                                                                 Right now we fully support macOS, Windows and GNU/Linux; and the idea is to eventually bring it to the web as well!
                                                                 <LineBreak />

@@ -18,7 +18,7 @@ using NBTModel.Interop;
 using Serilog;
 using Substrate.Nbt;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
@@ -53,7 +53,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             catch (Exception ex)
             {
                 // If something goes wrong, we log it and show a Dialog to the user. :C
-                Log.Error(ex, "[neoNBTExplorer]: Unhandled UI thread exception");
+                Log.Error(ex, "[NBTLoupe]: Unhandled UI thread exception");
                 OpenDialog(new ErrorDialogState(ex));
             }
         };
@@ -420,7 +420,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         Acknowledgements =
             CreateAppCommand(
                 _ => Launcher.LaunchUriAsync(
-                    new Uri("https://github.com/neoNBTExplorer/neoNBTExplorer/blob/master/NOTICE.md")), true);
+                    new Uri("https://github.com/NBTLoupe/NBTLoupe/blob/master/NOTICE.md")), true);
 
         // These are executed when the user chooses to Add a Tag.
         AddByteTag = CreateAppCommand(_ => AddTag(TagType.TAG_BYTE));
@@ -512,7 +512,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 Title = "Import to " + nodePath,
                 FileTypeFilter =
                 [
-                    new FilePickerFileType($"neoNBTExplorer {tagType} Data File")
+                    new FilePickerFileType($"NBTLoupe {tagType} Data File")
                     {
                         Patterns = [$"*{extension}"]
                     }
@@ -533,7 +533,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             else
                 // ...if it isn't, it'd crash the whole app so we won't accept it.
                 throw new UserErrorException(
-                    "Invalid (non-ASCII) data file. Please only import data files created through neoNBTExplorer. If you did so, your file may be corrupted.");
+                    "Invalid (non-ASCII) data file. Please only import data files created through NBTLoupe. If you did so, your file may be corrupted.");
         });
 
         DialogExport = CreateAppCommand(async _ =>
@@ -555,7 +555,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 Title = "Export " + nodePath,
                 FileTypeChoices =
                 [
-                    new FilePickerFileType($"neoNBTExplorer {tagType} Data File")
+                    new FilePickerFileType($"NBTLoupe {tagType} Data File")
                     {
                         Patterns = [$"*{extension}"]
                     }

@@ -11,7 +11,7 @@ using NBTModel.Data;
 using NBTModel.Data.Nodes;
 using Serilog;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 // We need this so NAOT is happy.
 [JsonSourceGenerationOptions]
@@ -129,7 +129,7 @@ internal class RecentItem
         catch (Exception e)
         {
             // Or we can fail at it...
-            Log.Error(e, "[neoNBTExplorer]: RecentItems (adding) exception");
+            Log.Error(e, "[NBTLoupe]: RecentItems (adding) exception");
         }
 
         return items;
@@ -153,7 +153,7 @@ internal class RecentItem
         catch (Exception e)
         {
             // Or we can fail at it...
-            Log.Error(e, "[neoNBTExplorer]: RecentItems (removing) exception");
+            Log.Error(e, "[NBTLoupe]: RecentItems (removing) exception");
         }
     }
 }
