@@ -8,7 +8,7 @@ using NBTModel.Data.Nodes;
 using NBTModel.Utility;
 using Substrate.Nbt;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 public partial class MainWindow
 {

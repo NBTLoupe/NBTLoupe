@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NBTModel.Data.Nodes;
 using Substrate.Nbt;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 public partial class MainWindow
 {

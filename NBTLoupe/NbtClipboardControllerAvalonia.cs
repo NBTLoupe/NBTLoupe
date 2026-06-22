@@ -5,14 +5,14 @@ using Avalonia.Input;
 using Avalonia.Input.Platform;
 using NBTModel.Interop;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 internal class NbtClipboardControllerAvalonia(IClipboard clipboard) : INbtClipboardController
 {
     // Yup, we're reusing infrastructure! I Asynced the calls in INbtClipboardController, though! So it's not backwards compatible, sorry!
     // Create an ApplicationFormat to be able to interface with the OS' Clipboard.
     private static readonly DataFormat<byte[]> MyDataFormat =
-        DataFormat.CreateBytesApplicationFormat("mallardluna-neonbtexplorer-nbtClipboardDataAvalonia");
+        DataFormat.CreateBytesApplicationFormat("mallardluna-nbtloupe-nbtClipboardDataAvalonia");
 
     // Copy into the OS' Clipboard.
     public async Task CopyToClipboardAsync(NbtClipboardData data)

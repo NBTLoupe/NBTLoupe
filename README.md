@@ -1,8 +1,8 @@
 <p align="center">
-  <img width="128" src="ASSETS/icons/neoNBTExplorer.png">
+  <img width="128" src="ASSETS/icons/NBTLoupe.png">
   <br>
   <br>
-  <b>neoNBTExplorer</b><br>
+  <b>NBTLoupe</b><br>
   A native cross-platform fork of NBTExplorer.<br><br>
   <img src="ASSETS/screenshots/light.png#gh-light-mode-only">
   <img src="ASSETS/screenshots/dark.png#gh-dark-mode-only">
@@ -12,13 +12,13 @@
 ## But why?
 A big chunk of the Minecraft community heavily depends on **NBTExplorer**. And although this shows its excellence, it's also starting to show its age and limited native platform support.
 
-**neoNBTExplorer** tries to close that gap with the help of **.NET 10** and a GUI written from the ground up in **Avalonia**.
+**NBTLoupe** tries to close that gap with the help of **.NET 10** and a GUI written from the ground up in **Avalonia**.
 
 Right now we fully support **macOS**, **Windows** and **GNU/Linux**; and the idea is to eventually bring it to the web as well!
 
 
 ## How do I use it?
-You can download the latest version for your operating system from the [Releases](https://github.com/neoNBTExplorer/neoNBTExplorer/releases) page. Make sure to download the one labelled **RELEASE**!
+You can download the latest version for your operating system from the [Releases](https://github.com/NBTLoupe/NBTLoupe/releases) page. Make sure to download the one labelled **RELEASE**!
 
 The **DEBUG** one is less performant (it's compiled **JIT** instead of **AOT**), and won't offer you anything useful if you're not, well, debugging!
 
@@ -28,7 +28,7 @@ That's also really easy!
 
 First, you have to **clone the repo**. The `--recursive` flag here makes sure you also clone neoSubstrate!
 ```bash
-git clone https://github.com/neoNBTExplorer/neoNBTExplorer --recursive
+git clone https://github.com/NBTLoupe/NBTLoupe --recursive
 ```
 Then, assuming you already have the **.NET SDK** installed, you run this for a **RELEASE** build...
 
@@ -40,7 +40,7 @@ dotnet publish -c Release
 ```bash
 dotnet publish -c Debug
 ```
-.NET will tell you where the built binaries are! They're usually at `./NBTExplorer/bin/[BUILD TYPE]/net10.0/[YOUR OS]/publish/` if you can't find them, though! 
+.NET will tell you where the built binaries are! They're usually at `./NBTLoupe/bin/[BUILD TYPE]/net10.0/[YOUR OS]/publish/` if you can't find them, though! 
 
 ## Thank you!
 I really need to thank **Justin Aquadro**. The original **NBTExplorer** keeps showing its excellence, and it's that excellence that made this project possible in the first place. We're a fork after all!
@@ -49,13 +49,13 @@ I also have to thank **copygirl** for **NBTEdit**, which was the pillar to the o
 
 I'm also really thankful to **amwx**. I'm not an experienced Avalonia developer, so I had quite the struggle getting my Dialogs to work. Thanks to amwx's work on the **FluentAvalonia** project, I could leave that roadblock behind, and was another critical pillar to make this project possible.
 
-And although I don't depend on FluentAvalonia itself, I do depend on **.NET** and **Avalonia UI**. These projects are the backbone of neoNBTExplorer, so I'm really thankful for all the work the .NET Community and the Avalonia Community have done to make this possible.
+And although I don't depend on FluentAvalonia itself, I do depend on **.NET** and **Avalonia UI**. These projects are the backbone of NBTLoupe, so I'm really thankful for all the work the .NET Community and the Avalonia Community have done to make this possible.
 
-Talking of the .NET Community, I'm also really thankful to **davidxuang** for the **FluentIcons** library, which helped give neoNBTExplorer its modern look. And I'm also thankful to **Serilog** and its contributors, which allowed neoNBTExplorer to easily expand its logging functionality.
+Talking of the .NET Community, I'm also really thankful to **davidxuang** for the **FluentIcons** library, which helped give NBTLoupe its modern look. And I'm also thankful to **Serilog** and its contributors, which allowed NBTLoupe to easily expand its logging functionality.
 
 Oh, and I have someone else to thank... **YOU**!
 
-I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. neoNBTExplorer is still a **really early project**, and it's your support which lets me continue iterating over it, and hopefully soon, reach full feature parity!
+I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. NBTLoupe is still a **really early project**, and it's your support which lets me continue iterating over it, and hopefully soon, reach full feature parity!
 
 
 ## FAQ
@@ -66,7 +66,7 @@ I'm a really small developer, and it's thanks to people like you that I can cont
   It actually isn't damaged, it's just <b>not signed</b>. I unfortunately don't have the money to justify signing it, so, after installing the app (moving it into <b>/Applications</b>) you'll have to run this command to be able to run it:
 
   ```bash
-  xattr -d com.apple.quarantine /Applications/neoNBTExplorer.app
+  xattr -d com.apple.quarantine /Applications/NBTLoupe.app
   ```
 </details>
 <details>
@@ -77,7 +77,7 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 </details>
 <details>
   <summary><b>Avalonia UI? That means you could run in a web browser!</b></summary>
-  Yup! And that's a <b>future step</b> we're <b>absolutely taking!</b> That way if you ever have to do a quick NBT edit on the go, you won't have to install the app! You'll also get all the same functionality as the original NBTExplorer, or potentially even more! All with the same familiar interface of neoNBTExplorer! Isn't that neat?
+  Yup! And that's a <b>future step</b> we're <b>absolutely taking!</b> That way if you ever have to do a quick NBT edit on the go, you won't have to install the app! You'll also get all the same functionality as the original NBTExplorer, or potentially even more! All with the same familiar interface of NBTLoupe! Isn't that neat?
 </details>
 <details>
   <summary><b>What does the icon represent?</b></summary>

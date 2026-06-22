@@ -6,7 +6,7 @@ using Serilog;
 using Serilog.Events;
 using Substrate;
 
-namespace NBTExplorer;
+namespace NBTLoupe;
 
 public partial class MainWindow
 {
@@ -148,7 +148,7 @@ public partial class MainWindow
 
                 // If something goes wrong, we log it and show a Dialog to the user. :C
                 Log.Write(fatal ? LogEventLevel.Fatal : LogEventLevel.Error, e,
-                    "[neoNBTExplorer]: AppCommand exception");
+                    "[NBTLoupe]: AppCommand exception");
                 _onError(e, fatal);
             }
         }

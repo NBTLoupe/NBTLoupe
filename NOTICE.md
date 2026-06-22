@@ -1,4 +1,4 @@
-## neoNBTExplorer is a derivative work of NBTExplorer.
+## NBTLoupe is a derivative work of NBTExplorer.
 
 ### This project contains code derived from the following works:
 

@@ -6,9 +6,9 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
-        <AssemblyName>neoNBTExplorer</AssemblyName>
+        <AssemblyName>NBTLoupe</AssemblyName>
         <Version>0.0.0</Version>
-        <ApplicationIcon>neoNBTExplorer.ico</ApplicationIcon>
+        <ApplicationIcon>NBTLoupe.ico</ApplicationIcon>
 
         <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
@@ -39,13 +39,13 @@
 
     <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
         <ItemGroup>
-            <Icons Include="..\ASSETS\icons\neoNBTExplorer.png;..\ASSETS\icons\neoNBTExplorer.ico" />
+            <Icons Include="..\ASSETS\icons\NBTLoupe.png;..\ASSETS\icons\NBTLoupe.ico" />
         </ItemGroup>
         <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)" SkipUnchangedFiles="true" />
     </Target>
 
     <ItemGroup>
-        <AvaloniaResource Include="neoNBTExplorer.png" />
-        <AvaloniaResource Include="neoNBTExplorer.ico" />
+        <AvaloniaResource Include="NBTLoupe.png" />
+        <AvaloniaResource Include="NBTLoupe.ico" />
     </ItemGroup>
 </Project>
