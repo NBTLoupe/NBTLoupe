@@ -203,7 +203,7 @@ public partial class MainWindow
             foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder)) RecentFiles.Add(item);
 
             // And we can begin the lazy-loading!
-            await Dispatcher.UIThread.InvokeAsync(async () => await TreeNode.ExpandNodeAsync([node], TreeNodes),
+            await Dispatcher.UIThread.InvokeAsync(() => TreeNode.ExpandNode([node], TreeNodes),
                 DispatcherPriority.Background);
         });
     }
@@ -239,7 +239,7 @@ public partial class MainWindow
 
             // And we can begin the lazy-loading!
             await Dispatcher.UIThread.InvokeAsync(
-                async () => await TreeNode.ExpandNodeAsync([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes),
+                () => TreeNode.ExpandNode([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes),
                 DispatcherPriority.Background);
         });
     }

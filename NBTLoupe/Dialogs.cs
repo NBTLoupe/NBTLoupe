@@ -280,28 +280,42 @@ internal class EditTagDialogState : DialogState
     }
 }
 
-// Here we define the Find Dialog!
-/* TODO: Actually implementing it! */
-internal class FindDialogState : DialogState
+// Here we define the Find and Replace Dialog!
+internal class FindReplaceDialogState : DialogState
 {
     // We need to access the Window somehow!
     private readonly MainWindow _window;
 
     // Here we set up the Dialog!
-    internal FindDialogState(MainWindow window, string? findName, string? findValue)
+    internal FindReplaceDialogState(MainWindow window, bool isAdvanced = false)
     {
         _window = window;
+        IsAdvanced = isAdvanced;
 
-        // We restore the values from the MainWindow.
-        NameEnabled = findName is not null;
-        NameText = findName;
-        ValueEnabled = findValue is not null;
-        ValueText = findValue;
+        BasicNameText = _window.BasicSearcher?.Name ?? "";
+        BasicValueText = _window.BasicSearcher?.Value ?? "";
+
+        BasicNameEnabled = _window.BasicSearcher?.Name is not null;
+        BasicValueEnabled = _window.BasicSearcher?.Value is not null;
     }
 
     // Here's all the fields we bind to in the XAML...
-    // The Name CheckBox...
-    internal bool NameEnabled
+    // The UI locker...
+    internal bool InProgress
+    {
+        get;
+        private set
+        {
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.OnPropertyChanged(nameof(_window.ShowProgressBar));
+            _window.RefreshOkButton();
+        }
+    }
+
+    // The current tab/mode...
+    internal bool IsAdvanced
     {
         get;
         set
@@ -313,8 +327,8 @@ internal class FindDialogState : DialogState
         }
     }
 
-    // The Value Checkbox...
-    internal bool ValueEnabled
+    // The BasicName CheckBox...
+    internal bool BasicNameEnabled
     {
         get;
         set
@@ -326,8 +340,8 @@ internal class FindDialogState : DialogState
         }
     }
 
-    // The Name TextBox...
-    internal string? NameText
+    // The BasicValue Checkbox...
+    internal bool BasicValueEnabled
     {
         get;
         set
@@ -339,8 +353,8 @@ internal class FindDialogState : DialogState
         }
     }
 
-    // The Value TextBox...
-    internal string? ValueText
+    // The BasicName TextBox...
+    internal string? BasicNameText
     {
         get;
         set
@@ -351,23 +365,78 @@ internal class FindDialogState : DialogState
             _window.RefreshOkButton();
         }
     }
+
+    // The BasicValue TextBox...
+    internal string? BasicValueText
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOkEnabled));
+            _window.RefreshOkButton();
+        }
+    }
+
+    // Not really magic, but just a hacky way to be able to show a new Dialog if we don't find anything. 
+    internal bool FoundMatch { get; private set; }
 
     // And here's where our Validation magic happens!
     // Only enable the OK button if:
-    // - At least one TextBox has its CheckBox enabled. 
-    // - The user inputted something into that TextBox.
-    internal override bool IsOkEnabled => (NameEnabled && !string.IsNullOrEmpty(NameText)) ||
-                                          (ValueEnabled && !string.IsNullOrEmpty(ValueText));
+    // - There isn't a search currently In Progress.
+    // - We are in Basic mode (as Advanced mode is not implemented).
+    internal override bool IsOkEnabled => !InProgress && !IsAdvanced;
 
     // And here's the actual magic! The OK button!
-    internal override Task ExecuteAsync()
+    internal override async Task ExecuteAsync()
     {
-        // We set the enabled values into our MainWindow variable, to potentially use elsewhere.
-        _window.FindName = NameEnabled ? NameText : null;
-        _window.FindValue = ValueEnabled ? ValueText : null;
+        // We have two modes. Basic is the equivalent to the old Find; meanwhile Advanced is equivalent to the old Replace.
+        // This is the Basic mode.
+        if (!IsAdvanced)
+        {
+            // Check if SubNodes is null, and return if so.
+            var selectedTreeNode = _window.SelectedTreeNodes.FirstOrDefault();
+            if (selectedTreeNode?.SubNodes is null) throw new UnreachableException();
 
-        // Then we make sure the user knows this is not done yet!
-        throw new NotImplementedException("Find functionality, including the Find Dialog, isn't implemented yet.");
+            // We block the UI to prevent the user from doing anything while we process the search.
+            InProgress = true;
+            _window.DialogCancel.Toggle(false);
+
+            // And we create our NodeBasicSearcher.
+            var find = new MainWindow.TreeNode.NodeBasicSearcher(selectedTreeNode,
+                BasicNameEnabled ? BasicNameText : null, BasicValueEnabled ? BasicValueText : null);
+
+            // Then we try to Find our first instance of the searched parameters.
+            var found = await find.FindNextAsync();
+
+            // If we Find one... 
+            if (found is not null)
+            {
+                // Then we can suppose there are even more things to Find, and thus we save the state in the MainWindow.
+                _window.BasicSearcher = find;
+
+                // And, because we have this state saved, we can enable the FindNext AppCommand.
+                _window.FindNext.Toggle(true);
+
+                // We also set FoundMatch to true, preventing the "No matching tags were found." dialog from showing.
+                FoundMatch = true;
+
+                return;
+            }
+
+            // If we don't, though, we make sure to clean up any leftover state in the MainWindow...
+            _window.BasicSearcher = null;
+
+            // ...and we make sure the FindNext AppCommand is disabled.
+            _window.FindNext.Toggle(false);
+        }
+        // And this is the Advanced mode.
+        else
+        {
+            // (which is not implemented yet)
+            throw new UnreachableException();
+        }
     }
 }
 
@@ -875,6 +944,7 @@ internal class ChunkFinderDialogState : DialogState
     internal override async Task ExecuteAsync()
     {
         InProgress = true;
+        _window.DialogCancel.Toggle(false);
 
         var selectedTreeNode = _window.SelectedTreeNodes.FirstOrDefault();
 
@@ -897,6 +967,27 @@ internal class AboutDialogState : DialogState
 {
     // We set the AboutDialog's title from here as it's neater to have the current version in there.
     internal static string AboutTitle => $"About {Program.FullName}";
+
+    internal override Task ExecuteAsync()
+    {
+        // Yes, it's really boring... :C
+        return Task.CompletedTask;
+    }
+}
+
+// Here we define the Info Dialog!
+internal class InfoDialogState : DialogState
+{
+    // Here we set up the Dialog!
+    internal InfoDialogState(string message)
+    {
+        // And we set the MessageText!
+        MessageText = message;
+    }
+
+    // Here's all the fields we bind to in the XAML...
+    // The Message TextBlock
+    internal string MessageText { get; }
 
     internal override Task ExecuteAsync()
     {

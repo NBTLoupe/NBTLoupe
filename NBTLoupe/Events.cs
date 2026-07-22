@@ -104,6 +104,7 @@ public partial class MainWindow
         AddCompoundTag.Toggle(single?.DataNode?.CanCreateTag(TagType.TAG_COMPOUND) ?? false);
 
         Find.Toggle(single?.DataNode?.CanSearchNode ?? false);
+        Replace.Toggle(single?.DataNode?.CanSearchNode ?? false);
     }
 
     // This opens the EditDialog when the user double-clicks a supported item.
@@ -121,7 +122,7 @@ public partial class MainWindow
     internal void InformationalDialog_OnLoaded(object? sender, RoutedEventArgs e)
     {
         // ...we focus its corresponding Buttons.
-        if (CurrentDialog is AboutDialogState or ErrorDialogState) DialogOkButton.Focus();
+        if (CurrentDialog is AboutDialogState or InfoDialogState or ErrorDialogState) DialogOkButton.Focus();
         if (CurrentDialog is UnsavedChangesDialogState) DialogCancelButton.Focus();
     }
 

@@ -46,8 +46,9 @@ public partial class MainWindow
         DialogImport.Toggle(CurrentDialog is EditTagDialogState { ValueVisible: true });
         DialogExport.Toggle(CurrentDialog is EditTagDialogState { ValueVisible: true });
 
-        // Also yes, the way we disable Cancel on the About and Error Dialog is kind of ugly... sorry.
-        DialogCancel.Toggle(CurrentDialog is not AboutDialogState && CurrentDialog is not ErrorDialogState);
+        // Also yes, the way we disable Cancel on the About, Info and Error Dialog is kind of ugly... sorry.
+        DialogCancel.Toggle(CurrentDialog is not AboutDialogState && CurrentDialog is not InfoDialogState &&
+                            CurrentDialog is not ErrorDialogState);
     }
 
     // This is an Async-wrapped for the code above! This lets us wait for the Dialog to finish being continuing.
@@ -105,7 +106,8 @@ internal abstract class DialogState : INotifyPropertyChanged
     internal virtual bool IsOkEnabled => true;
 
     // This allows us to wait for Dialog completion.
-    internal TaskCompletionSource<bool> CompletionSource { get; } = new();
+    internal TaskCompletionSource<bool> CompletionSource { get; } =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     // Add an event handler that fires if the state changed.
     public event PropertyChangedEventHandler? PropertyChanged;
