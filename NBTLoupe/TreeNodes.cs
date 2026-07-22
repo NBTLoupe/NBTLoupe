@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -44,7 +45,7 @@ public partial class MainWindow
     // ...which is defined here and...
     internal class TreeNode : INotifyPropertyChanged
     {
-        // More reused infrastructure! This sorts the TreeNode in exactly the same way as the original NBTExplorer!
+        // This is related to the NodeTreeComparer, also in this file.
         private static readonly NodeTreeComparer NodeComparer = new();
 
         // And here's how you create the actual TreeNode!
@@ -121,7 +122,7 @@ public partial class MainWindow
         }
 
         // Nodes in NBTModel have to be "Expanded" to be able to access their children. This does that in a sorted manner.
-        internal static async Task ExpandNodeAsync(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
+        internal static void ExpandNode(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
             TreeNode? parent = null)
         {
             // First we sort the NodeTree...
@@ -158,7 +159,7 @@ public partial class MainWindow
 
             // We Expand its real children lazily, and Stage them...
             var staged = new ObservableCollection<TreeNode>();
-            await ExpandNodeAsync(dataNode ?? DataNode.Nodes, staged, this);
+            ExpandNode(dataNode ?? DataNode.Nodes, staged, this);
 
             // ...so we can replace our stubby/lazy SubNodes with the Staged ones.
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -459,6 +460,7 @@ public partial class MainWindow
             return null;
         }
 
+        // More reused infrastructure! This sorts the TreeNode in exactly the same way as the original NBTExplorer!
         private class NodeTreeComparer : IComparer<DataNode>
         {
             private readonly NaturalComparer _comparer = new();
@@ -523,6 +525,47 @@ public partial class MainWindow
             private static int OrderForNode(DataNode node)
             {
                 return node is DirectoryDataNode ? 0 : 1;
+            }
+        }
+
+        // This does the *actual* search work of the Basic Find.
+        internal class NodeBasicSearcher(TreeNode parent, string? name, string? value)
+        {
+            // We create a Stack of all the Nodes we have to visit, starting from the parent.
+            private readonly Stack<TreeNode> _toVisit = new([parent]);
+
+            // First we store the Name and/or Value inserted, as we use it in the Dialog. 
+            internal readonly string? Name = name;
+            internal readonly string? Value = value;
+
+            // Then, every time we need to Find the Next result...
+            internal async Task<TreeNode?> FindNextAsync()
+            {
+                // ...if we still have something To Visit...
+                while (_toVisit.TryPop(out var node))
+                {
+                    // ...we make sure it is lazy-loaded...
+                    await node.LazyLoadAsync();
+
+                    // ...and if it has any SubNodes...
+                    if (node.SubNodes is not null)
+                        // ...we loop through them, although in reverse to follow a logical visual order... 
+                        foreach (var child in node.SubNodes.Reverse())
+                            // ...and we add them into our To Visit Stack, so we can continue the loop through them if needed.
+                            _toVisit.Push(child);
+
+                    // Once we finish that, we can check if this current Node is a result...
+                    if (node.DataNode is TagDataNode &&
+                        (Name is null ||
+                         node.DataNode.NodeName.Contains(Name, StringComparison.InvariantCultureIgnoreCase)) &&
+                        (Value is null ||
+                         node.DataNode.NodeDisplay.Contains(Value, StringComparison.InvariantCultureIgnoreCase)))
+                        // ...and we return it if so.
+                        return node;
+                }
+
+                // If we emptied the To Visit Stack and haven't found anything, we just return null.
+                return null;
             }
         }
     }

@@ -399,18 +399,57 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             await SelectionChanged();
         });
 
-        Find = CreateAppCommand(_ => OpenDialog(new FindDialogState(this, FindName, FindValue)));
+        // This one is executed when the user chooses to open a Find Dialog.
+        Find = CreateAppCommand(async _ =>
+        {
+            // We first create the Dialog...
+            var state = new FindReplaceDialogState(this);
 
-        /* TODO: Implement Find Next */
-        FindNext = CreateAppCommand(_ =>
-            throw new NotImplementedException(
-                "Find functionality, including the FindNext AppCommand, isn't implemented yet."));
+            // ...then we open it, and wait for the results. If we didn't find anything...
+            if (await OpenDialogAsync(state) && !state.FoundMatch)
+                // ...we tell the user.
+                await OpenDialogAsync(new InfoDialogState("No matching tags were found."));
+        });
 
-        /* TODO: Implement Replace */
-        Replace = CreateAppCommand(_ =>
-            throw new NotImplementedException(
-                "Find functionality, including the Replace AppCommand, isn't implemented yet."));
+        // This one is executed when the user chooses to continue their pre-started Find operation.
+        FindNext = CreateAppCommand(async _ =>
+        {
+            await WithBlock(async () =>
+            {
+                // Check if the BasicSearcher is null, which it shouldn't if the AppCommand is enabled.
+                if (BasicSearcher is null) throw new UnreachableException();
 
+                // Then we Find the next instance of the searched parameters.
+                var found = await BasicSearcher.FindNextAsync();
+
+                // If we didn't Find anything... 
+                if (found is null)
+                {
+                    // ...we clean our BasicSearcher...
+                    BasicSearcher = null;
+
+                    // ...we disable the FindNext AppCommand...
+                    FindNext?.Toggle(false);
+
+                    // ...and open a Dialog telling the user about this.
+                    OpenDialog(new InfoDialogState("End of results."));
+                    return;
+                }
+
+                // But if we did Find something, we start Expanding its tree in reverse.
+                await found.ExpandTreeReverseAsync();
+
+                // This is so, when we add it to SelectedTreeNodes, the UI automatically jumps to it.
+                SelectedTreeNodes.Clear();
+                SelectedTreeNodes.Add(found);
+            });
+        });
+
+        // This one is executed when the user chooses to open a Replace Dialog (AKA an Advanced mode Find Dialog).
+        // TODO: This kind of mode isn't implemented yet!
+        Replace = CreateAppCommand(_ => OpenDialog(new FindReplaceDialogState(this, true)));
+
+        // This one is executed when the user chooses to open a ChunkFinder Dialog.
         ChunkFinder = CreateAppCommand(_ => OpenDialog(new ChunkFinderDialogState(this)));
 
         // This one is executed when the user chooses to learn about us. <3
@@ -577,9 +616,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         DataContext = this;
     }
 
-    // This will be used by the Find functionality in the future.
-    internal string? FindName { get; set; }
-    internal string? FindValue { get; set; }
+    // This stores the values set on the BasicFind Dialog, allowing the Find Next functionality to work.
+    internal TreeNode.NodeBasicSearcher? BasicSearcher { get; set; }
 
     // This is how we block the main UI when something is happening.
     internal bool IsBlocked
@@ -596,7 +634,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     }
 
     // And this is just so Dialogs (which also block the UI) don't show a progress bar.
-    internal bool ShowProgressBar => IsBlocked && CurrentDialog is null or ChunkFinderDialogState { InProgress: true };
+    internal bool ShowProgressBar => IsBlocked && CurrentDialog is null or ChunkFinderDialogState { InProgress: true }
+        or FindReplaceDialogState { InProgress: true };
 
     // This is how we tell the UI our Dialogs changed.
     public new event PropertyChangedEventHandler? PropertyChanged;

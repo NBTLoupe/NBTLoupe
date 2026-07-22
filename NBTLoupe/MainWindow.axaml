@@ -466,40 +466,49 @@
                                                 </Grid>
                                             </DataTemplate>
 
-                                            <!-- Find -->
-                                            <DataTemplate DataType="{x:Type local:FindDialogState}">
-                                                <Grid RowDefinitions="Auto,*">
-                                                    <TextBlock TextWrapping="Wrap" Margin="0,0,0,12" Text="Find"
-                                                               FontSize="20"
-                                                               FontWeight="SemiBold"
-                                                               HorizontalAlignment="Left" VerticalAlignment="Top" />
-                                                    <StackPanel Grid.Row="1" Spacing="4">
-                                                        <CheckBox HorizontalAlignment="Stretch"
-                                                                  HorizontalContentAlignment="Stretch"
-                                                                  IsChecked="{Binding NameEnabled, Mode=TwoWay}">
-                                                            <TextBox
-                                                                Text="{Binding NameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                IsEnabled="{Binding NameEnabled}">
-                                                                <TextBox.InnerLeftContent>
-                                                                    <TextBlock Text="Name:" VerticalAlignment="Center"
-                                                                               Margin="10 0 0 0" />
-                                                                </TextBox.InnerLeftContent>
-                                                            </TextBox>
-                                                        </CheckBox>
-                                                        <CheckBox HorizontalAlignment="Stretch"
-                                                                  HorizontalContentAlignment="Stretch"
-                                                                  IsChecked="{Binding ValueEnabled, Mode=TwoWay}">
-                                                            <TextBox
-                                                                Text="{Binding ValueText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                IsEnabled="{Binding ValueEnabled}">
-                                                                <TextBox.InnerLeftContent>
-                                                                    <TextBlock Text="Value:" VerticalAlignment="Center"
-                                                                               Margin="10 0 0 0" />
-                                                                </TextBox.InnerLeftContent>
-                                                            </TextBox>
-                                                        </CheckBox>
-                                                    </StackPanel>
-                                                </Grid>
+                                            <!-- Find and Replace -->
+                                            <DataTemplate DataType="{x:Type local:FindReplaceDialogState}">
+                                                <TabControl Classes="dialogTabControl" Padding="0"
+                                                            IsEnabled="{Binding !InProgress}">
+                                                    <TabItem Header="Find (Basic)">
+                                                        <Grid RowDefinitions="*" Margin="0 10 0 0">
+                                                            <StackPanel Spacing="4">
+                                                                <CheckBox HorizontalAlignment="Stretch"
+                                                                          HorizontalContentAlignment="Stretch"
+                                                                          IsChecked="{Binding BasicNameEnabled, Mode=TwoWay}">
+                                                                    <TextBox
+                                                                        Text="{Binding BasicNameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                        IsEnabled="{Binding BasicNameEnabled}">
+                                                                        <TextBox.InnerLeftContent>
+                                                                            <TextBlock Text="Name:"
+                                                                                    VerticalAlignment="Center"
+                                                                                    Margin="10 0 0 0" />
+                                                                        </TextBox.InnerLeftContent>
+                                                                    </TextBox>
+                                                                </CheckBox>
+                                                                <CheckBox HorizontalAlignment="Stretch"
+                                                                          HorizontalContentAlignment="Stretch"
+                                                                          IsChecked="{Binding BasicValueEnabled, Mode=TwoWay}">
+                                                                    <TextBox
+                                                                        Text="{Binding BasicValueText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                        IsEnabled="{Binding BasicValueEnabled}">
+                                                                        <TextBox.InnerLeftContent>
+                                                                            <TextBlock Text="Value:"
+                                                                                    VerticalAlignment="Center"
+                                                                                    Margin="10 0 0 0" />
+                                                                        </TextBox.InnerLeftContent>
+                                                                    </TextBox>
+                                                                </CheckBox>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </TabItem>
+                                                    <TabItem Header="Find and Replace (Advanced)"
+                                                             IsSelected="{Binding IsAdvanced, Mode=TwoWay}">
+                                                        <Grid RowDefinitions="*" Margin="0 10 0 0">
+                                                            <TextBlock Text="Not implemented!" />
+                                                        </Grid>
+                                                    </TabItem>
+                                                </TabControl>
                                             </DataTemplate>
 
                                             <!-- Chunk Finder -->
@@ -736,6 +745,20 @@
                                                 </Grid>
                                             </DataTemplate>
 
+                                            <!-- Info -->
+                                            <DataTemplate DataType="{x:Type local:InfoDialogState}">
+                                                <Grid RowDefinitions="Auto,*" Loaded="InformationalDialog_OnLoaded">
+                                                    <StackPanel Margin="0,0,0,12">
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   Text="Info"
+                                                                   FontSize="20" FontWeight="SemiBold"
+                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding MessageText}" TextWrapping="Wrap"
+                                                               Grid.Row="1" />
+                                                </Grid>
+                                            </DataTemplate>
+
                                             <!-- Error -->
                                             <DataTemplate DataType="{x:Type local:ErrorDialogState}">
                                                 <Grid RowDefinitions="Auto,*" Loaded="InformationalDialog_OnLoaded">
@@ -855,6 +878,22 @@
         <Style Selector="CommandBarButton:disabled">
             <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundDisabled}" />
             <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}" />
+        </Style>
+
+        <!-- This is just the style for our TabControl-dependent Dialogs -->
+        <Style Selector="TabControl.dialogTabControl > TabItem">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0 0 16 0" />
+
+            <Style Selector="^:selected /template/ Border#PART_SelectedPipe">
+                <Setter Property="Margin" Value="0 28 0 0" />
+            </Style>
         </Style>
 
         <!-- We hide the Import/Export/Cancel Dialog Buttons when they're disabled -->
