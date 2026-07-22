@@ -132,13 +132,13 @@ public partial class MainWindow
         {
             try
             {
-                // Here go to the MainWindow to do some stuff...
+                // Here we go to the MainWindow to do some stuff...
                 _preExecute();
 
                 if (_execute is not null) _execute(parameter);
                 else if (_executeAsync is not null) await _executeAsync(parameter);
 
-                // ...and here go back again!
+                // ...and here we go back to it once again!
                 _postExecute();
             }
             catch (Exception e)
