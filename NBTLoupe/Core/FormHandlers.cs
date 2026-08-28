@@ -1,15 +1,17 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using NBTLoupe.ViewModels.Dialogs;
+using NBTLoupe.ViewModels.Main;
 using NBTModel.Interop;
 using Substrate.Nbt;
 
-namespace NBTLoupe;
+namespace NBTLoupe.Core;
 
-public partial class MainWindow
+internal static class FormHandlers
 {
     // This function intializes the FormHandlers (AKA the FormRegistry) for us. This lets NBTModel neatly interface with our UI. 
-    private void InitializeFormHandlers()
+    internal static void InitializeFormHandlers(MainViewModel viewModel)
     {
         // This one is executed when the user chooses to Rename a Tag.
         FormRegistry.RenameTag = data =>
@@ -17,7 +19,7 @@ public partial class MainWindow
             try
             {
                 // We just assign the value of the EditTagTextBox, pretty simple.
-                data.Value = (CurrentDialog as EditTagDialogState)?.TagName ?? "";
+                data.Value = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagName ?? "";
                 return true;
             }
             catch
@@ -32,10 +34,10 @@ public partial class MainWindow
             try
             {
                 // We first assign its TagName from our AddTagNameTextBox...
-                data.TagName = (CurrentDialog as AddTagDialogState)?.TagName;
+                data.TagName = (viewModel.CurrentDialog as AddTagDialogViewModel)?.TagName;
 
                 // ...then create an empty TagNode depending on its TagType and Size.
-                var size = (CurrentDialog as AddTagDialogState)?.TagSize ?? 0;
+                var size = (viewModel.CurrentDialog as AddTagDialogViewModel)?.TagSize ?? 0;
                 data.TagNode = data.TagType switch
                 {
                     TagType.TAG_BYTE => new TagNodeByte(),
@@ -71,7 +73,7 @@ public partial class MainWindow
             try
             {
                 // We just assign the value of the EditTagTextBox, pretty simple.
-                data.Value = (CurrentDialog as EditTagDialogState)?.TagValue ?? "";
+                data.Value = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
                 return true;
             }
             catch
@@ -85,7 +87,7 @@ public partial class MainWindow
         {
             try
             {
-                var text = (CurrentDialog as EditTagDialogState)?.TagValue ?? "";
+                var text = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
 
                 // These are extremely self-explanatory, so I'm not going to comment them.
                 switch (data.Tag.GetTagType())
@@ -127,22 +129,34 @@ public partial class MainWindow
         {
             try
             {
-                var text = (CurrentDialog as EditTagDialogState)?.TagValue ?? "";
+                var text = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
 
                 // Unfortunately, EditByteArray also deals with Scalar[]s. This means we have to convert them into byte[]s first.
-                data.Data = CurrentDialog?.DialogTagType switch
+                data.Data = viewModel.CurrentDialog?.DialogTagType switch
                 {
-                    TagType.TAG_SHORT_ARRAY => MemoryMarshal.AsBytes(text.Split(",", StringSplitOptions.TrimEntries)
-                            .Select(short.Parse).ToArray())
-                        .ToArray(),
-                    TagType.TAG_INT_ARRAY => MemoryMarshal
-                        .AsBytes(text.Split(",", StringSplitOptions.TrimEntries).Select(int.Parse).ToArray())
-                        .ToArray(),
-                    TagType.TAG_LONG_ARRAY => MemoryMarshal.AsBytes(text.Split(",", StringSplitOptions.TrimEntries)
-                            .Select(long.Parse).ToArray())
-                        .ToArray(),
-                    _ => text.Split(",", StringSplitOptions.TrimEntries).Select(x => unchecked((byte)sbyte.Parse(x)))
-                        .ToArray()
+                    TagType.TAG_SHORT_ARRAY =>
+                    [
+                        .. MemoryMarshal.AsBytes([
+                            .. text.Split(",", StringSplitOptions.TrimEntries)
+                                .Select(short.Parse)
+                        ])
+                    ],
+                    TagType.TAG_INT_ARRAY =>
+                    [
+                        .. MemoryMarshal
+                            .AsBytes([.. text.Split(",", StringSplitOptions.TrimEntries).Select(int.Parse)])
+                    ],
+                    TagType.TAG_LONG_ARRAY =>
+                    [
+                        .. MemoryMarshal.AsBytes([
+                            .. text.Split(",", StringSplitOptions.TrimEntries)
+                                .Select(long.Parse)
+                        ])
+                    ],
+                    _ =>
+                    [
+                        .. text.Split(",", StringSplitOptions.TrimEntries).Select(x => unchecked((byte)sbyte.Parse(x)))
+                    ]
                 };
 
                 return true;

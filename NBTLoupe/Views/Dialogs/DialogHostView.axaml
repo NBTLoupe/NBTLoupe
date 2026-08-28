@@ -1,0 +1,162 @@
+<!--
+    This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+
+    Licensed under the MIT License.
+    Copyright (c) 2025 amwx
+    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+    
+    Source repository: https://github.com/amwx/FluentAvalonia
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
+             xmlns:dialogs="clr-namespace:NBTLoupe.Views.Dialogs"
+             xmlns:dialogvms="clr-namespace:NBTLoupe.ViewModels.Dialogs"
+             x:Class="NBTLoupe.Views.Dialogs.DialogHostView"
+             x:DataType="main:MainViewModel">
+    <Border IsVisible="{Binding IsDialogOpen}">
+        <Panel Background="{DynamicResource DialogOverlayBrush}">
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderThickness="1"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" CornerRadius="8"
+                    MinWidth="320" MaxWidth="548" MinHeight="184" MaxHeight="756" HorizontalAlignment="Center"
+                    VerticalAlignment="Center" Effect="{DynamicResource DialogShadow}"
+                    BackgroundSizing="InnerBorderEdge">
+                <Border ClipToBounds="True" CornerRadius="8">
+                    <Grid ClipToBounds="True" RowDefinitions="*,Auto">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Padding="24"
+                                    BorderThickness="0,0,0,1"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                                <!-- Personalised dialogs -->
+                                <ContentControl Content="{Binding CurrentDialog}">
+                                    <ContentControl.DataTemplates>
+                                        <!-- Add Tag -->
+                                        <DataTemplate DataType="{x:Type dialogvms:AddTagDialogViewModel}">
+                                            <dialogs:AddTagDialogView />
+                                        </DataTemplate>
+
+                                        <!-- Edit Tag Value -->
+                                        <DataTemplate DataType="{x:Type dialogvms:EditTagDialogViewModel}">
+                                            <dialogs:EditTagDialogView />
+                                        </DataTemplate>
+
+                                        <!-- Find and Replace -->
+                                        <DataTemplate DataType="{x:Type dialogvms:FindReplaceDialogViewModel}">
+                                            <dialogs:FindReplaceDialogView />
+                                        </DataTemplate>
+
+                                        <!-- Chunk Finder -->
+                                        <DataTemplate DataType="{x:Type dialogvms:ChunkFinderDialogViewModel}">
+                                            <dialogs:ChunkFinderDialogView />
+                                        </DataTemplate>
+
+                                        <!-- About -->
+                                        <DataTemplate DataType="{x:Type dialogvms:AboutDialogViewModel}">
+                                            <dialogs:AboutDialogView Loaded="InformationalDialog_OnLoaded" />
+                                        </DataTemplate>
+
+                                        <!-- Info -->
+                                        <DataTemplate DataType="{x:Type dialogvms:InfoDialogViewModel}">
+                                            <dialogs:InfoDialogView Loaded="InformationalDialog_OnLoaded" />
+                                        </DataTemplate>
+
+                                        <!-- Error -->
+                                        <DataTemplate DataType="{x:Type dialogvms:ErrorDialogViewModel}">
+                                            <dialogs:ErrorDialogView Loaded="InformationalDialog_OnLoaded" />
+                                        </DataTemplate>
+
+                                        <!-- Unsaved Changes -->
+                                        <DataTemplate DataType="{x:Type dialogvms:UnsavedChangesDialogViewModel}">
+                                            <dialogs:UnsavedChangesDialogView Loaded="InformationalDialog_OnLoaded" />
+                                        </DataTemplate>
+                                    </ContentControl.DataTemplates>
+                                </ContentControl>
+                            </Border>
+                        </ScrollViewer>
+
+                        <!-- The Buttons! I know the way I chose to show them or not is janky, but it's a temporary solution. -->
+                        <Border Grid.Row="1" Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <DockPanel LastChildFill="False">
+                                <StackPanel Orientation="Horizontal" Spacing="4"
+                                            DockPanel.Dock="Left">
+                                    <Button Name="DialogImportButton" Content="Import"
+                                            Command="{Binding DialogImportCommand}"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                        <Button.KeyBindings>
+                                            <KeyBinding Gesture="Enter" Command="{Binding DialogImportCommand}" />
+                                        </Button.KeyBindings>
+                                    </Button>
+                                    <Button Name="DialogExportButton" Content="Export"
+                                            Command="{Binding DialogExportCommand}"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                        <Button.KeyBindings>
+                                            <KeyBinding Gesture="Enter" Command="{Binding DialogExportCommand}" />
+                                        </Button.KeyBindings>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="4" DockPanel.Dock="Right">
+                                    <Button Name="DialogCancelButton" Content="Cancel"
+                                            Command="{Binding CurrentDialog?.DialogCancelCommand}"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                        <Button.KeyBindings>
+                                            <KeyBinding Gesture="Enter"
+                                                        Command="{Binding CurrentDialog?.DialogCancelCommand}" />
+                                        </Button.KeyBindings>
+                                    </Button>
+                                    <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+                                    <Button Name="DialogOkButton" Content="OK"
+                                            Command="{Binding CurrentDialog?.DialogOkCommand}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                            Classes="accent" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Border>
+        </Panel>
+
+        <Border.KeyBindings>
+            <KeyBinding Gesture="Enter" Command="{Binding CurrentDialog?.DialogOkCommand}" />
+            <KeyBinding Gesture="Escape" Command="{Binding CurrentDialog?.DialogCancelCommand}" />
+        </Border.KeyBindings>
+
+        <!-- And Ok is enabled per-item, so you won't find it here. -->
+    </Border>
+
+    <UserControl.Styles>
+        <!-- We hide the Import/Export/Cancel Dialog Buttons when they're disabled -->
+        <Style Selector="Button#DialogImportButton:disabled">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Button#DialogExportButton:disabled">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Button#DialogCancelButton:disabled">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </UserControl.Styles>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4D000000" />
+                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- ReSharper disable Xaml.RedundantResource -->
+                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4DFFFFFF" />
+                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66FFFFFF" />
+                    <!-- ReSharper restore Xaml.RedundantResource -->
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+</UserControl>

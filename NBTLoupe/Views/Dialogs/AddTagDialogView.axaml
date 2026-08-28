@@ -1,0 +1,37 @@
+<!--
+    This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+
+    Licensed under the MIT License.
+    Copyright (c) 2025 amwx
+    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+    
+    Source repository: https://github.com/amwx/FluentAvalonia
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
+             x:Class="NBTLoupe.Views.Dialogs.AddTagDialogView"
+             x:DataType="dialogs:AddTagDialogViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Margin="0,0,0,12">
+            <TextBlock TextWrapping="Wrap" Text="{Binding TitleText}"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" Spacing="4">
+            <TextBox Loaded="DialogTextBox_Loaded"
+                     Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="Name" />
+            <NumericUpDown Value="{Binding TagSize, Mode=TwoWay}"
+                           IsEnabled="{Binding SizeEnabled}"
+                           Minimum="0"
+                           FormatString="0" ParsingNumberStyle="Integer">
+                <NumericUpDown.InnerLeftContent>
+                    <TextBlock Text="Size:" VerticalAlignment="Center"
+                               Margin="10 0 0 0" />
+                </NumericUpDown.InnerLeftContent>
+            </NumericUpDown>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -4,6 +4,12 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using NBTLoupe.Core;
+using NBTLoupe.ViewModels.Dialogs;
+using NBTLoupe.ViewModels.Main;
+using NBTLoupe.Views;
+using NBTLoupe.Views.Main;
+using NBTModel.Interop;
 using Serilog;
 
 namespace NBTLoupe;
@@ -17,28 +23,60 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        var mainWindow = new MainWindow();
+        var mainViewModel = new MainViewModel();
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) desktop.MainWindow = mainWindow;
+        switch (ApplicationLifetime)
+        {
+            case IClassicDesktopStyleApplicationLifetime desktop:
+            {
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = mainViewModel
+                };
 
+                // TODO: Add Clipboard support on other platforms.
+                if (desktop.MainWindow.Clipboard is not null)
+                    NbtClipboardController.Initialize(new NbtClipboardControllerAvalonia(desktop.MainWindow.Clipboard));
+                break;
+            }
+            case IActivityApplicationLifetime singleViewFactoryApplicationLifetime:
+                singleViewFactoryApplicationLifetime.MainViewFactory =
+                    () => new MainView { DataContext = mainViewModel };
+                break;
+            case ISingleViewApplicationLifetime singleViewPlatform:
+                singleViewPlatform.MainView = new MainView
+                {
+                    DataContext = mainViewModel
+                };
+                break;
+        }
+
+        SetupErrorHandling(mainViewModel);
+        FormHandlers.InitializeFormHandlers(mainViewModel);
+
+        base.OnFrameworkInitializationCompleted();
+    }
+
+    private static void SetupErrorHandling(MainViewModel viewModel)
+    {
         // Exception handling for non-AppCommands.
-        Dispatcher.UIThread.UnhandledException += (_, e) =>
+        Dispatcher.UIThread.UnhandledException += async (_, e) =>
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unhandled UI thread exception");
-            mainWindow.OpenDialog(new ErrorDialogState(e.Exception));
+            await viewModel.OpenDialogAsync(new ErrorDialogViewModel(e.Exception));
 
             e.Handled = true;
         };
-        TaskScheduler.UnobservedTaskException += (_, e) =>
+        TaskScheduler.UnobservedTaskException += async (_, e) =>
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unobserved task exception");
-            mainWindow.OpenDialog(new ErrorDialogState(e.Exception));
+            await viewModel.OpenDialogAsync(new ErrorDialogViewModel(e.Exception));
 
             e.SetObserved();
         };
-        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        AppDomain.CurrentDomain.UnhandledException += async (_, e) =>
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
             var exception = e.ExceptionObject as Exception;
@@ -46,9 +84,7 @@ public class App : Application
             Log.Error(exception, "[NBTLoupe]: Unhandled domain exception (terminating: {IsTerminating})",
                 e.IsTerminating);
             if (exception is not null && !e.IsTerminating)
-                mainWindow.OpenDialog(new ErrorDialogState(exception));
+                await viewModel.OpenDialogAsync(new ErrorDialogViewModel(exception));
         };
-
-        base.OnFrameworkInitializationCompleted();
     }
 }

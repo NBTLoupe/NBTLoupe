@@ -1,0 +1,191 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+             xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
+             x:Class="NBTLoupe.Views.Main.MainCommandBarView"
+             x:DataType="main:MainViewModel">
+    <CommandBar x:Name="MainCommandBar" DefaultLabelPosition="Collapsed" IsDynamicOverflowEnabled="True">
+        <CommandBar.PrimaryCommands>
+            <CommandBarButton Label="Open NBT Data Source" ToolTip.Tip="Open NBT Data Source"
+                              Command="{Binding OpenFileCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="DocumentFolder" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Open Folder" ToolTip.Tip="Open Folder"
+                              Command="{Binding OpenFolderCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="FolderOpen" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Save All Modified Tags" ToolTip.Tip="Save All Modified Tags"
+                              Command="{Binding SaveCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="Save" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Refresh Content From Disk" ToolTip.Tip="Refresh Content From Disk"
+                              Command="{Binding RefreshCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="ArrowSync" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarSeparator />
+
+            <CommandBarButton Label="Cut" ToolTip.Tip="Cut" Command="{Binding CutCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="Cut" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+            <CommandBarButton Label="Copy" ToolTip.Tip="Copy" Command="{Binding CopyCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="Copy" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+            <CommandBarButton Label="Paste" ToolTip.Tip="Paste" Command="{Binding PasteCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="ClipboardPaste" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarSeparator />
+
+            <CommandBarButton Label="Rename Tag" ToolTip.Tip="Rename Tag" Command="{Binding RenameCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="RenameA" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Edit Tag Value" ToolTip.Tip="Edit Tag Value"
+                              Command="{Binding EditValueCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="Edit" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Delete Tag" ToolTip.Tip="Delete Tag" Command="{Binding DeleteCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="Delete" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarSeparator />
+
+            <CommandBarButton Label="Add Byte Tag" ToolTip.Tip="Add Byte Tag"
+                              Command="{Binding AddByteTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="NumberCircle1" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Short Tag" ToolTip.Tip="Add Short Tag"
+                              Command="{Binding AddShortTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="NumberCircle2" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Int Tag" ToolTip.Tip="Add Int Tag"
+                              Command="{Binding AddIntTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="NumberCircle4" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Long Tag" ToolTip.Tip="Add Long Tag"
+                              Command="{Binding AddLongTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="NumberCircle8" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Float Tag" ToolTip.Tip="Add Float Tag"
+                              Command="{Binding AddFloatTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="DecimalArrowLeft" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Double Tag" ToolTip.Tip="Add Double Tag"
+                              Command="{Binding AddDoubleTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="DecimalArrowRight" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Byte Array Tag" ToolTip.Tip="Add Byte Array Tag"
+                              Command="{Binding AddByteArrayTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="CodeBlock" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Int Array Tag" ToolTip.Tip="Add Int Array Tag"
+                              Command="{Binding AddIntArrayTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="DataBarVertical" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Long Array Tag" ToolTip.Tip="Add Long Array Tag"
+                              Command="{Binding AddLongArrayTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="DataBarHorizontal" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add String Tag" ToolTip.Tip="Add String Tag"
+                              Command="{Binding AddStringTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="TextT" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add List Tag" ToolTip.Tip="Add List Tag"
+                              Command="{Binding AddListTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="TextBulletList" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Add Compound Tag" ToolTip.Tip="Add Compound Tag"
+                              Command="{Binding AddCompoundTagCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="Box" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarSeparator />
+
+            <CommandBarButton Label="Find" ToolTip.Tip="Find" Command="{Binding FindCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="Search" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarButton Label="Find Next" ToolTip.Tip="Find Next" Command="{Binding FindNextCommand}">
+                <CommandBarButton.Icon>
+                    <ic:FluentIcon Icon="DocumentSearch" />
+                </CommandBarButton.Icon>
+            </CommandBarButton>
+
+            <CommandBarSeparator />
+
+            <!-- This is hacky, but this is the best way I could align the CommandBar to the left without it looking awkward. -->
+            <CommandBarButton IsEnabled="False" IsVisible="{Binding !$self.IsInOverflow}"
+                              Width="{Binding $parent.Bounds.Width}" />
+        </CommandBar.PrimaryCommands>
+    </CommandBar>
+
+    <UserControl.Styles>
+        <!-- This makes it obvious when a CommandBarButton is disabled -->
+        <Style Selector="CommandBarButton:disabled">
+            <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundDisabled}" />
+            <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}" />
+        </Style>
+    </UserControl.Styles>
+</UserControl>

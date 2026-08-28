@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:main="clr-namespace:NBTLoupe.Views.Main"
+             xmlns:mainvm="clr-namespace:NBTLoupe.ViewModels.Main"
+             xmlns:dialogs="clr-namespace:NBTLoupe.Views.Dialogs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NBTLoupe.Views.Main.MainView"
+             x:DataType="mainvm:MainViewModel">
+    <Grid>
+        <DockPanel IsEnabled="{Binding !IsBlocked}">
+            <StackPanel DockPanel.Dock="Top">
+                <main:MainMenuView x:Name="MainMenuView" />
+
+                <main:MainCommandBarView x:Name="MainCommandBarView" />
+
+                <ProgressBar IsIndeterminate="True" Opacity="{Binding ShowProgressBar}" VerticalAlignment="Top" />
+            </StackPanel>
+
+            <main:MainTreeViewView />
+        </DockPanel>
+
+        <dialogs:DialogHostView DataContext="{Binding}" />
+    </Grid>
+
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="{OnPlatform 'Ctrl+O', macOS='Cmd+O'}" Command="{Binding OpenFileCommand}" />
+        <KeyBinding Gesture="{OnPlatform 'Ctrl+Shift+O', macOS='Cmd+Shift+O'}" Command="{Binding OpenFolderCommand}" />
+        <KeyBinding Gesture="{OnPlatform 'Ctrl+S', macOS='Cmd+S'}" Command="{Binding SaveCommand}" />
+        <KeyBinding Gesture="{OnPlatform 'Alt+F4', macOS='Cmd+Q'}" Command="{Binding ExitCommand}" />
+        <KeyBinding Gesture="F1" Command="{Binding AboutCommand}" />
+    </UserControl.KeyBindings>
+</UserControl>

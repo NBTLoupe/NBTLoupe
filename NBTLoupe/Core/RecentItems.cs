@@ -1,17 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Avalonia.Threading;
-using NBTModel.Data;
-using NBTModel.Data.Nodes;
 using Serilog;
 
-namespace NBTLoupe;
+namespace NBTLoupe.Core;
 
 // We need this so NAOT is happy.
 [JsonSourceGenerationOptions]
@@ -19,7 +14,7 @@ namespace NBTLoupe;
 internal partial class SourceGenerationContext : JsonSerializerContext;
 
 // And this is the class which defines our RecentItems!
-internal class RecentItem
+public class RecentItem
 {
     // Here's the Path of the RecentItem.
     public string Path { get; init; } = "";
@@ -84,7 +79,8 @@ internal class RecentItem
             if (!startingUp) return items;
 
             // ...but if we are, we quickly check all the RecentItems still exist.
-            var existing = items.Where(item => File.Exists(item.Path) || Directory.Exists(item.Path)).ToList();
+            var existing = items.Where<RecentItem>(item => File.Exists(item.Path) || Directory.Exists(item.Path))
+                .ToList();
 
             // If they do, we just return these!
             if (existing.Count == items.Count) return items;
@@ -155,92 +151,5 @@ internal class RecentItem
             // Or we can fail at it...
             Log.Error(e, "[NBTLoupe]: RecentItems (removing) exception");
         }
-    }
-}
-
-public partial class MainWindow
-{
-    // We need a RecentItem implementation to be able to interface with the UI!
-    internal ObservableCollection<RecentItem> RecentFiles { get; set; }
-    internal ObservableCollection<RecentItem> RecentFolders { get; set; }
-
-    // This function Opens a File from a Path.
-    private async Task OpenFileAsync(string path)
-    {
-        // If the user has unsaved changes...
-        var shouldContinue = !Save.CanExecute(null);
-
-        // ...we open a Dialog to warn them.
-        var state = new UnsavedChangesDialogState(this);
-        if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
-
-        // And if the user Cancelled, we return.
-        if (!shouldContinue) return;
-
-        await WithBlock(async () =>
-        {
-            // First we clear the TreeNode collections, as we're starting fresh.
-            SelectedTreeNodes.Clear();
-            TreeNodes.Clear();
-
-            // We disable the Save button, as the postExecute task may not be instant for this specific case.
-            Save.Toggle(false);
-
-            // We check, from the Path, if the File is supported by NBTModel, and use its respective NodeCreate method to create our DataNode if so.
-            var node = FileTypeRegistry.RegisteredTypes.FirstOrDefault(item => item.Value.NamePatternTest(path)).Value
-                ?.NodeCreate(path);
-
-            // If we couldn't find any Path-based matches, we just assume it is a NbtFileDataNode...
-            node ??= NbtFileDataNode.TryCreateFrom(path);
-
-            // And if it failed to open, we tell the user.
-            if (node is null)
-                throw new UserErrorException(
-                    "Invalid NBT file. Please only open supported file formats. If you did so, your file may be corrupted.");
-
-            // We add it to our Recent Files list, and update the UI!
-            RecentFiles.Clear();
-            foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder)) RecentFiles.Add(item);
-
-            // And we can begin the lazy-loading!
-            await Dispatcher.UIThread.InvokeAsync(() => TreeNode.ExpandNode([node], TreeNodes),
-                DispatcherPriority.Background);
-        });
-    }
-
-    // This function Opens a Folder from a Path.
-    private async Task OpenFolderAsync(string path)
-    {
-        // If the user has unsaved changes...
-        var shouldContinue = !Save.CanExecute(null);
-
-        // ...we open a Dialog to warn them.
-        var state = new UnsavedChangesDialogState(this);
-        if (!shouldContinue) shouldContinue = await OpenDialogAsync(state);
-
-        // And if the user Cancelled, we return.
-        if (!shouldContinue) return;
-
-        await WithBlock(async () =>
-        {
-            // First we clear the TreeNode collections, as we're starting fresh.
-            SelectedTreeNodes.Clear();
-            TreeNodes.Clear();
-
-            // We disable the Save button, as the postExecute task may not be instant for this specific case.
-            Save.Toggle(false);
-
-            // If it isn't the Minecraft Saves folder; we add it to our Recent Folders list, and update the UI!
-            if (path != Program.MinecraftSaveFolder)
-            {
-                RecentFolders.Clear();
-                foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder)) RecentFolders.Add(item);
-            }
-
-            // And we can begin the lazy-loading!
-            await Dispatcher.UIThread.InvokeAsync(
-                () => TreeNode.ExpandNode([new DirectoryDataNode(path.TrimEnd('/', '\\'))], TreeNodes),
-                DispatcherPriority.Background);
-        });
     }
 }
