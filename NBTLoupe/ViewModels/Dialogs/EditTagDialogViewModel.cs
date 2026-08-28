@@ -110,6 +110,9 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
         }
     }
 
+    // This gives the OK button tailor-made text!
+    internal override string OkText => "Edit";
+
     // Just kidding, it happens here, so we can still use the FormRegistry for Editing.
     private static bool ValidateTagValue(TagType tagType)
     {

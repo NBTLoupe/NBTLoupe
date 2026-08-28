@@ -133,6 +133,9 @@ internal partial class ChunkFinderDialogViewModel : DialogHostViewModel
     internal override bool IsOkEnabled =>
         !InProgress && !string.IsNullOrEmpty(LocalChunkX) && !string.IsNullOrEmpty(LocalChunkZ);
 
+    // This gives the OK button tailor-made text!
+    internal override string OkText => "Find";
+
     partial void OnInProgressChanged(bool value)
     {
         _viewModel.IsDialogProgressing = value;
