@@ -1,0 +1,74 @@
+<!--
+    This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+
+    Licensed under the MIT License.
+    Copyright (c) 2025 amwx
+    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+    
+    Source repository: https://github.com/amwx/FluentAvalonia
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
+             x:Class="NBTLoupe.Views.Dialogs.FindReplaceDialogView"
+             x:DataType="dialogs:FindReplaceDialogViewModel">
+    <TabControl Classes="dialogTabControl" Padding="0"
+                IsEnabled="{Binding !InProgress}">
+        <TabItem Header="Find (Basic)">
+            <Grid RowDefinitions="*" Margin="0 10 0 0">
+                <StackPanel Spacing="4">
+                    <CheckBox HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              IsChecked="{Binding BasicNameEnabled, Mode=TwoWay}">
+                        <TextBox
+                            Text="{Binding BasicNameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding BasicNameEnabled}">
+                            <TextBox.InnerLeftContent>
+                                <TextBlock Text="Name:"
+                                           VerticalAlignment="Center"
+                                           Margin="10 0 0 0" />
+                            </TextBox.InnerLeftContent>
+                        </TextBox>
+                    </CheckBox>
+                    <CheckBox HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              IsChecked="{Binding BasicValueEnabled, Mode=TwoWay}">
+                        <TextBox
+                            Text="{Binding BasicValueText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding BasicValueEnabled}">
+                            <TextBox.InnerLeftContent>
+                                <TextBlock Text="Value:"
+                                           VerticalAlignment="Center"
+                                           Margin="10 0 0 0" />
+                            </TextBox.InnerLeftContent>
+                        </TextBox>
+                    </CheckBox>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Find and Replace (Advanced)"
+                 IsSelected="{Binding IsAdvanced, Mode=TwoWay}">
+            <Grid RowDefinitions="*" Margin="0 10 0 0">
+                <TextBlock Text="Not implemented!" />
+            </Grid>
+        </TabItem>
+    </TabControl>
+
+    <UserControl.Styles>
+        <!-- This is just the style for our TabControl-dependent Dialogs -->
+        <Style Selector="TabControl.dialogTabControl > TabItem">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0 0 16 0" />
+
+            <Style Selector="^:selected /template/ Border#PART_SelectedPipe">
+                <Setter Property="Margin" Value="0 28 0 0" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+</UserControl>

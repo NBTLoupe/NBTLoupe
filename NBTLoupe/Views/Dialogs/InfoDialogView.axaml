@@ -1,0 +1,25 @@
+<!--
+    This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+
+    Licensed under the MIT License.
+    Copyright (c) 2025 amwx
+    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+    
+    Source repository: https://github.com/amwx/FluentAvalonia
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
+             x:Class="NBTLoupe.Views.Dialogs.InfoDialogView"
+             x:DataType="dialogs:InfoDialogViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Margin="0,0,0,12">
+            <TextBlock TextWrapping="Wrap"
+                       Text="Info"
+                       FontSize="20" FontWeight="SemiBold"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" />
+        </StackPanel>
+        <TextBlock Text="{Binding MessageText}" TextWrapping="Wrap"
+                   Grid.Row="1" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,155 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:NBTLoupe.Core"
+             xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+             xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
+             x:Class="NBTLoupe.Views.Main.MainMenuView"
+             x:DataType="main:MainViewModel">
+    <Menu x:Name="MainMenu">
+        <MenuItem Header="_File">
+            <MenuItem Header="_Open..." InputGesture="{OnPlatform 'Ctrl+O', macOS='Cmd+O'}"
+                      Command="{Binding OpenFileCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="DocumentFolder" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Open _Folder..."
+                      InputGesture="{OnPlatform 'Ctrl+Shift+O', macOS='Cmd+Shift+O'}"
+                      Command="{Binding OpenFolderCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="FolderOpen" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Open _Minecraft Save Folder"
+                      Command="{Binding OpenMinecraftSaveFolderCommand}" />
+            <Separator />
+            <MenuItem Header="Open in _Explorer"
+                      InputGesture="{OnPlatform 'Ctrl+Shift+E', macOS='Cmd+Shift+E'}"
+                      Command="{Binding OpenInExplorerCommand}" />
+            <Separator />
+            <MenuItem Header="_Save" InputGesture="{OnPlatform 'Ctrl+S', macOS='Cmd+S'}"
+                      Command="{Binding SaveCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Save" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Refresh" InputGesture="F5" Command="{Binding RefreshCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="ArrowSync" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Recent Files" Classes="recentItemsMenu" ItemsSource="{Binding RecentFiles}"
+                      IsEnabled="{Binding RecentFiles.Count}"
+                      DisplayMemberBinding="{Binding DisplayPath}" Command="{Binding OpenFileCommand}"
+                      CommandParameter="{Binding $self.SelectedItem}" />
+            <MenuItem Header="Recent Folders" Classes="recentItemsMenu"
+                      ItemsSource="{Binding RecentFolders}"
+                      IsEnabled="{Binding RecentFolders.Count}"
+                      DisplayMemberBinding="{Binding DisplayPath}" Command="{Binding OpenFolderCommand}"
+                      CommandParameter="{Binding $self.SelectedItem}" />
+            <Separator />
+            <MenuItem Header="E_xit" InputGesture="{OnPlatform 'Alt+F4', macOS='Cmd+Q'}"
+                      Command="{Binding ExitCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="ArrowExit" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Edit">
+            <MenuItem Header="Cu_t" InputGesture="{OnPlatform 'Ctrl+X', macOS='Cmd+X'}"
+                      Command="{Binding CutCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Cut" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Copy" InputGesture="{OnPlatform 'Ctrl+C', macOS='Cmd+C'}"
+                      Command="{Binding CopyCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Copy" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Paste" InputGesture="{OnPlatform 'Ctrl+V', macOS='Cmd+V'}"
+                      Command="{Binding PasteCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="ClipboardPaste" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="_Rename" InputGesture="{OnPlatform 'Ctrl+R', macOS='Cmd+R'}"
+                      Command="{Binding RenameCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="RenameA" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Edit Value" InputGesture="{OnPlatform 'Ctrl+E', macOS='Cmd+E'}"
+                      Command="{Binding EditValueCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Edit" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Delete" InputGesture="Delete" Command="{Binding DeleteCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Delete" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Move _Up" InputGesture="{OnPlatform 'Ctrl+Up', macOS='Cmd+Up'}"
+                      Command="{Binding MoveUpCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="ArrowUp" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Move Do_wn" InputGesture="{OnPlatform 'Ctrl+Down', macOS='Cmd+Down'}"
+                      Command="{Binding MoveDownCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="ArrowDown" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Search">
+            <MenuItem Header="_Find..." InputGesture="{OnPlatform 'Ctrl+F', macOS='Cmd+F'}"
+                      Command="{Binding FindCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Search" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Find _Next" InputGesture="F3" Command="{Binding FindNextCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="DocumentSearch" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="_Replace..." InputGesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}"
+                      Command="{Binding ReplaceCommand}" />
+            <Separator />
+            <MenuItem Header="_Chunk Finder..." Command="{Binding ChunkFinderCommand}" />
+        </MenuItem>
+        <MenuItem Header="_Help">
+            <MenuItem Header="_About" InputGesture="F1" Command="{Binding AboutCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Info" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Ac_knowledgements" Command="{Binding AcknowledgementsCommand}">
+                <MenuItem.Icon>
+                    <ic:FluentIcon Icon="Certificate" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+    </Menu>
+
+    <UserControl.Styles>
+        <!-- And these are RecentItem-specific. -->
+        <Style Selector="MenuItem.recentItemsMenu > MenuItem">
+            <!-- This is so the user can see the full path on the ToolTip. -->
+            <Setter Property="ToolTip.Tip" x:DataType="core:RecentItem" Value="{Binding Path}" />
+            <Setter Property="DataContext" Value="{Binding $self.SelectedItem}" />
+
+            <!-- And this makes sure the DisplayPath doesn't leave any blank space -->
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Grid.ColumnSpan" Value="2" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+</UserControl>

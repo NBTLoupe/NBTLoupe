@@ -8,7 +8,7 @@
 
         <AssemblyName>NBTLoupe</AssemblyName>
         <Version>0.0.0</Version>
-        <ApplicationIcon>NBTLoupe.ico</ApplicationIcon>
+        <ApplicationIcon>Assets/NBTLoupe.ico</ApplicationIcon>
 
         <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
@@ -19,17 +19,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="12.1.1" />
-        <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
-        <PackageReference Include="Avalonia.Wayland" Version="12.1.1" />
+        <PackageReference Include="Avalonia" Version="12.1.1"/>
+        <PackageReference Include="Avalonia.Desktop" Version="12.1.1"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1"/>
+        <PackageReference Include="Avalonia.Wayland" Version="12.1.1"/>
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="FluentIcons.Avalonia" Version="2.1.337" />
-        <PackageReference Include="Serilog" Version="4.4.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
+        <PackageReference Include="FluentIcons.Avalonia" Version="2.1.337"/>
+        <PackageReference Include="Serilog" Version="4.4.0"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
     </ItemGroup>
@@ -40,13 +41,48 @@
 
     <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
         <ItemGroup>
-            <Icons Include="..\ASSETS\icons\NBTLoupe.png;..\ASSETS\icons\NBTLoupe.ico" />
+            <Icons Include="..\ASSETS\icons\NBTLoupe.png;..\ASSETS\icons\NBTLoupe.ico"/>
         </ItemGroup>
-        <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)" SkipUnchangedFiles="true" />
+        <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)\Assets" SkipUnchangedFiles="true"/>
     </Target>
 
     <ItemGroup>
-        <AvaloniaResource Include="NBTLoupe.png" />
-        <AvaloniaResource Include="NBTLoupe.ico" />
+        <AvaloniaResource Include="Assets\NBTLoupe.ico"/>
+        <AvaloniaResource Include="Assets\NBTLoupe.png"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Views\Main\MainView.axaml.cs">
+            <DependentUpon>MainView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\DialogHostView.axaml.cs">
+            <DependentUpon>DialogHostViewModel.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="ViewModels\Main\MainViewModel.Blocking.cs">
+            <DependentUpon>MainViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="ViewModels\Main\MainViewModel.CommandChecks.cs">
+            <DependentUpon>MainViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="ViewModels\Main\MainViewModel.Commands.cs">
+            <DependentUpon>MainViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="ViewModels\Main\MainViewModel.Dialogs.cs">
+            <DependentUpon>MainViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Main\MainMenuView.axaml.cs">
+            <DependentUpon>AboutDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Main\MainCommandBarView.axaml.cs">
+            <DependentUpon>MainCommandBarView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Main\MainTreeViewView.axaml.cs">
+            <DependentUpon>MainTreeViewView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 </Project>

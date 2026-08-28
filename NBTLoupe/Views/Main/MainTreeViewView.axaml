@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:NBTLoupe.Core"
+             xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+             xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
+             x:Class="NBTLoupe.Views.Main.MainTreeViewView"
+             x:DataType="main:MainViewModel">
+    <TreeView x:Name="MainTreeView" ItemsSource="{Binding TreeNodes}"
+              SelectedItems="{Binding SelectedTreeNodes}"
+              SelectionMode="Multiple"
+              DoubleTapped="InputElement_OnDoubleTapped" DragDrop.AllowDrop="True"
+              DragDrop.DragOver="TreeView_OnDragOver"
+              DragDrop.Drop="TreeView_OnDrop">
+        <TreeView.ItemTemplate>
+            <TreeDataTemplate ItemsSource="{Binding SubNodes}">
+                <StackPanel Orientation="Horizontal">
+                    <ic:FluentIcon Icon="{Binding Icon}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                </StackPanel>
+            </TreeDataTemplate>
+        </TreeView.ItemTemplate>
+        <TreeView.ContextMenu>
+            <ContextMenu
+                IsEnabled="{Binding SingleSelectedTreeNode, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <MenuItem x:Name="Expand" Header="_Expand"
+                          IsVisible="{Binding !SingleSelectedTreeNode?.IsExpanded}"
+                          Command="{Binding ToggleExpandCommand}" />
+                <MenuItem x:Name="Collapse" Header="_Collapse"
+                          IsVisible="{Binding !!SingleSelectedTreeNode?.IsExpanded}"
+                          Command="{Binding ToggleExpandCommand}" />
+                <Separator />
+                <MenuItem Header="Expand C_hildren" Command="{Binding ExpandChildrenCommand}" />
+                <MenuItem Header="Expand _Tree" Command="{Binding ExpandTreeCommand}" />
+
+                <Separator />
+                <MenuItem Header="Move _Up" Command="{Binding MoveUpCommand}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="ArrowUp" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Move _Down" Command="{Binding MoveDownCommand}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="ArrowDown" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </TreeView.ContextMenu>
+        <TreeView.KeyBindings>
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+Shift+E', macOS='Cmd+Shift+E'}"
+                        Command="{Binding OpenInExplorerCommand}" />
+
+            <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}" />
+
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+X', macOS='Cmd+X'}" Command="{Binding CutCommand}" />
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+C', macOS='Cmd+C'}" Command="{Binding CopyCommand}" />
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+V', macOS='Cmd+V'}" Command="{Binding PasteCommand}" />
+
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+R', macOS='Cmd+R'}" Command="{Binding RenameCommand}" />
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+E', macOS='Cmd+E'}" Command="{Binding EditValueCommand}" />
+
+            <KeyBinding Gesture="Delete" Command="{Binding DeleteCommand}" />
+
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+Up', macOS='Cmd+Up'}" Command="{Binding MoveUpCommand}" />
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+Down', macOS='Cmd+Down'}"
+                        Command="{Binding MoveDownCommand}" />
+
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+F', macOS='Cmd+F'}" Command="{Binding FindCommand}" />
+            <KeyBinding Gesture="F3" Command="{Binding FindNextCommand}" />
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}" Command="{Binding ReplaceCommand}" />
+        </TreeView.KeyBindings>
+    </TreeView>
+
+    <UserControl.Styles>
+        <!-- This lets us control the UI IsExpanded both ways, and hides the Placeholder items -->
+        <Style Selector="TreeViewItem" x:DataType="core:TreeNode">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+            <Setter Property="IsVisible" Value="{Binding !IsPlaceholder}" />
+        </Style>
+    </UserControl.Styles>
+</UserControl>
