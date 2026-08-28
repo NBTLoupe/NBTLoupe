@@ -33,7 +33,6 @@ public partial class MainViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(RefreshCommand))]
     [NotifyCanExecuteChangedFor(nameof(CutCommand))]
     [NotifyCanExecuteChangedFor(nameof(CopyCommand))]
-    [NotifyCanExecuteChangedFor(nameof(PasteCommand))]
     [NotifyCanExecuteChangedFor(nameof(RenameCommand))]
     [NotifyCanExecuteChangedFor(nameof(EditValueCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteCommand))]
