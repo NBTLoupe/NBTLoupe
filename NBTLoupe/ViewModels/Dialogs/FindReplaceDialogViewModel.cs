@@ -65,6 +65,9 @@ internal partial class FindReplaceDialogViewModel : DialogHostViewModel
     // - We are in Basic mode (as Advanced mode is not implemented).
     internal override bool IsOkEnabled => !InProgress && !IsAdvanced;
 
+    // This gives the OK button tailor-made text!
+    internal override string OkText => "Find";
+
     partial void OnInProgressChanged(bool value)
     {
         _viewModel.IsDialogProgressing = value;
