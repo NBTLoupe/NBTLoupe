@@ -1,7 +1,13 @@
+using System;
 using System.IO;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using NBTLoupe.Core;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTModel.Data.Nodes;
+using Serilog;
+using Serilog.Events;
+using Substrate;
 using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Main;
@@ -27,10 +33,11 @@ public partial class MainViewModel
 
     private bool CanCopy => ClipboardAvailable && SingleSelectedTreeNode?.DataNode.CanCopyNode == true;
 
-    // TODO: Make CanPasteIntoNode synchronous.
-    private bool CanPaste => ClipboardAvailable &&
-                             SingleSelectedTreeNode?.DataNode.CanPasteIntoNode().GetAwaiter().GetResult() ==
-                             true;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PasteCommand))]
+    private partial bool CanPasteCached { get; set; }
+
+    private bool CanPaste => CanPasteCached;
 
     internal bool CanRename => SingleSelectedTreeNode?.DataNode.CanRenameNode ?? false;
 
@@ -94,4 +101,28 @@ public partial class MainViewModel
     private bool CanDialogImport => CurrentDialog is EditTagDialogViewModel { ValueVisible: true };
 
     private bool CanDialogExport => CurrentDialog is EditTagDialogViewModel { ValueVisible: true };
+
+    // We cache the CanPaste independently, as it'd lock the UI thread otherwise.
+    async partial void OnSingleSelectedTreeNodeChanged(TreeNode? value)
+    {
+        try
+        {
+            // We compute the CanPasteIntoNode value.
+            var canPaste = ClipboardAvailable && value is not null && await value.DataNode.CanPasteIntoNode();
+
+            // We make sure the SingleSelectedTreeNode hasn't changed before we computed the value.
+            if (SingleSelectedTreeNode == value) CanPasteCached = canPaste;
+        }
+        catch (Exception e)
+        {
+            // If the exception comes from Substrate, things are probably on fire. That's fatal.
+            var fatal = e is SubstrateException;
+
+            // If something goes wrong, we log it and show a Dialog to the user. :C
+            Log.Write(fatal ? LogEventLevel.Fatal : LogEventLevel.Error, e,
+                "[NBTLoupe]: CanPasteIntoNode exception");
+
+            await OpenDialogAsync(new ErrorDialogViewModel(e, fatal));
+        }
+    }
 }
