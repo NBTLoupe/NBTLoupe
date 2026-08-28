@@ -56,6 +56,9 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
         }
     }
 
+    // This gives the OK button tailor-made text!
+    internal override string OkText => "Add";
+
     partial void OnTagSizeChanging(decimal value)
     {
         if (value < 0) TagSize = 0;

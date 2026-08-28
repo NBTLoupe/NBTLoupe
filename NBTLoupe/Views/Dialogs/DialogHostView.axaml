@@ -108,7 +108,7 @@
                                         </Button.KeyBindings>
                                     </Button>
                                     <!-- ReSharper disable once Xaml.StyleClassNotFound -->
-                                    <Button Name="DialogOkButton" Content="OK"
+                                    <Button Name="DialogOkButton" Content="{Binding CurrentDialog?.OkText}"
                                             Command="{Binding CurrentDialog?.DialogOkCommand}"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"

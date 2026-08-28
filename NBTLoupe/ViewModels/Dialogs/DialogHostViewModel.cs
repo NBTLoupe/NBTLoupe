@@ -21,6 +21,9 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     // OK is always needed, but it needs to be Toggled based on validation!
     internal virtual bool IsOkEnabled => true;
 
+    // This allows us to give the OK button tailor-made text!
+    internal virtual string OkText => "OK";
+
     // This allows us to wait for Dialog completion.
     internal TaskCompletionSource<bool> CompletionSource { get; } =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
