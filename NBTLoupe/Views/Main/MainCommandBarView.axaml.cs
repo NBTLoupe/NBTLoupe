@@ -15,7 +15,7 @@ public partial class MainCommandBarView : UserControl
         // We check this so the Overflow Menu doesn't close unexpectedly, and instead only does when one of its items was clicked (which should always be the case).
         AddHandler(Button.ClickEvent, (_, e) =>
         {
-            if ((e.Source as Control).FindAncestorOfType<ItemsControl>()?.Name == "PART_OverflowPresenter" &&
+            if ((e.Source as Control)?.FindAncestorOfType<ItemsControl>()?.Name == "PART_OverflowPresenter" &&
                 MainCommandBar.IsOpen)
                 MainCommandBar.IsOpen = false;
         }, RoutingStrategies.Bubble, true);
