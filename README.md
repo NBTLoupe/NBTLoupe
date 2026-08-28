@@ -94,6 +94,6 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 ## Attribution
 If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file! And all licenses are in the [**LICENSES/**](./LICENSES/) subdirectory.
 
-The NBTExplorer subdirectory is entirely my own code, unless it is explicitly noted as not. Two examples of this are the Dialogs, which are derived from **FluentAvalonia**; and the **"reused infrastructure"**, which is derived from the original NBTExplorer.
+The NBTLoupe subdirectory is entirely my own code, unless it is explicitly noted as not. Two examples of this are the Dialogs, which are derived from **FluentAvalonia**; and the **"reused infrastructure"**, which is derived from the original NBTExplorer.
 
-All the other subdirectories are directly derived from the original NBTExplorer, and are mostly unmodified.
+Although the NBTModel and the Substrate subdirectories have been substantially modified and aren't backwards compatible, both are **directly derived** from the original NBTExplorer and contain much of the original code.
