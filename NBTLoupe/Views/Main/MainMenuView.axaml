@@ -114,11 +114,6 @@
                     <ic:FluentIcon Icon="Search" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Find _Next" InputGesture="F3" Command="{Binding FindNextCommand}">
-                <MenuItem.Icon>
-                    <ic:FluentIcon Icon="DocumentSearch" />
-                </MenuItem.Icon>
-            </MenuItem>
             <Separator />
             <MenuItem Header="_Replace..." InputGesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}"
                       Command="{Binding ReplaceCommand}" />

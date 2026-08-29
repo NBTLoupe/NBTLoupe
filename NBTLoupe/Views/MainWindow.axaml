@@ -7,7 +7,8 @@
         x:Class="NBTLoupe.Views.MainWindow"
         Title="NBTLoupe"
         Icon="/Assets/NBTLoupe.ico"
-        Width="1100" Height="750"
+        Width="1048" Height="720"
+        WindowStartupLocation="CenterScreen"
         Closing="Window_OnClosing">
     <views:MainView x:Name="MainView" />
 </Window>

@@ -167,14 +167,6 @@
                 </CommandBarButton.Icon>
             </CommandBarButton>
 
-            <CommandBarButton Label="Find Next" ToolTip.Tip="Find Next" Command="{Binding FindNextCommand}">
-                <CommandBarButton.Icon>
-                    <ic:FluentIcon Icon="DocumentSearch" />
-                </CommandBarButton.Icon>
-            </CommandBarButton>
-
-            <CommandBarSeparator />
-
             <!-- This is hacky, but this is the best way I could align the CommandBar to the left without it looking awkward. -->
             <CommandBarButton IsEnabled="False" IsVisible="{Binding !$self.IsInOverflow}"
                               Width="{Binding $parent.Bounds.Width}" />
