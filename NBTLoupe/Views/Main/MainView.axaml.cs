@@ -12,5 +12,5 @@ public partial class MainView : UserControl
     }
 
     // We need to get the ViewModel for certain operations.
-    internal MainViewModel ViewModel => DataContext as MainViewModel ?? throw new InvalidOperationException();
+    internal MainViewModel MainViewModel => DataContext as MainViewModel ?? throw new InvalidOperationException();
 }

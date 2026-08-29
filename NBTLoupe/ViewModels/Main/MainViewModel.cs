@@ -13,7 +13,7 @@ namespace NBTLoupe.ViewModels.Main;
 public partial class MainViewModel : ViewModelBase
 {
     // We need to get the TopLevel to do certain IO operations. 
-    private static TopLevel TopLevel => Application.Current?.ApplicationLifetime switch
+    internal static TopLevel TopLevel => Application.Current?.ApplicationLifetime switch
     {
         IClassicDesktopStyleApplicationLifetime desktop => TopLevel.GetTopLevel(desktop.MainWindow),
         ISingleViewApplicationLifetime singleViewPlatform => TopLevel.GetTopLevel(singleViewPlatform.MainView),

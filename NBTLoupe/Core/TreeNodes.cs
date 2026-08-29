@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using NBTLoupe.ViewModels.Dialogs;
+using NBTLoupe.ViewModels.Main;
 using NBTModel.Data.Nodes;
 using NBTModel.Utility;
 using Serilog;
@@ -19,7 +20,7 @@ internal partial class TreeNode : ObservableObject
 {
     // This is related to the NodeTreeComparer, also in this file.
     private static readonly NodeTreeComparer NodeComparer = new();
-    private readonly Func<DialogHostViewModel, Task> _openDialogAsync;
+    private readonly Func<Func<MainViewModel, DialogHostViewModel>, Task<bool>> _openDialogAsync;
 
     // We need this exclusively for the lazy loading's Error Handling.
     private readonly Func<Func<Task>, bool, bool, Task> _withBlock;
@@ -27,7 +28,7 @@ internal partial class TreeNode : ObservableObject
     // And here's how you create the actual TreeNode!
     private TreeNode(DataNode dataNode, ObservableCollection<TreeNode> subNodes,
         Func<Func<Task>, bool, bool, Task> withBlock,
-        Func<DialogHostViewModel, Task> openDialogAsync, bool isPlaceholder = false)
+        Func<Func<MainViewModel, DialogHostViewModel>, Task<bool>> openDialogAsync, bool isPlaceholder = false)
     {
         _withBlock = withBlock;
         _openDialogAsync = openDialogAsync;
@@ -96,7 +97,7 @@ internal partial class TreeNode : ObservableObject
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(ex, "[NBTLoupe]: Unhandled UI thread exception");
-            await _openDialogAsync(new ErrorDialogViewModel(ex));
+            await _openDialogAsync(viewModel => new ErrorDialogViewModel(viewModel, ex));
         }
     }
 
@@ -139,7 +140,8 @@ internal partial class TreeNode : ObservableObject
 
     // Nodes in NBTModel have to be "Expanded" to be able to access their children. This does that in a sorted manner.
     internal static void ExpandNode(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
-        Func<Func<Task>, bool, bool, Task> withBlock, Func<DialogHostViewModel, Task> openDialogAsync,
+        Func<Func<Task>, bool, bool, Task> withBlock,
+        Func<Func<MainViewModel, DialogHostViewModel>, Task<bool>> openDialogAsync,
         TreeNode? parent = null)
     {
         // First we sort the NodeTree...

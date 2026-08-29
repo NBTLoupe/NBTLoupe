@@ -43,7 +43,7 @@ public partial class MainViewModel
             Log.Write(fatal ? LogEventLevel.Fatal : LogEventLevel.Error, e,
                 "[NBTLoupe]: Dialog exception");
 
-            return await OpenDialogAsync(new ErrorDialogViewModel(e, fatal));
+            return await OpenDialogAsync(new ErrorDialogViewModel(this, e, fatal));
         }
         finally
         {

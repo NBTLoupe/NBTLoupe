@@ -11,7 +11,7 @@ namespace NBTLoupe.Core;
 internal static class FormHandlers
 {
     // This function intializes the FormHandlers (AKA the FormRegistry) for us. This lets NBTModel neatly interface with our UI. 
-    internal static void InitializeFormHandlers(MainViewModel viewModel)
+    internal static void InitializeFormHandlers(MainViewModel mainViewModel)
     {
         // This one is executed when the user chooses to Rename a Tag.
         FormRegistry.RenameTag = data =>
@@ -19,7 +19,7 @@ internal static class FormHandlers
             try
             {
                 // We just assign the value of the EditTagTextBox, pretty simple.
-                data.Value = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagName ?? "";
+                data.Value = (mainViewModel.CurrentDialog as EditTagDialogViewModel)?.TagName ?? "";
                 return true;
             }
             catch
@@ -34,10 +34,10 @@ internal static class FormHandlers
             try
             {
                 // We first assign its TagName from our AddTagNameTextBox...
-                data.TagName = (viewModel.CurrentDialog as AddTagDialogViewModel)?.TagName;
+                data.TagName = (mainViewModel.CurrentDialog as AddTagDialogViewModel)?.TagName;
 
                 // ...then create an empty TagNode depending on its TagType and Size.
-                var size = (viewModel.CurrentDialog as AddTagDialogViewModel)?.TagSize ?? 0;
+                var size = (mainViewModel.CurrentDialog as AddTagDialogViewModel)?.TagSize ?? 0;
                 data.TagNode = data.TagType switch
                 {
                     TagType.TAG_BYTE => new TagNodeByte(),
@@ -73,7 +73,7 @@ internal static class FormHandlers
             try
             {
                 // We just assign the value of the EditTagTextBox, pretty simple.
-                data.Value = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
+                data.Value = (mainViewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
                 return true;
             }
             catch
@@ -87,7 +87,7 @@ internal static class FormHandlers
         {
             try
             {
-                var text = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
+                var text = (mainViewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
 
                 // These are extremely self-explanatory, so I'm not going to comment them.
                 switch (data.Tag.GetTagType())
@@ -129,10 +129,10 @@ internal static class FormHandlers
         {
             try
             {
-                var text = (viewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
+                var text = (mainViewModel.CurrentDialog as EditTagDialogViewModel)?.TagValue ?? "";
 
                 // Unfortunately, EditByteArray also deals with Scalar[]s. This means we have to convert them into byte[]s first.
-                data.Data = viewModel.CurrentDialog?.DialogTagType switch
+                data.Data = mainViewModel.CurrentDialog?.DialogTagType switch
                 {
                     TagType.TAG_SHORT_ARRAY =>
                     [
