@@ -12,14 +12,10 @@ namespace NBTLoupe.ViewModels.Dialogs;
 // Here we define the AddTag Dialog!
 internal partial class AddTagDialogViewModel : DialogHostViewModel
 {
-    // We need to access the MainViewModel somehow!
-    private readonly MainViewModel _viewModel;
-
     // Here we set up the Dialog!
-    internal AddTagDialogViewModel(MainViewModel viewModel, TagType tagType)
+    internal AddTagDialogViewModel(MainViewModel mainViewModel, TagType tagType) : base(mainViewModel)
     {
         DialogTagType = tagType;
-        _viewModel = viewModel;
 
         // Set the context-accurate Title and Type.
         TitleText = $"Add {TreeNode.GetFriendlyTag(DialogTagType)}";
@@ -50,7 +46,7 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
             // - The use inputted a Name.
             // - There isn't already a sibling with that same Name.
             if (string.IsNullOrEmpty(TagName)) return false;
-            var metaTagContainer = _viewModel.SingleSelectedTreeNode?.DataNode as IMetaTagContainer;
+            var metaTagContainer = MainViewModel.SingleSelectedTreeNode?.DataNode as IMetaTagContainer;
             return metaTagContainer?.NamedTagContainer is null ||
                    !metaTagContainer.NamedTagContainer.TagNamesInUse.Contains(TagName);
         }
@@ -68,24 +64,24 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
     internal override async Task ExecuteAsync()
     {
         // Check if SubNodes is null, and return if so.
-        if (_viewModel.SingleSelectedTreeNode?.SubNodes is null) throw new UnreachableException();
+        if (MainViewModel.SingleSelectedTreeNode?.SubNodes is null) throw new UnreachableException();
 
         // Save its parent's SubNodes.
-        var before = _viewModel.SingleSelectedTreeNode.SubNodes.Select(n => n.DataNode).ToHashSet();
+        var before = MainViewModel.SingleSelectedTreeNode.SubNodes.Select(n => n.DataNode).ToHashSet();
 
         // Create the new TreeNode.
-        if (!_viewModel.SingleSelectedTreeNode.DataNode.CreateNode(DialogTagType)) throw new UnreachableException();
+        if (!MainViewModel.SingleSelectedTreeNode.DataNode.CreateNode(DialogTagType)) throw new UnreachableException();
 
         // IsExpand (UI-wise) the new TreeNode.
-        _viewModel.SingleSelectedTreeNode.IsExpanded = true;
+        MainViewModel.SingleSelectedTreeNode.IsExpanded = true;
 
         // Refresh its parent.
-        await _viewModel.SingleSelectedTreeNode.RefreshChildNodesAsync();
+        await MainViewModel.SingleSelectedTreeNode.RefreshChildNodesAsync();
 
         // And find the new TreeNode, so we can Select it.
-        _viewModel.SelectedTreeNodes.Clear();
+        MainViewModel.SelectedTreeNodes.Clear();
         var newFound =
-            _viewModel.SingleSelectedTreeNode.SubNodes.FirstOrDefault(node => !before.Contains(node.DataNode));
-        if (newFound is not null) _viewModel.SelectedTreeNodes.Add(newFound);
+            MainViewModel.SingleSelectedTreeNode.SubNodes.FirstOrDefault(node => !before.Contains(node.DataNode));
+        if (newFound is not null) MainViewModel.SelectedTreeNodes.Add(newFound);
     }
 }

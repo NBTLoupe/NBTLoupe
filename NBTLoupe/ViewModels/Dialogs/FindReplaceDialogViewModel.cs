@@ -9,20 +9,16 @@ namespace NBTLoupe.ViewModels.Dialogs;
 // Here we define the Find and Replace Dialog!
 internal partial class FindReplaceDialogViewModel : DialogHostViewModel
 {
-    // We need to access the MainViewModel somehow!
-    private readonly MainViewModel _viewModel;
-
     // Here we set up the Dialog!
-    internal FindReplaceDialogViewModel(MainViewModel viewModel, bool isAdvanced = false)
+    internal FindReplaceDialogViewModel(MainViewModel mainViewModel, bool isAdvanced = false) : base(mainViewModel)
     {
-        _viewModel = viewModel;
         IsAdvanced = isAdvanced;
 
-        BasicNameText = _viewModel.BasicSearcher?.Name ?? "";
-        BasicValueText = _viewModel.BasicSearcher?.Value ?? "";
+        BasicNameText = MainViewModel.BasicSearcher?.Name ?? "";
+        BasicValueText = MainViewModel.BasicSearcher?.Value ?? "";
 
-        BasicNameEnabled = _viewModel.BasicSearcher?.Name is not null;
-        BasicValueEnabled = _viewModel.BasicSearcher?.Value is not null;
+        BasicNameEnabled = MainViewModel.BasicSearcher?.Name is not null;
+        BasicValueEnabled = MainViewModel.BasicSearcher?.Value is not null;
     }
 
     // Here's all the fields we bind to in the XAML...
@@ -70,7 +66,7 @@ internal partial class FindReplaceDialogViewModel : DialogHostViewModel
 
     partial void OnInProgressChanged(bool value)
     {
-        _viewModel.IsDialogProgressing = value;
+        MainViewModel.IsDialogProgressing = value;
         DialogCancelCommand.NotifyCanExecuteChanged();
     }
 
@@ -82,13 +78,13 @@ internal partial class FindReplaceDialogViewModel : DialogHostViewModel
         if (!IsAdvanced)
         {
             // Check if SubNodes is null, and return if so.
-            if (_viewModel.SingleSelectedTreeNode?.SubNodes is null) throw new UnreachableException();
+            if (MainViewModel.SingleSelectedTreeNode?.SubNodes is null) throw new UnreachableException();
 
             // We block the UI to prevent the user from doing anything while we process the search.
             InProgress = true;
 
             // And we create our NodeBasicSearcher.
-            var find = new TreeNode.NodeBasicSearcher(_viewModel.SingleSelectedTreeNode,
+            var find = new TreeNode.NodeBasicSearcher(MainViewModel.SingleSelectedTreeNode,
                 BasicNameEnabled ? BasicNameText : null, BasicValueEnabled ? BasicValueText : null);
 
             // Then we try to Find our first instance of the searched parameters.
@@ -98,10 +94,10 @@ internal partial class FindReplaceDialogViewModel : DialogHostViewModel
             if (found is not null)
             {
                 // Then we can suppose there are even more things to Find, and thus we save the state in the MainViewModel.
-                _viewModel.BasicSearcher = find;
+                MainViewModel.BasicSearcher = find;
 
                 // And, because we have this state saved, we can enable the FindNext AppCommand.
-                _viewModel.EnableFindNext = true;
+                MainViewModel.EnableFindNext = true;
 
                 // We also set FoundMatch to true, preventing the "No matching tags were found." dialog from showing.
                 FoundMatch = true;
@@ -110,10 +106,10 @@ internal partial class FindReplaceDialogViewModel : DialogHostViewModel
             }
 
             // If we don't, though, we make sure to clean up any leftover state in the MainViewModel...
-            _viewModel.BasicSearcher = null;
+            MainViewModel.BasicSearcher = null;
 
             // ...and we make sure the FindNext AppCommand is disabled.
-            _viewModel.EnableFindNext = false;
+            MainViewModel.EnableFindNext = false;
         }
         // And this is the Advanced mode.
         else

@@ -13,10 +13,10 @@ public partial class MainWindow : Window
     internal void Window_OnClosing(object? sender, WindowClosingEventArgs e)
     {
         // If the user has unsaved changes...
-        if (!MainView.ViewModel.CanSave) return;
+        if (!MainView.MainViewModel.CanSave) return;
 
         // ...we open a Dialog to warn them and abort the Closing.
         e.Cancel = true;
-        MainView.ViewModel.AbortExitCommand.Execute(null);
+        MainView.MainViewModel.AbortExitCommand.Execute(null);
     }
 }

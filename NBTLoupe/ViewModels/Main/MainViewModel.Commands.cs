@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -34,7 +33,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Open a File through the Button.
     [RelayCommand(CanExecute = nameof(CanOpenFile))]
-    private Task OpenFile(RecentItem? recentItem)
+    private Task<bool> OpenFile(RecentItem? recentItem)
     {
         return SafeExecuteAsync(async () =>
         {
@@ -84,7 +83,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Open a Folder through the Button.
     [RelayCommand(CanExecute = nameof(CanOpenFolder))]
-    private Task OpenFolder(RecentItem? recentItem)
+    private Task<bool> OpenFolder(RecentItem? recentItem)
     {
         return SafeExecuteAsync(async () =>
         {
@@ -120,7 +119,7 @@ public partial class MainViewModel
 
     // This one is executed when the user Drops a File/Folder into the app.
     [RelayCommand]
-    private Task DropFile(string path)
+    private Task<bool> DropFile(string path)
     {
         return SafeExecuteAsync(async () =>
         {
@@ -131,7 +130,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Open their Minecraft Save Folder.
     [RelayCommand(CanExecute = nameof(CanOpenMinecraftSaveFolder))]
-    private Task OpenMinecraftSaveFolder()
+    private Task<bool> OpenMinecraftSaveFolder()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -142,7 +141,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Open a DirectoryDataNode in their file Explorer.
     [RelayCommand(CanExecute = nameof(CanOpenInExplorer))]
-    private Task OpenInExplorer()
+    private Task<bool> OpenInExplorer()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -158,7 +157,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Save their "project" (TreeNodes).
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private Task Save()
+    private Task<bool> Save()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -176,7 +175,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Refresh a TreeNode.
     [RelayCommand(CanExecute = nameof(CanRefresh))]
-    private Task Refresh()
+    private Task<bool> Refresh()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -230,7 +229,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Exit through the Button.
     [RelayCommand]
-    private Task Exit()
+    private Task<bool> Exit()
     {
         return SafeExecuteAsync(() =>
         {
@@ -251,14 +250,14 @@ public partial class MainViewModel
 
     // This one is executed when the user is trying to Exit with Unsaved Changes.
     [RelayCommand]
-    private Task AbortExit()
+    private Task<bool> AbortExit()
     {
         return SafeExecuteAsync(async () => { await OpenDialogAsync(new UnsavedChangesDialogViewModel(this, true)); });
     }
 
     // This one is executed when the user chooses to Cut a TreeNode.
     [RelayCommand(CanExecute = nameof(CanCut))]
-    private Task Cut()
+    private Task<bool> Cut()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -292,7 +291,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Copy a TreeNode.
     [RelayCommand(CanExecute = nameof(CanCopy))]
-    private Task Copy()
+    private Task<bool> Copy()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -307,7 +306,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Paste a TreeNode.
     [RelayCommand(CanExecute = nameof(CanPaste))]
-    private Task Paste()
+    private Task<bool> Paste()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -337,7 +336,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Rename a TreeNode.
     [RelayCommand(CanExecute = nameof(CanRename))]
-    private Task Rename()
+    private Task<bool> Rename()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -350,7 +349,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Edit a TreeNode.
     [RelayCommand(CanExecute = nameof(CanEditValue))]
-    private Task EditValue()
+    private Task<bool> EditValue()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -363,7 +362,7 @@ public partial class MainViewModel
 
     // This is a mixed version of Rename and EditValue, which is used to Focus on the right TextBox when unknown. 
     [RelayCommand]
-    private Task EditOrRename()
+    private Task<bool> EditOrRename()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -374,7 +373,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Delete a TreeNode.
     [RelayCommand(CanExecute = nameof(CanDelete))]
-    private Task Delete()
+    private Task<bool> Delete()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -413,7 +412,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Move Up a TreeNode.
     [RelayCommand(CanExecute = nameof(CanMoveUp))]
-    private Task MoveUp()
+    private Task<bool> MoveUp()
     {
         return SafeExecuteAsync(() =>
         {
@@ -433,7 +432,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Move Down a TreeNode.
     [RelayCommand(CanExecute = nameof(CanMoveDown))]
-    private Task MoveDown()
+    private Task<bool> MoveDown()
     {
         return SafeExecuteAsync(() =>
         {
@@ -453,7 +452,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to open a Find Dialog.
     [RelayCommand(CanExecute = nameof(CanFind))]
-    private Task Find()
+    private Task<bool> Find()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -463,13 +462,13 @@ public partial class MainViewModel
             // ...then we open it, and wait for the results. If we didn't find anything...
             if (await OpenDialogAsync(dialogViewModel) && !dialogViewModel.FoundMatch)
                 // ...we tell the user.
-                await OpenDialogAsync(new InfoDialogViewModel("No matching tags were found."));
+                await OpenDialogAsync(new InfoDialogViewModel(this, "No matching tags were found."));
         });
     }
 
     // This one is executed when the user chooses to continue their pre-started Find operation.
     [RelayCommand(CanExecute = nameof(CanFindNext))]
-    private Task FindNext()
+    private Task<bool> FindNext()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -491,7 +490,7 @@ public partial class MainViewModel
                     EnableFindNext = false;
 
                     // ...and open a Dialog telling the user about this.
-                    await OpenDialogAsync(new InfoDialogViewModel("End of results."));
+                    await OpenDialogAsync(new InfoDialogViewModel(this, "End of results."));
                     return;
                 }
 
@@ -508,14 +507,14 @@ public partial class MainViewModel
     // This one is executed when the user chooses to open a Replace Dialog (AKA an Advanced mode Find Dialog).
     // TODO: This kind of mode isn't implemented yet!
     [RelayCommand(CanExecute = nameof(CanReplace))]
-    private Task Replace()
+    private Task<bool> Replace()
     {
         return SafeExecuteAsync(async () => { await OpenDialogAsync(new FindReplaceDialogViewModel(this, true)); });
     }
 
     // This one is executed when the user chooses to open a ChunkFinder Dialog.
     [RelayCommand(CanExecute = nameof(CanChunkFinder))]
-    private Task ChunkFinder()
+    private Task<bool> ChunkFinder()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -525,20 +524,20 @@ public partial class MainViewModel
             // ...then we open it, and wait for the results. If we didn't find anything...
             if (await OpenDialogAsync(dialogViewModel) && !dialogViewModel.FoundMatch)
                 // ...we tell the user.
-                await OpenDialogAsync(new InfoDialogViewModel("Chunk not found."));
+                await OpenDialogAsync(new InfoDialogViewModel(this, "Chunk not found."));
         });
     }
 
     // This one is executed when the user chooses to learn about us. <3
     [RelayCommand]
-    private Task About()
+    private Task<bool> About()
     {
-        return SafeExecuteAsync(async () => { await OpenDialogAsync(new AboutDialogViewModel()); });
+        return SafeExecuteAsync(async () => { await OpenDialogAsync(new AboutDialogViewModel(this)); });
     }
 
     // This one is executed when the user chooses to see the NOTICE file.
     [RelayCommand]
-    private Task Acknowledgements()
+    private Task<bool> Acknowledgements()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -549,80 +548,80 @@ public partial class MainViewModel
 
     // These are executed when the user chooses to Add a Tag.
     [RelayCommand(CanExecute = nameof(CanAddByteTag))]
-    private Task AddByteTag()
+    private Task<bool> AddByteTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_BYTE); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddShortTag))]
-    private Task AddShortTag()
+    private Task<bool> AddShortTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_SHORT); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddIntTag))]
-    private Task AddIntTag()
+    private Task<bool> AddIntTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_INT); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddLongTag))]
-    private Task AddLongTag()
+    private Task<bool> AddLongTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_LONG); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddFloatTag))]
-    private Task AddFloatTag()
+    private Task<bool> AddFloatTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_FLOAT); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddDoubleTag))]
-    private Task AddDoubleTag()
+    private Task<bool> AddDoubleTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_DOUBLE); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddByteArrayTag))]
-    private Task AddByteArrayTag()
+    private Task<bool> AddByteArrayTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_BYTE_ARRAY); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddIntArrayTag))]
-    private Task AddIntArrayTag()
+    private Task<bool> AddIntArrayTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_INT_ARRAY); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddLongArrayTag))]
-    private Task AddLongArrayTag()
+    private Task<bool> AddLongArrayTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_LONG_ARRAY); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddStringTag))]
-    private Task AddStringTag()
+    private Task<bool> AddStringTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_STRING); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddListTag))]
-    private Task AddListTag()
+    private Task<bool> AddListTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_LIST); });
     }
 
     [RelayCommand(CanExecute = nameof(CanAddCompoundTag))]
-    private Task AddCompoundTag()
+    private Task<bool> AddCompoundTag()
     {
         return SafeExecuteAsync(async () => { await AddTag(TagType.TAG_COMPOUND); });
     }
 
     // This one is executed when the user chooses to Expand or Collapse a TreeNode.
     [RelayCommand(CanExecute = nameof(CanToggleExpand))]
-    private Task ToggleExpand()
+    private Task<bool> ToggleExpand()
     {
         return SafeExecuteAsync(() =>
         {
@@ -637,7 +636,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Expand a TreeNode's Children.
     [RelayCommand(CanExecute = nameof(CanExpandChildren))]
-    private Task ExpandChildren()
+    private Task<bool> ExpandChildren()
     {
         return SafeExecuteAsync(() =>
         {
@@ -652,7 +651,7 @@ public partial class MainViewModel
 
     // This one is executed when the user chooses to Expand a TreeNode's Tree.
     [RelayCommand(CanExecute = nameof(CanExpandTree))]
-    private Task ExpandTree()
+    private Task<bool> ExpandTree()
     {
         return SafeExecuteAsync(async () =>
         {
@@ -663,100 +662,13 @@ public partial class MainViewModel
         });
     }
 
-    // This one is executed when the user chooses to Import a new Tag Value.
-    [RelayCommand(CanExecute = nameof(CanDialogImport))]
-    private Task DialogImport()
-    {
-        return SafeExecuteAsync(async () =>
-        {
-            // Check if DataNode is null.
-            if (SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
-
-            // First we get the TreeNode's type...
-            var tagDataNode = SingleSelectedTreeNode.DataNode as TagDataNode;
-            var tagType = tagDataNode?.Tag.GetTagType();
-            // ...and build an extension for it.
-            var nodePath = SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
-            var extension = $".{tagType}";
-
-            // We open a FilePicker that only accepts that extension.
-            var files = await TopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            {
-                Title = "Import to " + nodePath,
-                FileTypeFilter =
-                [
-                    new FilePickerFileType($"NBTLoupe {tagType} Data File")
-                    {
-                        Patterns = [$"*{extension}"]
-                    }
-                ]
-            });
-
-            // If the user didn't select any File, we pretend nothing happened.
-            if (files.Count < 1) return;
-
-            // We start reading the opened File.
-            await using var stream = await files[0].OpenReadAsync();
-            using var streamReader = new StreamReader(stream);
-            var fileContent = await streamReader.ReadToEndAsync();
-
-            // If the file is Ascii, it may follow our format...
-            if (Ascii.IsValid(fileContent))
-                (CurrentDialog as EditTagDialogViewModel)?.TagValue = fileContent;
-            else
-                // ...if it isn't, it'd crash the whole app so we won't accept it.
-                throw new UserErrorException(
-                    "Invalid (non-ASCII) data file. Please only import data files created through NBTLoupe. If you did so, your file may be corrupted.");
-        });
-    }
-
-    // This one is executed when the user chooses to Export a Tag Value.
-    [RelayCommand(CanExecute = nameof(CanDialogExport))]
-    private Task DialogExport()
-    {
-        return SafeExecuteAsync(async () =>
-        {
-            // Check if DataNode is null.
-            if (SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
-
-            // First we get the TreeNode's type...
-            var tagDataNode = SingleSelectedTreeNode.DataNode as TagDataNode;
-            var tagType = tagDataNode?.Tag.GetTagType();
-            // ...and build an extension for it.
-            var nodePath = SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
-            var extension = $".{tagType}";
-
-            // We open a SaveFilePicker that only accepts that extension.
-            var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = "Export " + nodePath,
-                FileTypeChoices =
-                [
-                    new FilePickerFileType($"NBTLoupe {tagType} Data File")
-                    {
-                        Patterns = [$"*{extension}"]
-                    }
-                ],
-                DefaultExtension = extension,
-                SuggestedFileName = nodePath.Replace("/", "-").Replace("\\", "-")
-            });
-
-            // If the user didn't save any File, we pretend nothing happened.
-            if (file is null) return;
-
-            // But if they did select a File, we save the Tag's value to it.
-            await using var stream = await file.OpenWriteAsync();
-            await using var streamWriter = new StreamWriter(stream);
-            await streamWriter.WriteAsync((CurrentDialog as EditTagDialogViewModel)?.TagValue);
-        });
-    }
-
     // This allows us to easily catch any errors!
-    private async Task SafeExecuteAsync(Func<Task> action)
+    internal async Task<bool> SafeExecuteAsync(Func<Task> action)
     {
         try
         {
             await action();
+            return true;
         }
         catch (Exception e)
         {
@@ -767,7 +679,9 @@ public partial class MainViewModel
             Log.Write(fatal ? LogEventLevel.Fatal : LogEventLevel.Error, e,
                 "[NBTLoupe]: RelayCommand exception");
 
-            await OpenDialogAsync(new ErrorDialogViewModel(e, fatal));
+            await OpenDialogAsync(new ErrorDialogViewModel(this, e, fatal));
+
+            return false;
         }
         finally
         {

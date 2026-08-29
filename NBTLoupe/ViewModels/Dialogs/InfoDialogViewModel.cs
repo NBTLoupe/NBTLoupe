@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using NBTLoupe.ViewModels.Main;
 
 namespace NBTLoupe.ViewModels.Dialogs;
 
@@ -6,7 +7,7 @@ namespace NBTLoupe.ViewModels.Dialogs;
 internal class InfoDialogViewModel : DialogHostViewModel
 {
     // Here we set up the Dialog!
-    internal InfoDialogViewModel(string message)
+    internal InfoDialogViewModel(MainViewModel mainViewModel, string message) : base(mainViewModel)
     {
         // And we set the MessageText!
         MessageText = message;
