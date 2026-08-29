@@ -9,13 +9,9 @@ internal class UnsavedChangesDialogViewModel : DialogHostViewModel
     // This allows use to reuse this dialog for other operations which could result in data loss.
     private readonly bool _isExit;
 
-    // We need to access the MainViewModel somehow!
-    private readonly MainViewModel _viewModel;
-
     // Here we set up the Dialog!
-    internal UnsavedChangesDialogViewModel(MainViewModel viewModel, bool isExit = false)
+    internal UnsavedChangesDialogViewModel(MainViewModel mainViewModel, bool isExit = false) : base(mainViewModel)
     {
-        _viewModel = viewModel;
         _isExit = isExit;
     }
 
@@ -26,10 +22,10 @@ internal class UnsavedChangesDialogViewModel : DialogHostViewModel
     internal override async Task ExecuteAsync()
     {
         // We disable the Save button to bypass the dialog...
-        _viewModel.DisableSave = true;
+        MainViewModel.DisableSave = true;
 
         if (_isExit)
             // ...and immediately exit!
-            await _viewModel.ExitCommand.ExecuteAsync(null);
+            await MainViewModel.ExitCommand.ExecuteAsync(null);
     }
 }

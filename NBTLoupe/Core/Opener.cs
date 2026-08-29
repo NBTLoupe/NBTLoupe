@@ -11,23 +11,23 @@ namespace NBTLoupe.Core;
 internal static class Opener
 {
     // This function Opens a File from a Path.
-    internal static async Task OpenFileAsync(MainViewModel viewModel, string path)
+    internal static async Task OpenFileAsync(MainViewModel mainViewModel, string path)
     {
         // If the user has unsaved changes...
-        var shouldContinue = !viewModel.CanSave;
+        var shouldContinue = !mainViewModel.CanSave;
 
         // ...we open a Dialog to warn them.
         if (!shouldContinue)
-            shouldContinue = await viewModel.OpenDialogAsync(new UnsavedChangesDialogViewModel(viewModel));
+            shouldContinue = await mainViewModel.OpenDialogAsync(new UnsavedChangesDialogViewModel(mainViewModel));
 
         // And if the user Cancelled, we return.
         if (!shouldContinue) return;
 
-        await viewModel.WithBlock(async () =>
+        await mainViewModel.WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.
-            viewModel.SelectedTreeNodes.Clear();
-            viewModel.TreeNodes.Clear();
+            mainViewModel.SelectedTreeNodes.Clear();
+            mainViewModel.TreeNodes.Clear();
 
             // We check, from the Path, if the File is supported by NBTModel, and use its respective NodeCreate method to create our DataNode if so.
             var node = FileTypeRegistry.RegisteredTypes.FirstOrDefault(item => item.Value.NamePatternTest(path)).Value
@@ -42,47 +42,49 @@ internal static class Opener
                     "Invalid NBT file. Please only open supported file formats. If you did so, your file may be corrupted.");
 
             // We add it to our Recent Files list, and update the UI!
-            viewModel.RecentFiles.Clear();
-            foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder)) viewModel.RecentFiles.Add(item);
+            mainViewModel.RecentFiles.Clear();
+            foreach (var item in RecentItem.Add(path, false).Where(x => !x.IsFolder))
+                mainViewModel.RecentFiles.Add(item);
 
             // And we can begin the lazy-loading!
             await Dispatcher.UIThread.InvokeAsync(
-                () => TreeNode.ExpandNode([node], viewModel.TreeNodes, viewModel.WithBlock, viewModel.OpenDialogAsync),
+                () => TreeNode.ExpandNode([node], mainViewModel.TreeNodes, mainViewModel.WithBlock,
+                    factory => mainViewModel.OpenDialogAsync(factory(mainViewModel))),
                 DispatcherPriority.Background);
         }, false, true);
     }
 
     // This function Opens a Folder from a Path.
-    internal static async Task OpenFolderAsync(MainViewModel viewModel, string path)
+    internal static async Task OpenFolderAsync(MainViewModel mainViewModel, string path)
     {
         // If the user has unsaved changes...
-        var shouldContinue = !viewModel.CanSave;
+        var shouldContinue = !mainViewModel.CanSave;
 
         // ...we open a Dialog to warn them.
         if (!shouldContinue)
-            shouldContinue = await viewModel.OpenDialogAsync(new UnsavedChangesDialogViewModel(viewModel));
+            shouldContinue = await mainViewModel.OpenDialogAsync(new UnsavedChangesDialogViewModel(mainViewModel));
 
         // And if the user Cancelled, we return.
         if (!shouldContinue) return;
 
-        await viewModel.WithBlock(async () =>
+        await mainViewModel.WithBlock(async () =>
         {
             // First we clear the TreeNode collections, as we're starting fresh.
-            viewModel.SelectedTreeNodes.Clear();
-            viewModel.TreeNodes.Clear();
+            mainViewModel.SelectedTreeNodes.Clear();
+            mainViewModel.TreeNodes.Clear();
 
             // If it isn't the Minecraft Saves folder; we add it to our Recent Folders list, and update the UI!
             if (path != Program.MinecraftSaveFolder)
             {
-                viewModel.RecentFolders.Clear();
+                mainViewModel.RecentFolders.Clear();
                 foreach (var item in RecentItem.Add(path, true).Where(x => x.IsFolder))
-                    viewModel.RecentFolders.Add(item);
+                    mainViewModel.RecentFolders.Add(item);
             }
 
             // And we can begin the lazy-loading!
             await Dispatcher.UIThread.InvokeAsync(
-                () => TreeNode.ExpandNode([new DirectoryDataNode(path.TrimEnd('/', '\\'))], viewModel.TreeNodes,
-                    viewModel.WithBlock, viewModel.OpenDialogAsync),
+                () => TreeNode.ExpandNode([new DirectoryDataNode(path.TrimEnd('/', '\\'))], mainViewModel.TreeNodes,
+                    mainViewModel.WithBlock, factory => mainViewModel.OpenDialogAsync(factory(mainViewModel))),
                 DispatcherPriority.Background);
         }, false, true);
     }

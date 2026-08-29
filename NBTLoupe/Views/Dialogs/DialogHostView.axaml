@@ -74,29 +74,33 @@
                             </Border>
                         </ScrollViewer>
 
-                        <!-- The Buttons! I know the way I chose to show them or not is janky, but it's a temporary solution. -->
+                        <!-- The buttons! -->
                         <Border Grid.Row="1" Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                                 Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
                             <DockPanel LastChildFill="False">
-                                <StackPanel Orientation="Horizontal" Spacing="4"
-                                            DockPanel.Dock="Left">
-                                    <Button Name="DialogImportButton" Content="Import"
-                                            Command="{Binding DialogImportCommand}"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                        <Button.KeyBindings>
-                                            <KeyBinding Gesture="Enter" Command="{Binding DialogImportCommand}" />
-                                        </Button.KeyBindings>
-                                    </Button>
-                                    <Button Name="DialogExportButton" Content="Export"
-                                            Command="{Binding DialogExportCommand}"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                        <Button.KeyBindings>
-                                            <KeyBinding Gesture="Enter" Command="{Binding DialogExportCommand}" />
-                                        </Button.KeyBindings>
-                                    </Button>
-                                </StackPanel>
+                                <!-- Personalised ("Special") buttons -->
+                                <ItemsControl DockPanel.Dock="Left"
+                                              ItemsSource="{Binding CurrentDialog?.SpecialButtons}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="4" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="dialogvms:DialogButton">
+                                            <Button Content="{Binding Text}" Command="{Binding Command}"
+                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalContentAlignment="Center">
+                                                <Button.KeyBindings>
+                                                    <KeyBinding Gesture="Enter" Command="{Binding Command}" />
+                                                </Button.KeyBindings>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <!-- Generic buttons (Cancel and OK) -->
                                 <StackPanel Orientation="Horizontal" Spacing="4" DockPanel.Dock="Right">
                                     <Button Name="DialogCancelButton" Content="Cancel"
                                             Command="{Binding CurrentDialog?.DialogCancelCommand}"
@@ -126,18 +130,10 @@
             <KeyBinding Gesture="Enter" Command="{Binding CurrentDialog?.DialogOkCommand}" />
             <KeyBinding Gesture="Escape" Command="{Binding CurrentDialog?.DialogCancelCommand}" />
         </Border.KeyBindings>
-
-        <!-- And Ok is enabled per-item, so you won't find it here. -->
     </Border>
 
     <UserControl.Styles>
-        <!-- We hide the Import/Export/Cancel Dialog Buttons when they're disabled -->
-        <Style Selector="Button#DialogImportButton:disabled">
-            <Setter Property="IsVisible" Value="False" />
-        </Style>
-        <Style Selector="Button#DialogExportButton:disabled">
-            <Setter Property="IsVisible" Value="False" />
-        </Style>
+        <!-- We hide the Cancel Dialog Button when it is disabled -->
         <Style Selector="Button#DialogCancelButton:disabled">
             <Setter Property="IsVisible" Value="False" />
         </Style>

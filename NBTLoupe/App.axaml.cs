@@ -57,14 +57,14 @@ public class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private static void SetupErrorHandling(MainViewModel viewModel)
+    private static void SetupErrorHandling(MainViewModel mainViewModel)
     {
         // Exception handling for non-AppCommands.
         Dispatcher.UIThread.UnhandledException += async (_, e) =>
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unhandled UI thread exception");
-            await viewModel.OpenDialogAsync(new ErrorDialogViewModel(e.Exception));
+            await mainViewModel.OpenDialogAsync(new ErrorDialogViewModel(mainViewModel, e.Exception));
 
             e.Handled = true;
         };
@@ -72,7 +72,7 @@ public class App : Application
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unobserved task exception");
-            await viewModel.OpenDialogAsync(new ErrorDialogViewModel(e.Exception));
+            await mainViewModel.OpenDialogAsync(new ErrorDialogViewModel(mainViewModel, e.Exception));
 
             e.SetObserved();
         };
@@ -84,7 +84,7 @@ public class App : Application
             Log.Error(exception, "[NBTLoupe]: Unhandled domain exception (terminating: {IsTerminating})",
                 e.IsTerminating);
             if (exception is not null && !e.IsTerminating)
-                await viewModel.OpenDialogAsync(new ErrorDialogViewModel(exception));
+                await mainViewModel.OpenDialogAsync(new ErrorDialogViewModel(mainViewModel, exception));
         };
     }
 }

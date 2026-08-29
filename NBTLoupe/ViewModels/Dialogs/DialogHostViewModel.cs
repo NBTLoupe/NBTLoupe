@@ -1,14 +1,23 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using NBTLoupe.ViewModels.Main;
 using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Dialogs;
 
+// This is what lets us easily create extra Dialog Buttons! 
+internal sealed record DialogButton(string Text, IRelayCommand Command);
+
 // This is what lets us easily create and manage Dialogs! 
 internal abstract partial class DialogHostViewModel : ViewModelBase
 {
-    internal DialogHostViewModel()
+    // We need to access the MainViewModel somehow!
+    protected readonly MainViewModel MainViewModel;
+
+    internal DialogHostViewModel(MainViewModel mainViewModel)
     {
+        MainViewModel = mainViewModel;
         PropertyChanged += (_, e) =>
         {
             if (e.PropertyName != nameof(IsOkEnabled)) DialogOkCommand.NotifyCanExecuteChanged();
@@ -24,6 +33,9 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     // This allows us to give the OK button tailor-made text!
     internal virtual string OkText => "OK";
 
+    // This allows us to add our tailor-made buttons to the Dialog!
+    internal virtual IReadOnlyList<DialogButton> SpecialButtons { get; } = [];
+
     // This allows us to wait for Dialog completion.
     internal TaskCompletionSource<bool> CompletionSource { get; } =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -35,10 +47,8 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(IsOkEnabled))]
     private async Task DialogOk()
     {
-        // Execute the designated OK code!
-        await ExecuteAsync();
-
-        CompletionSource.TrySetResult(true);
+        var success = await MainViewModel.SafeExecuteAsync(ExecuteAsync);
+        CompletionSource.TrySetResult(success);
     }
 
     // This helps us disable Cancel in very specific scenarios.
@@ -51,9 +61,14 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
 
     // This one is executed when the user Cancels a Dialog.
     [RelayCommand(CanExecute = nameof(CanDialogCancel))]
-    private void DialogCancel()
+    private Task<bool> DialogCancel()
     {
-        // ...then close the Dialog.
-        CompletionSource.TrySetResult(false);
+        return MainViewModel.SafeExecuteAsync(() =>
+        {
+            // ...then close the Dialog.
+            CompletionSource.TrySetResult(false);
+
+            return Task.CompletedTask;
+        });
     }
 }

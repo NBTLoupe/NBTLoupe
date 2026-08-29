@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using NBTLoupe.ViewModels.Main;
 
 namespace NBTLoupe.ViewModels.Dialogs;
 
@@ -10,7 +11,8 @@ internal class UserErrorException(string message) : Exception(message);
 internal class ErrorDialogViewModel : DialogHostViewModel
 {
     // Here we set up the Dialog!
-    internal ErrorDialogViewModel(Exception exception, bool fatal = false)
+    internal ErrorDialogViewModel(MainViewModel mainViewModel, Exception exception, bool fatal = false) : base(
+        mainViewModel)
     {
         // If the Exception is fatal, we force the user to restart the app.
         FatalException = fatal;

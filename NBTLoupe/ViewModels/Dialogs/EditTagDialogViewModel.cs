@@ -1,7 +1,12 @@
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using NBTLoupe.Core;
 using NBTLoupe.ViewModels.Main;
 using NBTModel.Data;
@@ -19,21 +24,21 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
     private readonly string _oldTagValue;
 
-    // We need to access the MainViewModel somehow!
-    private readonly MainViewModel _viewModel;
-
     // Here we set up the Dialog!
-    internal EditTagDialogViewModel(MainViewModel viewModel, bool isRename = false)
+    internal EditTagDialogViewModel(MainViewModel mainViewModel, bool isRename = false) : base(mainViewModel)
     {
-        _viewModel = viewModel;
         IsRename = isRename;
 
-        var tagDataNode = _viewModel.SingleSelectedTreeNode?.DataNode as TagDataNode;
+        SpecialButtons = ValueVisible
+            ? [new DialogButton("Import", DialogImportCommand), new DialogButton("Export", DialogExportCommand)]
+            : [];
+
+        var tagDataNode = MainViewModel.SingleSelectedTreeNode?.DataNode as TagDataNode;
         DialogTagType = tagDataNode?.Tag.GetTagType() ?? TagType.TAG_END;
 
         // If the TreeNode is a NbtFileDataNode, its Renameable Name is different.
-        _oldTagName = (_viewModel.SingleSelectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
-            ? _viewModel.SingleSelectedTreeNode?.DataNode?.NodeName
+        _oldTagName = (MainViewModel.SingleSelectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
+            ? MainViewModel.SingleSelectedTreeNode?.DataNode?.NodeName
             : fileDataNode.TreeName) ?? "";
         TagName = _oldTagName;
 
@@ -66,7 +71,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
     public partial string? TagName { get; set; }
 
     // ...(which is only visible in certain cases, by the way)
-    internal bool NameVisible => _viewModel.SingleSelectedTreeNode?.DataNode.CanRenameNode ?? false;
+    internal bool NameVisible => MainViewModel.SingleSelectedTreeNode?.DataNode.CanRenameNode ?? false;
 
     // ... and the new Value TextBox
     [ObservableProperty]
@@ -74,7 +79,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
     public partial string? TagValue { get; set; }
 
     // ...(which is only visible in certain cases, by the way)
-    internal bool ValueVisible => _viewModel.SingleSelectedTreeNode?.DataNode.CanEditNode ?? false;
+    internal bool ValueVisible => MainViewModel.SingleSelectedTreeNode?.DataNode.CanEditNode ?? false;
 
     // And here's where our Validation magic happens!
     internal override bool IsOkEnabled
@@ -90,7 +95,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
             if (!hasNewTagName && !hasNewTagValue) return false;
 
-            var tagNode = _viewModel.SingleSelectedTreeNode?.DataNode;
+            var tagNode = MainViewModel.SingleSelectedTreeNode?.DataNode;
             var tagDataNode = tagNode as TagDataNode;
             var metaTagContainer = tagDataNode?.Parent as IMetaTagContainer;
 
@@ -112,6 +117,96 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
     // This gives the OK button tailor-made text!
     internal override string OkText => "Edit";
+
+    // This allows us to have special separate buttons for Import/Export!
+    internal override IReadOnlyList<DialogButton> SpecialButtons { get; }
+
+    // This one is executed when the user chooses to Import a new Tag Value.
+    [RelayCommand]
+    private Task<bool> DialogImport()
+    {
+        return MainViewModel.SafeExecuteAsync(async () =>
+        {
+            // Check if DataNode is null.
+            if (MainViewModel.SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
+
+            // First we get the TreeNode's type...
+            var tagDataNode = MainViewModel.SingleSelectedTreeNode.DataNode as TagDataNode;
+            var tagType = tagDataNode?.Tag.GetTagType();
+            // ...and build an extension for it.
+            var nodePath = MainViewModel.SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
+            var extension = $".{tagType}";
+
+            // We open a FilePicker that only accepts that extension.
+            var files = await MainViewModel.TopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Import to " + nodePath,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType($"NBTLoupe {tagType} Data File")
+                    {
+                        Patterns = [$"*{extension}"]
+                    }
+                ]
+            });
+
+            // If the user didn't select any File, we pretend nothing happened.
+            if (files.Count < 1) return;
+
+            // We start reading the opened File.
+            await using var stream = await files[0].OpenReadAsync();
+            using var streamReader = new StreamReader(stream);
+            var fileContent = await streamReader.ReadToEndAsync();
+
+            // If the file is Ascii, it may follow our format...
+            if (Ascii.IsValid(fileContent)) TagValue = fileContent;
+            else
+                // ...if it isn't, it'd crash the whole app so we won't accept it.
+                throw new UserErrorException(
+                    "Invalid (non-ASCII) data file. Please only import data files created through NBTLoupe. If you did so, your file may be corrupted.");
+        });
+    }
+
+    // This one is executed when the user chooses to Export a Tag Value.
+    [RelayCommand]
+    private Task<bool> DialogExport()
+    {
+        return MainViewModel.SafeExecuteAsync(async () =>
+        {
+            // Check if DataNode is null.
+            if (MainViewModel.SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
+
+            // First we get the TreeNode's type...
+            var tagDataNode = MainViewModel.SingleSelectedTreeNode.DataNode as TagDataNode;
+            var tagType = tagDataNode?.Tag.GetTagType();
+            // ...and build an extension for it.
+            var nodePath = MainViewModel.SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
+            var extension = $".{tagType}";
+
+            // We open a SaveFilePicker that only accepts that extension.
+            var file = await MainViewModel.TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Export " + nodePath,
+                FileTypeChoices =
+                [
+                    new FilePickerFileType($"NBTLoupe {tagType} Data File")
+                    {
+                        Patterns = [$"*{extension}"]
+                    }
+                ],
+                DefaultExtension = extension,
+                SuggestedFileName = nodePath.Replace("/", "-").Replace("\\", "-")
+            });
+
+            // If the user didn't save any File, we pretend nothing happened.
+            if (file is null) return;
+
+            // But if they did select a File, we save the Tag's value to it.
+            await using var stream = await file.OpenWriteAsync();
+            await using var streamWriter = new StreamWriter(stream);
+            await streamWriter.WriteAsync(TagValue);
+        });
+    }
 
     // Just kidding, it happens here, so we can still use the FormRegistry for Editing.
     private static bool ValidateTagValue(TagType tagType)
@@ -145,7 +240,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
     // And here's the actual magic! The OK button!
     internal override async Task ExecuteAsync()
     {
-        var dataNode = _viewModel.SingleSelectedTreeNode?.DataNode;
+        var dataNode = MainViewModel.SingleSelectedTreeNode?.DataNode;
 
         var hasNewTagName = _oldTagName != TagName;
         var hasNewTagValue = _oldTagValue != TagValue;
@@ -158,20 +253,20 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
         if (!success) throw new UnreachableException();
 
         // Then we back up our SelectedTreeNodes' IndexPath.
-        var savedSelectedTreeNodes = _viewModel.SingleSelectedTreeNode?.GetIndexPath(_viewModel.TreeNodes);
+        var savedSelectedTreeNodes = MainViewModel.SingleSelectedTreeNode?.GetIndexPath(MainViewModel.TreeNodes);
 
         // And, on a rename, we refresh its parent so the order updates.
-        if (hasNewTagName && _viewModel.SingleSelectedTreeNode?.Parent is not null)
+        if (hasNewTagName && MainViewModel.SingleSelectedTreeNode?.Parent is not null)
         {
-            await _viewModel.SingleSelectedTreeNode.Parent.RefreshChildNodesAsync();
+            await MainViewModel.SingleSelectedTreeNode.Parent.RefreshChildNodesAsync();
 
             // And finally, we restore our SelectedTreeNodes using our IndexPath and the new name.
             if (savedSelectedTreeNodes is null) return;
             var restoredSelectedTreeNode =
-                TreeNode.GetByIndexPath(_viewModel.TreeNodes, savedSelectedTreeNodes);
+                TreeNode.GetByIndexPath(MainViewModel.TreeNodes, savedSelectedTreeNodes);
             var foundNode =
                 restoredSelectedTreeNode?.Parent?.SubNodes?.FirstOrDefault(node => node.DataNode.NodeName == TagName);
-            if (foundNode is not null) _viewModel.SelectedTreeNodes.Add(foundNode);
+            if (foundNode is not null) MainViewModel.SelectedTreeNodes.Add(foundNode);
         }
     }
 }

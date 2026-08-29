@@ -98,10 +98,6 @@ public partial class MainViewModel
 
     private bool CanExpandTree => SingleSelectedTreeNode?.IsExpanded ?? false;
 
-    private bool CanDialogImport => CurrentDialog is EditTagDialogViewModel { ValueVisible: true };
-
-    private bool CanDialogExport => CurrentDialog is EditTagDialogViewModel { ValueVisible: true };
-
     // We cache the CanPaste independently, as it'd lock the UI thread otherwise.
     async partial void OnSingleSelectedTreeNodeChanged(TreeNode? value)
     {
@@ -122,7 +118,7 @@ public partial class MainViewModel
             Log.Write(fatal ? LogEventLevel.Fatal : LogEventLevel.Error, e,
                 "[NBTLoupe]: CanPasteIntoNode exception");
 
-            await OpenDialogAsync(new ErrorDialogViewModel(e, fatal));
+            await OpenDialogAsync(new ErrorDialogViewModel(this, e, fatal));
         }
     }
 }

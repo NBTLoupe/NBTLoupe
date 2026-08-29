@@ -8,9 +8,6 @@ namespace NBTLoupe.ViewModels.Dialogs;
 // Here we define the ChunkFinder Dialog!
 internal partial class ChunkFinderDialogViewModel : DialogHostViewModel
 {
-    // We need to access the MainViewModel somehow!
-    private readonly MainViewModel _viewModel;
-
     // We don't want to cascade into infinite updates when the user inputs something!
     private bool _isUpdating;
 
@@ -45,9 +42,8 @@ internal partial class ChunkFinderDialogViewModel : DialogHostViewModel
     private string? _lastValidRegionZ;
 
     // Here we set up the Dialog!
-    internal ChunkFinderDialogViewModel(MainViewModel viewModel)
+    internal ChunkFinderDialogViewModel(MainViewModel mainViewModel) : base(mainViewModel)
     {
-        _viewModel = viewModel;
     }
 
     // Here's all the fields we bind to in the XAML...
@@ -138,7 +134,7 @@ internal partial class ChunkFinderDialogViewModel : DialogHostViewModel
 
     partial void OnInProgressChanged(bool value)
     {
-        _viewModel.IsDialogProgressing = value;
+        MainViewModel.IsDialogProgressing = value;
         DialogCancelCommand.NotifyCanExecuteChanged();
     }
 
@@ -473,19 +469,20 @@ internal partial class ChunkFinderDialogViewModel : DialogHostViewModel
     {
         InProgress = true;
 
-        if (_viewModel.SingleSelectedTreeNode is null || !int.TryParse(RegionX, out var regionX) ||
+        if (MainViewModel.SingleSelectedTreeNode is null || !int.TryParse(RegionX, out var regionX) ||
             !int.TryParse(RegionZ, out var regionZ) ||
             !int.TryParse(LocalChunkX, out var localChunkX) ||
             !int.TryParse(LocalChunkZ, out var localChunkZ)) throw new UnreachableException();
 
-        var foundNode = await _viewModel.SingleSelectedTreeNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
+        var foundNode =
+            await MainViewModel.SingleSelectedTreeNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
         if (foundNode is null) return;
 
         // We also set FoundMatch to true, preventing the "Chunk not found." dialog from showing.
         FoundMatch = true;
 
         await foundNode.ExpandTreeReverseAsync();
-        _viewModel.SelectedTreeNodes.Clear();
-        _viewModel.SelectedTreeNodes.Add(foundNode);
+        MainViewModel.SelectedTreeNodes.Clear();
+        MainViewModel.SelectedTreeNodes.Add(foundNode);
     }
 }
