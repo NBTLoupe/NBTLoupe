@@ -138,21 +138,4 @@
             <Setter Property="IsVisible" Value="False" />
         </Style>
     </UserControl.Styles>
-
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4D000000" />
-                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66000000" />
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Dark">
-                    <!-- ReSharper disable Xaml.RedundantResource -->
-                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4DFFFFFF" />
-                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66FFFFFF" />
-                    <!-- ReSharper restore Xaml.RedundantResource -->
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
 </UserControl>
