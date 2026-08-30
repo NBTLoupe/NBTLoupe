@@ -8,4 +8,19 @@
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+    
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4D000000" />
+                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="DialogOverlayBrush" Color="#4DFFFFFF" />
+                    <DropShadowEffect x:Key="DialogShadow" OffsetX="0" OffsetY="8" BlurRadius="32" Color="#66FFFFFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
