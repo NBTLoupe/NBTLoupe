@@ -52,12 +52,68 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Update="App.axaml.cs">
+            <DependentUpon>App.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\MainWindow.axaml.cs">
+            <DependentUpon>MainWindow.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
         <Compile Update="Views\Main\MainView.axaml.cs">
             <DependentUpon>MainView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Views\Dialogs\DialogHostView.axaml.cs">
+        <Compile Update="Views\Main\MainMenuView.axaml.cs">
+            <DependentUpon>MainMenuView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Main\MainCommandBarView.axaml.cs">
+            <DependentUpon>MainCommandBarView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Main\MainTreeViewView.axaml.cs">
+            <DependentUpon>MainTreeViewView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Main\MainSearchBarView.axaml.cs">
+            <DependentUpon>MainSearchBarView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\DialogHostViewModel.axaml.cs">
             <DependentUpon>DialogHostViewModel.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\AboutDialogView.axaml.cs">
+            <DependentUpon>AboutDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\AddTagDialogView.axaml.cs">
+            <DependentUpon>AddTagDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\ChunkFinderDialogView.axaml.cs">
+            <DependentUpon>ChunkFinderDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\EditTagDialogView.axaml.cs">
+            <DependentUpon>EditTagDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\ErrorDialogView.axaml.cs">
+            <DependentUpon>ErrorDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\FindReplaceDialogView.axaml.cs">
+            <DependentUpon>FindReplaceDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\InfoDialogView.axaml.cs">
+            <DependentUpon>InfoDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\UnsavedChangesDialogView.axaml.cs">
+            <DependentUpon>UnsavedChangesDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
         <Compile Update="ViewModels\Main\MainViewModel.Blocking.cs">
@@ -71,22 +127,6 @@
         </Compile>
         <Compile Update="ViewModels\Main\MainViewModel.Dialogs.cs">
             <DependentUpon>MainViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Views\Main\MainMenuView.axaml.cs">
-            <DependentUpon>AboutDialogView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Views\Main\MainCommandBarView.axaml.cs">
-            <DependentUpon>MainCommandBarView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Views\Main\MainTreeViewView.axaml.cs">
-            <DependentUpon>MainTreeViewView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Views\Main\MainSearchBarView.axaml.cs">
-            <DependentUpon>MainSearchFloater.axaml</DependentUpon>
-            <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 </Project>
