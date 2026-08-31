@@ -84,5 +84,9 @@
             <DependentUpon>MainTreeViewView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Views\Main\MainSearchBarView.axaml.cs">
+            <DependentUpon>MainSearchFloater.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 </Project>

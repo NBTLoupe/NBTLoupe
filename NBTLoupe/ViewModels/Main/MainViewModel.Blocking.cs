@@ -29,11 +29,6 @@ public partial class MainViewModel
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     internal partial bool DisableSave { get; set; }
 
-    // This allows us to toggle the FindNext button.
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(FindNextCommand))]
-    internal partial bool EnableFindNext { get; set; }
-
     // This is how we block the main UI when something is happening.
     internal async Task WithBlock(Func<Task> execute, bool usuallySlow = false, bool disableSave = false)
     {

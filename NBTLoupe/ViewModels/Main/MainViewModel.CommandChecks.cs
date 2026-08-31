@@ -53,7 +53,10 @@ public partial class MainViewModel
 
     private bool CanFind => SingleSelectedTreeNode?.DataNode.CanSearchNode ?? false;
 
-    private bool CanFindNext => EnableFindNext;
+    private bool CanFindNext =>
+        BasicSearcher?.TotalMatches is null || BasicSearcher?.CurrentMatch < BasicSearcher?.TotalMatches;
+
+    private bool CanFindPrevious => BasicSearcher?.CurrentMatch > 1;
 
     private bool CanReplace => SingleSelectedTreeNode?.DataNode.CanSearchNode ?? false;
 
