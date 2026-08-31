@@ -18,7 +18,8 @@
         <Panel Background="{DynamicResource DialogOverlayBrush}">
             <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderThickness="1"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" CornerRadius="8"
-                    MinWidth="320" MaxWidth="548" MinHeight="184" MaxHeight="756" HorizontalAlignment="Center"
+                    MinWidth="320" MaxWidth="{Binding CurrentDialog?.MaxWidth, TargetNullValue=640}" MaxHeight="640"
+                    HorizontalAlignment="Center"
                     VerticalAlignment="Center" Effect="{DynamicResource DialogShadow}"
                     BackgroundSizing="InnerBorderEdge">
                 <Border ClipToBounds="True" CornerRadius="8">
