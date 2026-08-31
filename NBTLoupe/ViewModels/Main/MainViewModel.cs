@@ -62,4 +62,10 @@ public partial class MainViewModel : ViewModelBase
     private static List<RecentItem> RecentItems => RecentItem.Load(true);
     internal ObservableCollection<RecentItem> RecentFiles { get; set; } = [.. RecentItems.Where(x => !x.IsFolder)];
     internal ObservableCollection<RecentItem> RecentFolders { get; set; } = [.. RecentItems.Where(x => x.IsFolder)];
+
+    // This stores the values set on the BasicFind Dialog, allowing the Find Next functionality to work.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanFindNext))]
+    [NotifyPropertyChangedFor(nameof(CanFindPrevious))]
+    internal partial TreeNode.NodeBasicSearcher? BasicSearcher { get; set; }
 }

@@ -59,7 +59,7 @@ public class App : Application
 
     private static void SetupErrorHandling(MainViewModel mainViewModel)
     {
-        // Exception handling for non-AppCommands.
+        // Exception handling for non-RelayCommands.
         Dispatcher.UIThread.UnhandledException += async (_, e) =>
         {
             // If something goes wrong, we log it and show a Dialog to the user. :C

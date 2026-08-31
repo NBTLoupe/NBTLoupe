@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+             xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
+             x:Class="NBTLoupe.Views.Main.MainSearchBarView"
+             x:DataType="main:MainViewModel">
+    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderThickness="1"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" CornerRadius="8"
+            Margin="0,88,8,0" HorizontalAlignment="Right"
+            VerticalAlignment="Top" Effect="{DynamicResource DialogShadow}"
+            BackgroundSizing="InnerBorderEdge"
+            IsVisible="{Binding BasicSearcher, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <Border ClipToBounds="True" CornerRadius="8" Padding="16 8">
+            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <TextBlock FontSize="14" VerticalAlignment="Center"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Match {0} of {1}">
+                            <Binding Path="BasicSearcher?.CurrentMatch" TargetNullValue="??" />
+                            <Binding Path="BasicSearcher?.TotalMatches" TargetNullValue="??" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <Separator Height="NaN" Width="1" Background="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+
+                <Button Command="{Binding FindPreviousCommand}" ToolTip.Tip="Previous match (Shift+F3)">
+                    <ic:FluentIcon Icon="ArrowUp" />
+                </Button>
+                <Button Command="{Binding FindNextCommand}" ToolTip.Tip="Next match (F3)">
+                    <ic:FluentIcon Icon="ArrowDown" />
+                </Button>
+
+                <!-- TODO: Implement the Advanced Search/Replace! -->
+                <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="False">
+                    <Separator Height="NaN" Width="1"
+                               Background="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+
+                    <Button ToolTip.Tip="Replace this match">
+                        <ic:FluentIcon Icon="TranslateAuto" />
+                    </Button>
+                </StackPanel>
+
+                <Separator Height="NaN" Width="1" Background="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+
+                <Button Command="{Binding FindStopCommand}" ToolTip.Tip="Close">
+                    <ic:FluentIcon Icon="Dismiss" />
+                </Button>
+            </StackPanel>
+        </Border>
+    </Border>
+</UserControl>

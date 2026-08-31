@@ -96,20 +96,21 @@ internal partial class FindReplaceDialogViewModel : DialogHostViewModel
                 // Then we can suppose there are even more things to Find, and thus we save the state in the MainViewModel.
                 MainViewModel.BasicSearcher = find;
 
-                // And, because we have this state saved, we can enable the FindNext AppCommand.
-                MainViewModel.EnableFindNext = true;
-
                 // We also set FoundMatch to true, preventing the "No matching tags were found." dialog from showing.
                 FoundMatch = true;
+
+                // We start Expanding its tree in reverse.
+                await found.ExpandTreeReverseAsync();
+
+                // This is so, when we add it to SelectedTreeNodes, the UI automatically jumps to it.
+                MainViewModel.SelectedTreeNodes.Clear();
+                MainViewModel.SelectedTreeNodes.Add(found);
 
                 return;
             }
 
-            // If we don't, though, we make sure to clean up any leftover state in the MainViewModel...
+            // If we don't, though, we make sure to clean up any leftover state in the MainViewModel.
             MainViewModel.BasicSearcher = null;
-
-            // ...and we make sure the FindNext AppCommand is disabled.
-            MainViewModel.EnableFindNext = false;
         }
         // And this is the Advanced mode.
         else

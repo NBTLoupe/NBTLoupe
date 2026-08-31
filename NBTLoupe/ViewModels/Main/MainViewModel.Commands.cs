@@ -474,25 +474,14 @@ public partial class MainViewModel
         {
             await WithBlock(async () =>
             {
-                // Check if the BasicSearcher is null, which it shouldn't if the AppCommand is enabled.
+                // Check if the BasicSearcher is null, which it shouldn't if the RelayCommand is enabled.
                 if (BasicSearcher is null) throw new UnreachableException();
 
                 // Then we Find the next instance of the searched parameters.
                 var found = await BasicSearcher.FindNextAsync();
 
-                // If we didn't Find anything... 
-                if (found is null)
-                {
-                    // ...we clean our BasicSearcher...
-                    BasicSearcher = null;
-
-                    // ...we disable the FindNext AppCommand...
-                    EnableFindNext = false;
-
-                    // ...and open a Dialog telling the user about this.
-                    await OpenDialogAsync(new InfoDialogViewModel(this, "End of results."));
-                    return;
-                }
+                // If we didn't Find anything, we immediately return.
+                if (found is null) return;
 
                 // But if we did Find something, we start Expanding its tree in reverse.
                 await found.ExpandTreeReverseAsync();
@@ -500,6 +489,55 @@ public partial class MainViewModel
                 // This is so, when we add it to SelectedTreeNodes, the UI automatically jumps to it.
                 SelectedTreeNodes.Clear();
                 SelectedTreeNodes.Add(found);
+
+                // We need to tell the Find Previous Command about this as it may need to be Enabled now.
+                FindPreviousCommand.NotifyCanExecuteChanged();
+            });
+        });
+    }
+
+    // This one is executed when the user chooses to go backwards in their pre-started Find operation.
+    [RelayCommand(CanExecute = nameof(CanFindPrevious))]
+    private Task<bool> FindPrevious()
+    {
+        return SafeExecuteAsync(async () =>
+        {
+            await WithBlock(async () =>
+            {
+                // Check if the BasicSearcher is null, which it shouldn't if the RelayCommand is enabled.
+                if (BasicSearcher is null) throw new UnreachableException();
+
+                // Then we Find the next instance of the searched parameters.
+                var found = BasicSearcher.FindPrevious();
+
+                // If we didn't Find anything, we immediately return.
+                if (found is null) return;
+
+                // But if we did Find something, we start Expanding its tree in reverse.
+                await found.ExpandTreeReverseAsync();
+
+                // This is so, when we add it to SelectedTreeNodes, the UI automatically jumps to it.
+                SelectedTreeNodes.Clear();
+                SelectedTreeNodes.Add(found);
+
+                // We need to tell the Find Next Command about this as it may need to be Enabled now.
+                FindNextCommand.NotifyCanExecuteChanged();
+            });
+        });
+    }
+
+    // This one is executed when the user chooses to stop their pre-started Find operation.
+    [RelayCommand]
+    private Task<bool> FindStop()
+    {
+        return SafeExecuteAsync(async () =>
+        {
+            await WithBlock(() =>
+            {
+                // Yup, all we do is set the BasicSearcher to null!
+                BasicSearcher = null;
+
+                return Task.CompletedTask;
             });
         });
     }
