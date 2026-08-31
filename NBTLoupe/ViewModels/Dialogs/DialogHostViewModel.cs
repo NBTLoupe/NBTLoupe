@@ -32,6 +32,9 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
 
     // This allows us to give the OK button tailor-made text!
     internal virtual string OkText => "OK";
+    
+    // This allows us to give the Cancel button tailor-made text!
+    internal virtual string CancelText => "Cancel";
 
     // This allows us to add our tailor-made buttons to the Dialog!
     internal virtual IReadOnlyList<DialogButton> SpecialButtons { get; } = [];
