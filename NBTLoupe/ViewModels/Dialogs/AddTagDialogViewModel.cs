@@ -79,9 +79,9 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
         await MainViewModel.SingleSelectedTreeNode.RefreshChildNodesAsync();
 
         // And find the new TreeNode, so we can Select it.
-        MainViewModel.SelectedTreeNodes.Clear();
         var newFound =
             MainViewModel.SingleSelectedTreeNode.SubNodes.FirstOrDefault(node => !before.Contains(node.DataNode));
+        MainViewModel.SelectedTreeNodes.Clear();
         if (newFound is not null) MainViewModel.SelectedTreeNodes.Add(newFound);
     }
 }
