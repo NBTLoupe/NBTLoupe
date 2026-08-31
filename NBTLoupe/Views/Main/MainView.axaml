@@ -15,7 +15,7 @@
 
                 <main:MainCommandBarView x:Name="MainCommandBarView" />
 
-                <ProgressBar IsIndeterminate="True" Opacity="{Binding ShowProgressBar}" VerticalAlignment="Top" />
+                <ProgressBar IsIndeterminate="True" IsVisible="{Binding ShowProgressBar}" VerticalAlignment="Top" />
             </StackPanel>
 
             <main:MainTreeViewView />
