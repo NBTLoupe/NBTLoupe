@@ -27,6 +27,10 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     // This is kind of annoying, but we require it mostly for EditByteArray.
     internal TagType DialogTagType { get; init; }
 
+    // This allows us to let the Dialogs be a bit (1.55x) wider!
+    protected virtual bool IsWide => false;
+    internal double MaxWidth => !IsWide ? 640 : 992;
+
     // OK is always needed, but it needs to be Toggled based on validation!
     internal virtual bool IsOkEnabled => true;
 
