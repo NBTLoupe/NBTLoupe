@@ -16,7 +16,7 @@ internal class UnsavedChangesDialogViewModel : DialogHostViewModel
     }
 
     // This gives the OK button tailor-made text!
-    internal override string OkText => "Exit";
+    internal override string OkText => "Yes";
 
     // And here's the actual magic! The OK button!
     internal override async Task ExecuteAsync()
