@@ -65,7 +65,7 @@ public partial class MainViewModel : ViewModelBase
 
     // This stores the values set on the BasicFind Dialog, allowing the Find Next functionality to work.
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanFindNext))]
-    [NotifyPropertyChangedFor(nameof(CanFindPrevious))]
+    [NotifyCanExecuteChangedFor(nameof(FindNextCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FindPreviousCommand))]
     internal partial TreeNode.NodeBasicSearcher? BasicSearcher { get; set; }
 }
