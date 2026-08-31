@@ -102,7 +102,7 @@
 
                                 <!-- Generic buttons (Cancel and OK) -->
                                 <StackPanel Orientation="Horizontal" Spacing="4" DockPanel.Dock="Right">
-                                    <Button Name="DialogCancelButton" Content="Cancel"
+                                    <Button Name="DialogCancelButton" Content="{Binding CurrentDialog?.CancelText}"
                                             Command="{Binding CurrentDialog?.DialogCancelCommand}"
                                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
