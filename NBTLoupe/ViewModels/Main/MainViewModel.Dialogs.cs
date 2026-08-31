@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NBTLoupe.Core;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTModel.Data.Nodes;
 using Serilog;
@@ -20,9 +19,6 @@ public partial class MainViewModel
 
     // We need a way to tell the UI that the Dialog is open.
     internal bool IsDialogOpen => CurrentDialog is not null;
-
-    // This stores the values set on the BasicFind Dialog, allowing the Find Next functionality to work.
-    internal TreeNode.NodeBasicSearcher? BasicSearcher { get; set; }
 
     // And this is how we open the Dialog! It's pretty neat, and way easier to scale.
     internal async Task<bool> OpenDialogAsync(DialogHostViewModel state)
@@ -54,7 +50,7 @@ public partial class MainViewModel
         }
     }
 
-    // I extracted the AddTag function over here because it's shared by a lot of AppCommands.
+    // I extracted the AddTag function over here because it's shared by a lot of RelayCommands.
     private async Task AddTag(TagType tagType)
     {
         var dialogViewModel = new AddTagDialogViewModel(this, tagType);
