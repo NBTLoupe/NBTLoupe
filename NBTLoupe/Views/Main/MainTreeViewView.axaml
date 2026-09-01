@@ -8,6 +8,7 @@
     <TreeView x:Name="MainTreeView" ItemsSource="{Binding TreeNodes}"
               SelectedItems="{Binding SelectedTreeNodes}"
               SelectionMode="Multiple"
+              IsHitTestVisible="{Binding BasicSearcher, Converter={x:Static ObjectConverters.IsNull}}"
               DoubleTapped="InputElement_OnDoubleTapped" DragDrop.AllowDrop="True"
               DragDrop.DragOver="TreeView_OnDragOver"
               DragDrop.Drop="TreeView_OnDrop">
