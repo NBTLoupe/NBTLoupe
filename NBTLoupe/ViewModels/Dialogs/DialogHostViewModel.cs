@@ -63,7 +63,10 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     {
         return this is not AboutDialogViewModel && this is not InfoDialogViewModel &&
                this is not ErrorDialogViewModel && this is not ChunkFinderDialogViewModel { InProgress: true } &&
-               this is not FindReplaceDialogViewModel { InProgress: true };
+               this is not FindBasicDialogViewModel { InProgress: true } && this is not FindAdvancedDialogViewModel
+               {
+                   InProgress: true
+               };
     }
 
     // This one is executed when the user Cancels a Dialog.
