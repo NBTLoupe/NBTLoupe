@@ -41,9 +41,14 @@
                                             <dialogs:EditTagDialogView />
                                         </DataTemplate>
 
-                                        <!-- Find and Replace -->
-                                        <DataTemplate DataType="{x:Type dialogvms:FindReplaceDialogViewModel}">
-                                            <dialogs:FindReplaceDialogView />
+                                        <!-- Basic Find -->
+                                        <DataTemplate DataType="{x:Type dialogvms:FindBasicDialogViewModel}">
+                                            <dialogs:FindBasicDialogView />
+                                        </DataTemplate>
+
+                                        <!-- Advanced Find and Replace -->
+                                        <DataTemplate DataType="{x:Type dialogvms:FindAdvancedDialogViewModel}">
+                                            <dialogs:FindAdvancedDialogView />
                                         </DataTemplate>
 
                                         <!-- Chunk Finder -->

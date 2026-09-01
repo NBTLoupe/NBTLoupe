@@ -457,7 +457,7 @@ public partial class MainViewModel
         return SafeExecuteAsync(async () =>
         {
             // We first create the Dialog...
-            var dialogViewModel = new FindReplaceDialogViewModel(this);
+            var dialogViewModel = new FindBasicDialogViewModel(this);
 
             // ...then we open it, and wait for the results. If we didn't find anything...
             if (await OpenDialogAsync(dialogViewModel) && !dialogViewModel.FoundMatch)
@@ -547,7 +547,7 @@ public partial class MainViewModel
     [RelayCommand(CanExecute = nameof(CanReplace))]
     private Task<bool> Replace()
     {
-        return SafeExecuteAsync(async () => { await OpenDialogAsync(new FindReplaceDialogViewModel(this, true)); });
+        return SafeExecuteAsync(async () => { await OpenDialogAsync(new FindAdvancedDialogViewModel(this)); });
     }
 
     // This one is executed when the user chooses to open a ChunkFinder Dialog.
