@@ -104,8 +104,12 @@
             <DependentUpon>ErrorDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Views\Dialogs\FindReplaceDialogView.axaml.cs">
-            <DependentUpon>FindReplaceDialogView.axaml</DependentUpon>
+        <Compile Update="Views\Dialogs\FindBasicDialogView.axaml.cs">
+            <DependentUpon>FindBasicDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\FindAdvancedDialogView.axaml.cs">
+            <DependentUpon>FindAdvancedDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\Dialogs\InfoDialogView.axaml.cs">

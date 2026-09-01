@@ -1,0 +1,240 @@
+<!--
+    This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+
+    Licensed under the MIT License.
+    Copyright (c) 2025 amwx
+    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+    
+    Source repository: https://github.com/amwx/FluentAvalonia
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+             xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
+             x:Class="NBTLoupe.Views.Dialogs.FindAdvancedDialogView"
+             x:DataType="dialogs:FindAdvancedDialogViewModel">
+    <StackPanel>
+        <TabStrip Classes="dialogTabStrip" Padding="0"
+                  IsEnabled="{Binding !InProgress}" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
+            <TabStripItem Name="Basic" IsSelected="False">Find (Basic)</TabStripItem>
+            <TabStripItem Name="Advanced" IsSelected="True" IsHitTestVisible="False">Find and Replace (Advanced)</TabStripItem>
+        </TabStrip>
+        <Grid RowDefinitions="*" Margin="0 10 0 0">
+            <UniformGrid Columns="2" HorizontalAlignment="Stretch"
+                         ColumnSpacing="8">
+                <!-- Find Column -->
+                <Border Classes="halfGroup">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top">
+                            <TextBlock Text="Find" />
+                            <Border>
+                                <StackPanel>
+                                    <Button ToolTip.Tip="Edit Selected Rule">
+                                        <ic:FluentIcon Icon="Edit" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Delete Selected Rule">
+                                        <ic:FluentIcon Icon="Delete" />
+                                    </Button>
+
+                                    <Separator />
+
+                                    <Button ToolTip.Tip="Add Match-All Group">
+                                        <ic:FluentIcon Icon="ShapeIntersect" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Match-Any Group">
+                                        <ic:FluentIcon Icon="ShapeUnion" />
+                                    </Button>
+
+                                    <Separator />
+
+                                    <Button ToolTip.Tip="Add Any-Time Tag Rule">
+                                        <ic:FluentIcon Icon="TextAsterisk" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Byte Tag Rule">
+                                        <ic:FluentIcon Icon="NumberCircle1" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Short Tag Rule">
+                                        <ic:FluentIcon Icon="NumberCircle2" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Int Tag Rule">
+                                        <ic:FluentIcon Icon="NumberCircle4" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Long Tag Rule">
+                                        <ic:FluentIcon Icon="NumberCircle8" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Float Tag Rule">
+                                        <ic:FluentIcon Icon="DecimalArrowLeft" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Double Tag Rule">
+                                        <ic:FluentIcon Icon="DecimalArrowRight" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Text Tag Rule">
+                                        <ic:FluentIcon Icon="TextT" />
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <TreeView>
+                            <TreeViewItem IsExpanded="True">
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ic:FluentIcon Icon="ArrowDownRight" Margin="0,0,6,0"
+                                                       VerticalAlignment="Center" />
+                                        <TextBlock Text="Search Rules" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                                <TreeViewItem Header="Not implemented!" />
+                            </TreeViewItem>
+                        </TreeView>
+                    </DockPanel>
+                </Border>
+
+                <!-- Replace Column -->
+                <Border Classes="halfGroup">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top">
+                            <TextBlock Text="Replace" />
+                            <Border>
+                                <StackPanel>
+                                    <Button ToolTip.Tip="Edit Selected Tag">
+                                        <ic:FluentIcon Icon="Edit" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Delete Selected Tag">
+                                        <ic:FluentIcon Icon="Delete" />
+                                    </Button>
+
+                                    <Separator />
+
+                                    <Button ToolTip.Tip="Add Byte Tag">
+                                        <ic:FluentIcon Icon="NumberCircle1" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Short Tag">
+                                        <ic:FluentIcon Icon="NumberCircle2" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Int Tag">
+                                        <ic:FluentIcon Icon="NumberCircle4" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Long Tag">
+                                        <ic:FluentIcon Icon="NumberCircle8" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Float Tag">
+                                        <ic:FluentIcon Icon="DecimalArrowLeft" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Double Tag">
+                                        <ic:FluentIcon Icon="DecimalArrowRight" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Byte Array Tag">
+                                        <ic:FluentIcon Icon="CodeBlock" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Int Array Tag">
+                                        <ic:FluentIcon Icon="DataBarVertical" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Long Array Tag">
+                                        <ic:FluentIcon Icon="DataBarHorizontal" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add String Tag">
+                                        <ic:FluentIcon Icon="TextT" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add List Tag">
+                                        <ic:FluentIcon Icon="TextBulletList" />
+                                    </Button>
+                                    <Button ToolTip.Tip="Add Compound Tag">
+                                        <ic:FluentIcon Icon="Box" />
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <CheckBox DockPanel.Dock="Bottom" Margin="0 4 0 0">Delete matched tags before applying replacements.</CheckBox>
+
+                        <TreeView>
+                            <TreeViewItem IsExpanded="True">
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ic:FluentIcon Icon="ArrowDownRight" Margin="0,0,6,0"
+                                                       VerticalAlignment="Center" />
+                                        <TextBlock Text="Replacement Tags" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                                <TreeViewItem Header="Not implemented!" />
+                            </TreeViewItem>
+                        </TreeView>
+                    </DockPanel>
+                </Border>
+            </UniformGrid>
+        </Grid>
+    </StackPanel>
+
+    <UserControl.Styles>
+        <!-- This is just the style for our TabStrip-dependent Dialogs -->
+        <Style Selector="TabStrip.dialogTabStrip > TabStripItem">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0 0 16 0" />
+
+            <Style Selector="^:selected /template/ Border#PART_SelectedPipe">
+                <Setter Property="Margin" Value="0 28 0 0" />
+            </Style>
+        </Style>
+
+        <Style Selector="Border.halfGroup">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="8" />
+
+            <Style Selector="^ > DockPanel">
+                <Setter Property="Height" Value="320" />
+
+                <Style Selector="^ > StackPanel">
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="Margin" Value="0 0 0 4" />
+                    </Style>
+
+                    <Style Selector="^ > Border">
+                        <Setter Property="CornerRadius" Value="4 4 0 0" />
+                        <Setter Property="Height" Value="32" />
+                        <Setter Property="ClipToBounds" Value="True" />
+                        <Setter Property="Background"
+                                Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}" />
+
+                        <Style Selector="^ > StackPanel">
+                            <Setter Property="Orientation" Value="Horizontal" />
+                            <Setter Property="Spacing" Value="2" />
+
+                            <Style Selector="^ > Button">
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
+                                <Setter Property="Padding" Value="4 2" />
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
+
+                            <Style Selector="^ > Button:pointerover">
+                                <Setter Property="Background"
+                                        Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+                            </Style>
+
+                            <Style Selector="^ > Button:pressed">
+                                <Setter Property="Background"
+                                        Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+                            </Style>
+
+                            <Style Selector="^ > Separator">
+                                <Setter Property="Height" Value="NaN" />
+                                <Setter Property="Width" Value="1" />
+                                <Setter Property="Margin" Value="0 4" />
+                                <Setter Property="Background"
+                                        Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+</UserControl>
