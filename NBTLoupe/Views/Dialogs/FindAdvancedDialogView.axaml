@@ -47,7 +47,7 @@
 
                                     <Separator />
 
-                                    <Button ToolTip.Tip="Add Any-Time Tag Rule">
+                                    <Button ToolTip.Tip="Add Any-Type Tag Rule">
                                         <ic:FluentIcon Icon="TextAsterisk" />
                                     </Button>
                                     <Button ToolTip.Tip="Add Byte Tag Rule">
