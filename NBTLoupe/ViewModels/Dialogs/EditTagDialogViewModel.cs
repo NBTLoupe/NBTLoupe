@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +12,6 @@ using NBTLoupe.Core;
 using NBTLoupe.ViewModels.Main;
 using NBTModel.Data;
 using NBTModel.Data.Nodes;
-using NBTModel.Interop;
 using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Dialogs;
@@ -109,7 +109,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
             if (hasNewTagValue)
                 valid = valid is null or true && tagDataNode?.Tag is not null &&
-                        ValidateTagValue(tagDataNode.Tag.GetTagType());
+                        ValidateTagValue(tagDataNode.Tag.GetTagType(), TagValue);
 
             return valid ?? false;
         }
@@ -208,33 +208,34 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
         });
     }
 
-    // Just kidding, it happens here, so we can still use the FormRegistry for Editing.
-    private static bool ValidateTagValue(TagType tagType)
+    // And here's where we validate a new TagValue!
+    private static bool ValidateTagValue(TagType tagType, string? value)
     {
-        // And we let the FormRegistry deal with it! Neat, eh?
-        try
+        return tagType switch
         {
-            return tagType switch
-            {
-                TagType.TAG_STRING => FormRegistry.EditString!(new StringFormData("")),
+            TagType.TAG_STRING => true,
 
-                TagType.TAG_BYTE => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeByte())),
-                TagType.TAG_SHORT => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeShort())),
-                TagType.TAG_INT => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeInt())),
-                TagType.TAG_LONG => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeLong())),
-                TagType.TAG_FLOAT => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeFloat())),
-                TagType.TAG_DOUBLE => FormRegistry.EditTagScalar!(new TagScalarFormData(new TagNodeDouble())),
+            TagType.TAG_BYTE => sbyte.TryParse(value, out _),
+            TagType.TAG_SHORT => short.TryParse(value, out _),
+            TagType.TAG_INT => int.TryParse(value, out _),
+            TagType.TAG_LONG => long.TryParse(value, out _),
+            TagType.TAG_FLOAT => float.TryParse(value, out _),
+            TagType.TAG_DOUBLE => double.TryParse(value, out _),
 
-                TagType.TAG_BYTE_ARRAY or TagType.TAG_SHORT_ARRAY or TagType.TAG_INT_ARRAY
-                    or TagType.TAG_LONG_ARRAY => FormRegistry.EditByteArray!(new ByteArrayFormData { Data = [] }),
+            TagType.TAG_BYTE_ARRAY => string.IsNullOrEmpty(value) ||
+                                      value.Split(",", StringSplitOptions.TrimEntries)
+                                          .All(x => sbyte.TryParse(x, out _)),
+            TagType.TAG_SHORT_ARRAY => string.IsNullOrEmpty(value) ||
+                                       value.Split(",", StringSplitOptions.TrimEntries)
+                                           .All(x => short.TryParse(x, out _)),
+            TagType.TAG_INT_ARRAY => string.IsNullOrEmpty(value) ||
+                                     value.Split(",", StringSplitOptions.TrimEntries).All(x => int.TryParse(x, out _)),
+            TagType.TAG_LONG_ARRAY => string.IsNullOrEmpty(value) ||
+                                      value.Split(",", StringSplitOptions.TrimEntries)
+                                          .All(x => long.TryParse(x, out _)),
 
-                _ => false
-            };
-        }
-        catch
-        {
-            return false;
-        }
+            _ => false
+        };
     }
 
     // And here's the actual magic! The OK button!
@@ -247,8 +248,8 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
         var success = true;
         // ...we let the FormHandlers deal with it.
-        if (hasNewTagName) success &= dataNode?.RenameNode() == true;
-        if (hasNewTagValue) success &= dataNode?.EditNode() == true;
+        if (TagName is not null && hasNewTagName) success &= dataNode?.RenameNode(TagName) == true;
+        if (TagValue is not null && hasNewTagValue) success &= dataNode?.EditNode(TagValue) == true;
 
         if (!success) throw new UnreachableException();
 
