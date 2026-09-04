@@ -71,7 +71,7 @@ jobs:
           <key>CFBundleExecutable</key>
           <string>NBTLoupe</string>
           <key>CFBundleIdentifier</key>
-          <string>com.github.nbtloupe.nbtloupe</string>
+          <string>com.mallardluna.nbtloupe</string>
           <key>CFBundleName</key>
           <string>NBTLoupe</string>
           <key>CFBundleIconFile</key>
@@ -129,7 +129,7 @@ jobs:
           chmod +x "publish/NBTLoupe.AppDir/AppRun"
 
 
-          cat > "publish/NBTLoupe.AppDir/usr/share/applications/com.github.nbtloupe.nbtloupe.desktop" << 'EOF'
+          cat > "publish/NBTLoupe.AppDir/usr/share/applications/com.mallardluna.nbtloupe.desktop" << 'EOF'
           [Desktop Entry]
           Type=Application
           Name=NBTLoupe
@@ -138,13 +138,13 @@ jobs:
           Categories=Utility;FileTools;
           Exec=NBTLoupe
           EOF
-          cp "publish/NBTLoupe.AppDir/usr/share/applications/com.github.nbtloupe.nbtloupe.desktop" "publish/NBTLoupe.AppDir/com.github.nbtloupe.nbtloupe.desktop"
+          cp "publish/NBTLoupe.AppDir/usr/share/applications/com.mallardluna.nbtloupe.desktop" "publish/NBTLoupe.AppDir/com.mallardluna.nbtloupe.desktop"
 
 
-          cat > "publish/NBTLoupe.AppDir/usr/share/metainfo/com.github.nbtloupe.nbtloupe.appdata.xml" << EOF
+          cat > "publish/NBTLoupe.AppDir/usr/share/metainfo/com.mallardluna.nbtloupe.appdata.xml" << EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <component type="desktop-application">
-            <id>com.github.nbtloupe.nbtloupe</id>
+            <id>com.mallardluna.nbtloupe</id>
             <metadata_license>MIT</metadata_license>
             <project_license>MIT</project_license>
             <name>NBTLoupe</name>
@@ -158,7 +158,7 @@ jobs:
               <p>NBTLoupe tries to close that gap with the help of .NET 10 and a GUI written from
                 the ground up in Avalonia.</p>
             </description>
-            <launchable type="desktop-id">com.github.nbtloupe.nbtloupe.desktop</launchable>
+            <launchable type="desktop-id">com.mallardluna.nbtloupe.desktop</launchable>
             <url type="homepage">https://github.com/NBTLoupe/NBTLoupe</url>
             <screenshots>
               <screenshot type="default">
@@ -170,11 +170,11 @@ jobs:
               <release version="$VERSION" date="$(date +%F)" />
             </releases>
             <content_rating type="oars-1.0" />
-            <developer id="com.github.nbtloupe">
+            <developer id="com.mallardluna">
               <name>MallardLuna</name>
             </developer>
             <provides>
-              <id>com.github.nbtloupe.nbtloupe.desktop</id>
+              <id>com.mallardluna.nbtloupe.desktop</id>
             </provides>
           </component>
           EOF
