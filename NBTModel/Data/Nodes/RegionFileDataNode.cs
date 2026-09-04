@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using NBTModel.Interop;
 using Substrate.Core;
 
 namespace NBTModel.Data.Nodes;
@@ -69,7 +68,7 @@ public partial class RegionFileDataNode : DataNode
         }
         catch (Exception)
         {
-            FormRegistry.MessageBox?.Invoke("Not a valid region file.");
+            throw new InvalidDataException("Not a valid region file.");
         }
     }
 

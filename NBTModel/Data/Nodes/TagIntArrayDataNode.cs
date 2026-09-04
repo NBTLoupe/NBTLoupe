@@ -10,8 +10,8 @@ public class TagIntArrayDataNode(TagNodeIntArray tag) : TagDataNode(tag)
 
     public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " integers";
 
-    public override bool EditNode()
+    public override bool EditNode(string value)
     {
-        return EditIntHexValue(Tag);
+        return EditIntHexValue(Tag, value);
     }
 }

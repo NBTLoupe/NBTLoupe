@@ -44,7 +44,7 @@ public sealed class TagListDataNode(TagNodeList tag) : TagDataNode.Container(tag
         return data.Node.GetTagType() == Tag.ValueType || Tag.Count == 0;
     }
 
-    public override bool CreateNode(TagType type)
+    public override bool CreateNode(TagType type, string name, int size)
     {
         if (!CanCreateTag(type))
             return false;

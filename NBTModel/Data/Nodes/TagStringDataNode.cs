@@ -16,8 +16,8 @@ public class TagStringDataNode(TagNodeString tag) : TagDataNode(tag)
         return true;
     }
 
-    public override bool EditNode()
+    public override bool EditNode(string value)
     {
-        return EditStringValue(Tag);
+        return EditStringValue(Tag, value);
     }
 }

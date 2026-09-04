@@ -10,8 +10,8 @@ public class TagLongArrayDataNode(TagNodeLongArray tag) : TagDataNode(tag)
 
     public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " long integers";
 
-    public override bool EditNode()
+    public override bool EditNode(string value)
     {
-        return EditLongHexValue(Tag);
+        return EditLongHexValue(Tag, value);
     }
 }

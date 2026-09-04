@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NBTModel.Interop;
 using Substrate.Nbt;
@@ -121,16 +123,14 @@ public abstract class TagDataNode(TagNode tag) : DataNode
         return Parent?.Nodes.Remove(this) == true;
     }
 
-    public override bool RenameNode()
+    public override bool RenameNode(string name)
     {
-        if (!CanRenameNode || TagParent is not { IsNamedContainer: true } || FormRegistry.RenameTag == null)
+        if (!CanRenameNode || TagParent is not { IsNamedContainer: true })
             return false;
         var tagName = TagParent.NamedTagContainer?.GetTagName(Tag);
         if (tagName == null) return false;
-        var data = new RestrictedStringFormData(tagName);
 
-        if (!FormRegistry.RenameTag(data)) return false;
-        if (TagParent.NamedTagContainer?.RenameTag(Tag, data.Value) != true) return false;
+        if (TagParent.NamedTagContainer?.RenameTag(Tag, name) != true) return false;
         IsDataModified = true;
         return true;
     }
@@ -172,113 +172,116 @@ public abstract class TagDataNode(TagNode tag) : DataNode
         return true;
     }
 
-    protected bool EditScalarValue(TagNode tag)
+    protected bool EditScalarValue(TagNode tag, string value)
     {
-        if (FormRegistry.EditTagScalar == null) return false;
-        if (!FormRegistry.EditTagScalar(new TagScalarFormData(tag))) return false;
-        IsDataModified = true;
-        return true;
-    }
-
-    protected bool EditStringValue(TagNode tag)
-    {
-        if (FormRegistry.EditString == null) return false;
-        var data = new StringFormData(tag.ToTagString().Data);
-        if (!FormRegistry.EditString(data)) return false;
-        tag.ToTagString().Data = data.Value;
-        IsDataModified = true;
-        return true;
-    }
-
-    protected bool EditByteHexValue(TagNode tag)
-    {
-        if (FormRegistry.EditByteArray == null) return false;
-        var byteData = new byte[tag.ToTagByteArray().Length];
-        Array.Copy(tag.ToTagByteArray().Data, byteData, byteData.Length);
-
-        var data = new ByteArrayFormData
+        switch (tag.GetTagType())
         {
-            Data = byteData
-        };
+            case TagType.TAG_SHORT:
+                tag.ToTagShort().Data = short.Parse(value);
+                break;
 
-        if (!FormRegistry.EditByteArray(data)) return false;
-        tag.ToTagByteArray().Data = data.Data;
+            case TagType.TAG_INT:
+                tag.ToTagInt().Data = int.Parse(value);
+                break;
+
+            case TagType.TAG_LONG:
+                tag.ToTagLong().Data = long.Parse(value);
+                break;
+
+            case TagType.TAG_FLOAT:
+                tag.ToTagFloat().Data = float.Parse(value);
+                break;
+
+            case TagType.TAG_DOUBLE:
+                tag.ToTagDouble().Data = double.Parse(value);
+                break;
+
+            case TagType.TAG_BYTE:
+            default:
+                tag.ToTagByte().Data = unchecked((byte)sbyte.Parse(value));
+                break;
+        }
+
         IsDataModified = true;
         return true;
     }
 
-    protected bool EditShortHexValue(TagNode tag)
+    protected bool EditStringValue(TagNode tag, string value)
     {
-        if (FormRegistry.EditByteArray == null) return false;
+        tag.ToTagString().Data = value;
+        IsDataModified = true;
+        return true;
+    }
+
+    protected bool EditByteHexValue(TagNode tag, string value)
+    {
+        tag.ToTagByteArray().Data =
+        [
+            .. value.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => unchecked((byte)sbyte.Parse(x)))
+        ];
+        IsDataModified = true;
+        return true;
+    }
+
+    protected bool EditShortHexValue(TagNode tag, string value)
+    {
         var iatag = tag.ToTagShortArray();
-        var byteData = new byte[iatag.Length * 2];
-        for (var i = 0; i < iatag.Length; i++)
-        {
-            var buf = BitConverter.GetBytes(iatag.Data[i]);
-            Array.Copy(buf, 0, byteData, 2 * i, 2);
-        }
 
-        var data = new ByteArrayFormData
-        {
-            Data = byteData
-        };
+        byte[] data =
+        [
+            .. MemoryMarshal.AsBytes([
+                .. value.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Select(short.Parse)
+            ])
+        ];
 
-        if (!FormRegistry.EditByteArray(data)) return false;
         {
-            iatag.Data = new short[data.Data.Length / 2];
-            for (var i = 0; i < iatag.Length; i++) iatag.Data[i] = BitConverter.ToInt16(data.Data, i * 2);
+            iatag.Data = new short[data.Length / 2];
+            for (var i = 0; i < iatag.Length; i++) iatag.Data[i] = BitConverter.ToInt16(data, i * 2);
 
             IsDataModified = true;
             return true;
         }
     }
 
-    protected bool EditIntHexValue(TagNode tag)
+    protected bool EditIntHexValue(TagNode tag, string value)
     {
-        if (FormRegistry.EditByteArray == null) return false;
         var iatag = tag.ToTagIntArray();
-        var byteData = new byte[iatag.Length * 4];
-        for (var i = 0; i < iatag.Length; i++)
-        {
-            var buf = BitConverter.GetBytes(iatag.Data[i]);
-            Array.Copy(buf, 0, byteData, 4 * i, 4);
-        }
 
-        var data = new ByteArrayFormData
-        {
-            Data = byteData
-        };
+        byte[] data =
+        [
+            .. MemoryMarshal
+                .AsBytes([
+                    .. value.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                        .Select(int.Parse)
+                ])
+        ];
 
-        if (!FormRegistry.EditByteArray(data)) return false;
         {
-            iatag.Data = new int[data.Data.Length / 4];
-            for (var i = 0; i < iatag.Length; i++) iatag.Data[i] = BitConverter.ToInt32(data.Data, i * 4);
+            iatag.Data = new int[data.Length / 4];
+            for (var i = 0; i < iatag.Length; i++) iatag.Data[i] = BitConverter.ToInt32(data, i * 4);
 
             IsDataModified = true;
             return true;
         }
     }
 
-    protected bool EditLongHexValue(TagNode tag)
+    protected bool EditLongHexValue(TagNode tag, string value)
     {
-        if (FormRegistry.EditByteArray == null) return false;
         var latag = tag.ToTagLongArray();
-        var byteData = new byte[latag.Length * 8];
-        for (var i = 0; i < latag.Length; i++)
-        {
-            var buf = BitConverter.GetBytes(latag.Data[i]);
-            Array.Copy(buf, 0, byteData, 8 * i, 8);
-        }
 
-        var data = new ByteArrayFormData
-        {
-            Data = byteData
-        };
+        byte[] data =
+        [
+            .. MemoryMarshal.AsBytes([
+                .. value.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Select(long.Parse)
+            ])
+        ];
 
-        if (!FormRegistry.EditByteArray(data)) return false;
         {
-            latag.Data = new long[data.Data.Length / 8];
-            for (var i = 0; i < latag.Length; i++) latag.Data[i] = BitConverter.ToInt64(data.Data, i * 8);
+            latag.Data = new long[data.Length / 8];
+            for (var i = 0; i < latag.Length; i++) latag.Data[i] = BitConverter.ToInt64(data, i * 8);
 
             IsDataModified = true;
             return true;

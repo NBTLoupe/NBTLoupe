@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
-using NBTModel.Interop;
 
 namespace NBTModel.Data.Nodes;
 
@@ -51,7 +50,7 @@ public partial class CubicRegionDataNode : DataNode
         }
         catch
         {
-            FormRegistry.MessageBox?.Invoke("Not a valid cubic region file.");
+            throw new InvalidDataException("Not a valid cubic region file.");
         }
     }
 

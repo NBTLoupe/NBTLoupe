@@ -10,8 +10,8 @@ public class TagByteArrayDataNode(TagNodeByteArray tag) : TagDataNode(tag)
 
     public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " bytes";
 
-    public override bool EditNode()
+    public override bool EditNode(string value)
     {
-        return EditByteHexValue(Tag);
+        return EditByteHexValue(Tag, value);
     }
 }

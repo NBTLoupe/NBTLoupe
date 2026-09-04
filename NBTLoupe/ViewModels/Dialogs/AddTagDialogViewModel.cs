@@ -70,7 +70,8 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
         var before = MainViewModel.SingleSelectedTreeNode.SubNodes.Select(n => n.DataNode).ToHashSet();
 
         // Create the new TreeNode.
-        if (!MainViewModel.SingleSelectedTreeNode.DataNode.CreateNode(DialogTagType)) throw new UnreachableException();
+        if (!MainViewModel.SingleSelectedTreeNode.DataNode.CreateNode(DialogTagType, TagName ?? "", (int)TagSize))
+            throw new UnreachableException();
 
         // IsExpand (UI-wise) the new TreeNode.
         MainViewModel.SingleSelectedTreeNode.IsExpanded = true;

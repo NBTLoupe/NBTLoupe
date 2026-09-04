@@ -39,21 +39,34 @@ public class TagCompoundDataNode(TagNodeCompound tag) : TagDataNode.Container(ta
         return await NbtClipboardController.ContainsDataAsync();
     }
 
-    public override bool CreateNode(TagType type)
+    public override bool CreateNode(TagType type, string name, int size)
     {
         if (!CanCreateTag(type))
             return false;
 
-        if (FormRegistry.CreateNode == null) return false;
-        var data = new CreateTagFormData
+        TagNode node = type switch
         {
-            TagType = type
+            TagType.TAG_BYTE => new TagNodeByte(),
+            TagType.TAG_BYTE_ARRAY => new TagNodeByteArray(
+                new byte[size]),
+            TagType.TAG_COMPOUND => new TagNodeCompound(),
+            TagType.TAG_DOUBLE => new TagNodeDouble(),
+            TagType.TAG_FLOAT => new TagNodeFloat(),
+            TagType.TAG_INT => new TagNodeInt(),
+            TagType.TAG_INT_ARRAY => new TagNodeIntArray(
+                new int[size]),
+            TagType.TAG_LIST => new TagNodeList(TagType.TAG_BYTE),
+            TagType.TAG_LONG => new TagNodeLong(),
+            TagType.TAG_LONG_ARRAY => new TagNodeLongArray(
+                new long[size]),
+            TagType.TAG_SHORT => new TagNodeShort(),
+            TagType.TAG_SHORT_ARRAY => new TagNodeShortArray(
+                new short[size]),
+            TagType.TAG_STRING => new TagNodeString(),
+            _ => new TagNodeByte()
         };
 
-        if (!FormRegistry.CreateNode(data)) return false;
-
-        if (data.TagNode == null || data.TagName == null) return false;
-        AddTag(data.TagNode, data.TagName);
+        AddTag(node, name);
         return true;
     }
 

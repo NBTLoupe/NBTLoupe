@@ -187,17 +187,17 @@ public class DataNode
 
     #region Operations
 
-    public virtual bool CreateNode(TagType type)
+    public virtual bool CreateNode(TagType type, string name, int size)
     {
         return false;
     }
 
-    public virtual bool RenameNode()
+    public virtual bool RenameNode(string name)
     {
         return false;
     }
 
-    public virtual bool EditNode()
+    public virtual bool EditNode(string value)
     {
         return false;
     }

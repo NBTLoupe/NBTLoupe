@@ -10,8 +10,8 @@ public class TagShortArrayDataNode(TagNodeShortArray tag) : TagDataNode(tag)
 
     public override string NodeDisplay => NodeDisplayPrefix + Tag.Data.Length + " shorts";
 
-    public override bool EditNode()
+    public override bool EditNode(string value)
     {
-        return EditShortHexValue(Tag);
+        return EditShortHexValue(Tag, value);
     }
 }

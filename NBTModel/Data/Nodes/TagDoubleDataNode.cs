@@ -17,8 +17,8 @@ public class TagDoubleDataNode(TagNodeDouble tag) : TagDataNode(tag)
         return true;
     }
 
-    public override bool EditNode()
+    public override bool EditNode(string value)
     {
-        return EditScalarValue(Tag);
+        return EditScalarValue(Tag, value);
     }
 }
