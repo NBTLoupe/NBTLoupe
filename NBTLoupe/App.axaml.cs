@@ -52,7 +52,6 @@ public class App : Application
         }
 
         SetupErrorHandling(mainViewModel);
-        FormHandlers.InitializeFormHandlers(mainViewModel);
 
         base.OnFrameworkInitializationCompleted();
     }

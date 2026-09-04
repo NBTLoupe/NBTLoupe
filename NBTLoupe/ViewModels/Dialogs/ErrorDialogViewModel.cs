@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using NBTLoupe.ViewModels.Main;
@@ -18,7 +19,8 @@ internal class ErrorDialogViewModel : DialogHostViewModel
         FatalException = fatal;
 
         // If it's one of these Exceptions, it likely isn't a bug, but rather a user-caused Error. So we don't want to confuse the user into opening an issue.
-        PotentialBug = exception is not UserErrorException && exception is not NotImplementedException &&
+        PotentialBug = exception is not UserErrorException && exception is not InvalidDataException &&
+                       exception is not NotImplementedException &&
                        !FatalException;
 
         // This is just so people running NAOT builds (AKA everyone on RELEASE) don't get a confusing StackTrace. 
