@@ -15,19 +15,12 @@
              x:Class="NBTLoupe.Views.Dialogs.DialogHostView"
              x:DataType="main:MainViewModel">
     <Border IsVisible="{Binding IsDialogOpen}">
-        <Panel Background="{DynamicResource DialogOverlayBrush}">
-            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderThickness="1"
-                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" CornerRadius="8"
-                    MinWidth="320" MaxWidth="{Binding CurrentDialog?.MaxWidth, TargetNullValue=640}" MaxHeight="640"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center" Effect="{DynamicResource DialogShadow}"
-                    BackgroundSizing="InnerBorderEdge">
-                <Border ClipToBounds="True" CornerRadius="8">
-                    <Grid ClipToBounds="True" RowDefinitions="*,Auto">
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Padding="24"
-                                    BorderThickness="0,0,0,1"
-                                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+        <Panel Classes="dialogPanel">
+            <Border Classes="floatyCard">
+                <Border>
+                    <Grid RowDefinitions="*,Auto">
+                        <ScrollViewer>
+                            <Border Classes="dialogSegment">
                                 <!-- Personalised dialogs -->
                                 <ContentControl Content="{Binding CurrentDialog}">
                                     <ContentControl.DataTemplates>
@@ -81,23 +74,18 @@
                         </ScrollViewer>
 
                         <!-- The buttons! -->
-                        <Border Grid.Row="1" Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-                            <DockPanel LastChildFill="False">
+                        <Border Grid.Row="1" Classes="dialogSegment">
+                            <DockPanel>
                                 <!-- Personalised ("Special") buttons -->
-                                <ItemsControl DockPanel.Dock="Left"
-                                              ItemsSource="{Binding CurrentDialog?.SpecialButtons}">
+                                <ItemsControl ItemsSource="{Binding CurrentDialog?.SpecialButtons}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" Spacing="4" />
+                                            <StackPanel />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="dialogvms:DialogButton">
-                                            <Button Content="{Binding Text}" Command="{Binding Command}"
-                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                    HorizontalContentAlignment="Center"
-                                                    VerticalContentAlignment="Center">
+                                            <Button Content="{Binding Text}" Command="{Binding Command}">
                                                 <Button.KeyBindings>
                                                     <KeyBinding Gesture="Enter" Command="{Binding Command}" />
                                                 </Button.KeyBindings>
@@ -107,23 +95,18 @@
                                 </ItemsControl>
 
                                 <!-- Generic buttons (Cancel and OK) -->
-                                <StackPanel Orientation="Horizontal" Spacing="4" DockPanel.Dock="Right">
-                                    <Button Name="DialogCancelButton" Content="{Binding CurrentDialog?.CancelText}"
-                                            Command="{Binding CurrentDialog?.DialogCancelCommand}"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                <StackPanel>
+                                    <Button x:Name="DialogCancelButton" Content="{Binding CurrentDialog?.CancelText}"
+                                            Command="{Binding CurrentDialog?.DialogCancelCommand}">
                                         <Button.KeyBindings>
                                             <KeyBinding Gesture="Enter"
                                                         Command="{Binding CurrentDialog?.DialogCancelCommand}" />
                                         </Button.KeyBindings>
                                     </Button>
                                     <!-- ReSharper disable once Xaml.StyleClassNotFound -->
-                                    <Button Name="DialogOkButton" Content="{Binding CurrentDialog?.OkText}"
-                                            Command="{Binding CurrentDialog?.DialogOkCommand}"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Stretch"
-                                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                            Classes="accent" />
+                                    <Button Classes="accent" x:Name="DialogOkButton"
+                                            Content="{Binding CurrentDialog?.OkText}"
+                                            Command="{Binding CurrentDialog?.DialogOkCommand}" />
                                 </StackPanel>
                             </DockPanel>
                         </Border>
@@ -139,9 +122,65 @@
     </Border>
 
     <UserControl.Styles>
-        <!-- We hide the Cancel Dialog Button when it is disabled -->
-        <Style Selector="Button#DialogCancelButton:disabled">
-            <Setter Property="IsVisible" Value="False" />
+        <Style Selector="Panel.dialogPanel">
+            <Setter Property="Background" Value="{DynamicResource DialogOverlayBrush}" />
+
+            <Style Selector="^ > Border.floatyCard">
+                <Setter Property="MinWidth" Value="320" />
+                <Setter Property="MaxWidth" Value="{Binding CurrentDialog?.MaxWidth, TargetNullValue=640}" />
+                <Setter Property="MaxHeight" Value="640" />
+
+                <Style Selector="^ Border.dialogSegment">
+                    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+                    <Setter Property="Padding" Value="24" />
+                </Style>
+
+                <Style Selector="^ > Border > Grid">
+                    <Setter Property="ClipToBounds" Value="True" />
+
+                    <Style Selector="^ > ScrollViewer">
+                        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+
+                        <Style Selector="^ > Border">
+                            <Setter Property="BorderThickness" Value="0,0,0,1" />
+                            <Setter Property="BorderBrush"
+                                    Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        </Style>
+                    </Style>
+
+                    <Style Selector="^ > Border">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+
+                        <Style Selector="^ > DockPanel">
+                            <Setter Property="LastChildFill" Value="False" />
+
+                            <Style Selector="^ ItemsControl">
+                                <Setter Property="DockPanel.Dock" Value="Left" />
+                            </Style>
+
+                            <Style Selector="^ StackPanel">
+                                <Setter Property="DockPanel.Dock" Value="Right" />
+                                <Setter Property="Orientation" Value="Horizontal" />
+                                <Setter Property="Spacing" Value="4" />
+
+                                <Style Selector="^ > Button">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                    <Setter Property="VerticalAlignment" Value="Stretch" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                </Style>
+
+                                <!-- We hide the Cancel Dialog Button when it is disabled -->
+                                <Style Selector="^ > Button#DialogCancelButton:disabled">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </Style>
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
         </Style>
     </UserControl.Styles>
 </UserControl>

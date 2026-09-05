@@ -13,46 +13,25 @@
              x:Class="NBTLoupe.Views.Dialogs.ChunkFinderDialogView"
              x:DataType="dialogs:ChunkFinderDialogViewModel">
     <Grid RowDefinitions="Auto,*" IsEnabled="{Binding !InProgress}">
-        <TextBlock TextWrapping="Wrap" Margin="0,0,0,12"
-                   Text="Chunk Finder"
-                   FontSize="20"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Left" VerticalAlignment="Top" />
-        <UniformGrid Grid.Row="1" Columns="3" HorizontalAlignment="Stretch"
-                     ColumnSpacing="8">
+        <TextBlock Classes="dialogTitle" Text="Chunk Finder" />
+        <UniformGrid Grid.Row="1" Columns="3" Classes="groupBoxer">
             <!-- Region Column -->
-            <StackPanel Spacing="8">
+            <StackPanel>
                 <!-- Region Group -->
-                <Border BorderThickness="1"
-                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                        CornerRadius="8" Padding="8">
-                    <StackPanel Spacing="4">
+                <Border>
+                    <StackPanel>
                         <TextBlock Text="Region" />
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding RegionXPlaceholder}"
-                                       Value="{Binding RegionX, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding RegionXPlaceholder}"
+                                       Value="{Binding RegionX, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="X:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="X:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
 
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding RegionZPlaceholder}"
-                                       Value="{Binding RegionZ, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding RegionZPlaceholder}"
+                                       Value="{Binding RegionZ, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="Z:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="Z:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
                     </StackPanel>
@@ -60,74 +39,42 @@
             </StackPanel>
 
             <!-- Chunk Column -->
-            <StackPanel Spacing="8">
+            <StackPanel>
                 <!-- Chunk Group -->
-                <Border BorderThickness="1"
-                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                        CornerRadius="8" Padding="8">
-                    <StackPanel Spacing="4">
+                <Border>
+                    <StackPanel>
                         <TextBlock Text="Chunk" />
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding ChunkXPlaceholder}"
-                                       Value="{Binding ChunkX, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding ChunkXPlaceholder}"
+                                       Value="{Binding ChunkX, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="X:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="X:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
 
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding ChunkZPlaceholder}"
-                                       Value="{Binding ChunkZ, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding ChunkZPlaceholder}"
+                                       Value="{Binding ChunkZ, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="Z:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="Z:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
                     </StackPanel>
                 </Border>
 
                 <!-- Local Chunk Group -->
-                <Border BorderThickness="1"
-                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                        CornerRadius="8" Padding="8">
-                    <StackPanel Spacing="4">
+                <Border>
+                    <StackPanel>
                         <TextBlock Text="Local Chunk" />
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding LocalChunkXPlaceholder}"
-                                       Value="{Binding LocalChunkX, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding LocalChunkXPlaceholder}"
+                                       Value="{Binding LocalChunkX, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="X:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="X:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
 
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding LocalChunkZPlaceholder}"
-                                       Value="{Binding LocalChunkZ, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding LocalChunkZPlaceholder}"
+                                       Value="{Binding LocalChunkZ, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="Z:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="Z:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
                     </StackPanel>
@@ -135,74 +82,42 @@
             </StackPanel>
 
             <!-- Block Column -->
-            <StackPanel Spacing="8">
+            <StackPanel>
                 <!-- Block Group -->
-                <Border BorderThickness="1"
-                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                        CornerRadius="8" Padding="8">
-                    <StackPanel Spacing="4">
+                <Border>
+                    <StackPanel>
                         <TextBlock Text="Block" />
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding BlockXPlaceholder}"
-                                       Value="{Binding BlockX, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding BlockXPlaceholder}"
+                                       Value="{Binding BlockX, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="X:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="X:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
 
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding BlockZPlaceholder}"
-                                       Value="{Binding BlockZ, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding BlockZPlaceholder}"
+                                       Value="{Binding BlockZ, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="Z:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="Z:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
                     </StackPanel>
                 </Border>
 
                 <!-- Local Block Group -->
-                <Border BorderThickness="1"
-                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                        CornerRadius="8" Padding="8">
-                    <StackPanel Spacing="4">
+                <Border>
+                    <StackPanel>
                         <TextBlock Text="Local Block" />
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding LocalBlockXPlaceholder}"
-                                       Value="{Binding LocalBlockX, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding LocalBlockXPlaceholder}"
+                                       Value="{Binding LocalBlockX, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="X:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="X:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
 
-                        <NumericUpDown MinWidth="140"
-                                       PlaceholderText="{Binding LocalBlockZPlaceholder}"
-                                       Value="{Binding LocalBlockZ, Mode=TwoWay}"
-                                       FormatString="0"
-                                       ParsingNumberStyle="Integer"
-                                       ShowButtonSpinner="False"
-                                       AllowSpin="False">
+                        <NumericUpDown PlaceholderText="{Binding LocalBlockZPlaceholder}"
+                                       Value="{Binding LocalBlockZ, Mode=TwoWay}">
                             <NumericUpDown.InnerLeftContent>
-                                <TextBlock Text="Z:"
-                                           VerticalAlignment="Center"
-                                           Margin="10 0 0 0" />
+                                <TextBlock Classes="innerLeftLabel" Text="Z:" />
                             </NumericUpDown.InnerLeftContent>
                         </NumericUpDown>
                     </StackPanel>
@@ -210,4 +125,22 @@
             </StackPanel>
         </UniformGrid>
     </Grid>
+
+    <UserControl.Styles>
+        <Style Selector="UniformGrid.groupBoxer > StackPanel">
+            <Setter Property="Spacing" Value="8" />
+            <Style Selector="^ > Border">
+                <Style Selector="^ > StackPanel">
+                    <Setter Property="Spacing" Value="4" />
+                    <Style Selector="^ NumericUpDown">
+                        <Setter Property="MinWidth" Value="140" />
+                        <Setter Property="FormatString" Value="0" />
+                        <Setter Property="ParsingNumberStyle" Value="Integer" />
+                        <Setter Property="ShowButtonSpinner" Value="False" />
+                        <Setter Property="AllowSpin" Value="False" />
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+    </UserControl.Styles>
 </UserControl>
