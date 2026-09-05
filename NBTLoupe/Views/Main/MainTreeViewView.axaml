@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:core="clr-namespace:NBTLoupe.Core"
+             xmlns:treenodes="clr-namespace:NBTLoupe.Core.TreeNodes"
              xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
              xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
              x:Class="NBTLoupe.Views.Main.MainTreeViewView"
@@ -72,7 +72,7 @@
 
     <UserControl.Styles>
         <!-- This lets us control the UI IsExpanded both ways, and hides the Placeholder items -->
-        <Style Selector="TreeViewItem" x:DataType="core:TreeNode">
+        <Style Selector="TreeViewItem" x:DataType="treenodes:TreeNode">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
             <Setter Property="IsVisible" Value="{Binding !IsPlaceholder}" />
         </Style>

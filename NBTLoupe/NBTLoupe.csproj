@@ -120,6 +120,9 @@
             <DependentUpon>UnsavedChangesDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Core\TreeNodes\TreeNodes.Expansion.Cs">
+            <DependentUpon>TreeNodes.cs</DependentUpon>
+        </Compile>
         <Compile Update="ViewModels\Main\MainViewModel.Blocking.cs">
             <DependentUpon>MainViewModel.cs</DependentUpon>
         </Compile>

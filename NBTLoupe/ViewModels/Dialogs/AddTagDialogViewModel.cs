@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NBTLoupe.Core;
+using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Main;
 using NBTModel.Data;
 using Substrate.Nbt;
@@ -18,7 +18,7 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
         DialogTagType = tagType;
 
         // Set the context-accurate Title and Type.
-        TitleText = $"Add {TreeNode.GetFriendlyTag(DialogTagType)}";
+        TitleText = $"Add {DialogTagType.GetFriendlyTag()}";
     }
 
     // Here's all the fields we bind to in the XAML...

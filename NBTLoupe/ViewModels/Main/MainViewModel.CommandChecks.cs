@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NBTLoupe.Core;
+using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTModel.Data.Nodes;
 using Serilog;

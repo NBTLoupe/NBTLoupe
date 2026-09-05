@@ -8,7 +8,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
-using NBTLoupe.Core;
+using NBTLoupe.Core.IO;
+using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTModel.Data.Nodes;
 using Serilog;
@@ -220,7 +221,7 @@ public partial class MainViewModel
                 SelectedTreeNodes.Clear();
 
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
-                var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                var restoredSelectedTreeNode = NodeStateRestorer.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
             });
         });
@@ -283,7 +284,7 @@ public partial class MainViewModel
                 SelectedTreeNodes.Clear();
 
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
-                var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                var restoredSelectedTreeNode = NodeStateRestorer.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
             });
         });
@@ -328,7 +329,7 @@ public partial class MainViewModel
                 SelectedTreeNodes.Clear();
 
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
-                var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                var restoredSelectedTreeNode = NodeStateRestorer.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                 if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
             });
         });
@@ -403,7 +404,7 @@ public partial class MainViewModel
                 // And finally, we restore our SelectedTreeNodes using our IndexPath.
                 if (savedSelectedTreeNodes is not null)
                 {
-                    var restoredSelectedTreeNode = TreeNode.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                    var restoredSelectedTreeNode = NodeStateRestorer.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
                     if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
                 }
             });

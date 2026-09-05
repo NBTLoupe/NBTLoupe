@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Serilog;
 
-namespace NBTLoupe.Core;
+namespace NBTLoupe.Core.IO;
 
 // We need this so NAOT is happy.
 [JsonSourceGenerationOptions]
