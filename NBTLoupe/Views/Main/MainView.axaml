@@ -9,13 +9,13 @@
              x:Class="NBTLoupe.Views.Main.MainView"
              x:DataType="mainvm:MainViewModel">
     <Grid>
-        <DockPanel IsEnabled="{Binding !IsBlocked}">
-            <StackPanel DockPanel.Dock="Top">
+        <DockPanel Classes="mainDockPanel" IsEnabled="{Binding !IsBlocked}">
+            <StackPanel>
                 <main:MainMenuView x:Name="MainMenuView" />
 
                 <main:MainCommandBarView x:Name="MainCommandBarView" />
 
-                <ProgressBar IsIndeterminate="True" IsVisible="{Binding ShowProgressBar}" VerticalAlignment="Top" />
+                <ProgressBar IsVisible="{Binding ShowProgressBar}" />
             </StackPanel>
 
             <main:MainTreeViewView />
@@ -36,4 +36,15 @@
         <KeyBinding Gesture="{OnPlatform 'Alt+F4', macOS='Cmd+Q'}" Command="{Binding ExitCommand}" />
         <KeyBinding Gesture="F1" Command="{Binding AboutCommand}" />
     </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <Style Selector="DockPanel.mainDockPanel > StackPanel">
+            <Setter Property="DockPanel.Dock" Value="Top" />
+
+            <Style Selector="^ > ProgressBar">
+                <Setter Property="IsIndeterminate" Value="True" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
 </UserControl>

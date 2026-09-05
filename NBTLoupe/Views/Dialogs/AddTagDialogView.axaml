@@ -13,25 +13,28 @@
              x:Class="NBTLoupe.Views.Dialogs.AddTagDialogView"
              x:DataType="dialogs:AddTagDialogViewModel">
     <Grid RowDefinitions="Auto,*">
-        <StackPanel Margin="0,0,0,12">
-            <TextBlock TextWrapping="Wrap" Text="{Binding TitleText}"
-                       FontSize="20"
-                       FontWeight="SemiBold"
-                       HorizontalAlignment="Left" VerticalAlignment="Top" />
-        </StackPanel>
-        <StackPanel Grid.Row="1" Spacing="4">
-            <TextBox Loaded="DialogTextBox_Loaded"
-                     Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     PlaceholderText="Name" />
+        <TextBlock Classes="dialogTitle" Text="{Binding TitleText}" />
+        <StackPanel Grid.Row="1">
+            <TextBox Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="Name" Loaded="DialogTextBox_Loaded" />
             <NumericUpDown Value="{Binding TagSize, Mode=TwoWay}"
-                           IsEnabled="{Binding SizeEnabled}"
-                           Minimum="0"
-                           FormatString="0" ParsingNumberStyle="Integer">
+                           IsEnabled="{Binding SizeEnabled}">
                 <NumericUpDown.InnerLeftContent>
-                    <TextBlock Text="Size:" VerticalAlignment="Center"
-                               Margin="10 0 0 0" />
+                    <TextBlock Classes="innerLeftLabel" Text="Size:" />
                 </NumericUpDown.InnerLeftContent>
             </NumericUpDown>
         </StackPanel>
     </Grid>
+
+    <UserControl.Styles>
+        <Style Selector="Grid > StackPanel">
+            <Setter Property="Spacing" Value="4" />
+
+            <Style Selector="^ > NumericUpDown">
+                <Setter Property="Minimum" Value="0" />
+                <Setter Property="FormatString" Value="0" />
+                <Setter Property="ParsingNumberStyle" Value="Integer" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
 </UserControl>

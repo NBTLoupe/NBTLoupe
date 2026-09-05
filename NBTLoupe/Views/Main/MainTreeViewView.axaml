@@ -7,17 +7,16 @@
              x:DataType="main:MainViewModel">
     <TreeView x:Name="MainTreeView" ItemsSource="{Binding TreeNodes}"
               SelectedItems="{Binding SelectedTreeNodes}"
-              SelectionMode="Multiple"
               IsHitTestVisible="{Binding BasicSearcher, Converter={x:Static ObjectConverters.IsNull}}"
               DoubleTapped="InputElement_OnDoubleTapped" DragDrop.AllowDrop="True"
               DragDrop.DragOver="TreeView_OnDragOver"
               DragDrop.Drop="TreeView_OnDrop">
         <TreeView.ItemTemplate>
             <TreeDataTemplate ItemsSource="{Binding SubNodes}">
-                <StackPanel Orientation="Horizontal">
-                    <ic:FluentIcon Icon="{Binding Icon}" Margin="0,0,6,0" VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
-                </StackPanel>
+                <Grid ColumnDefinitions="Auto,*">
+                    <ic:FluentIcon Icon="{Binding Icon}" />
+                    <TextBlock Grid.Column="1" Text="{Binding Title}" />
+                </Grid>
             </TreeDataTemplate>
         </TreeView.ItemTemplate>
         <TreeView.ContextMenu>
@@ -71,10 +70,13 @@
     </TreeView>
 
     <UserControl.Styles>
-        <!-- This lets us control the UI IsExpanded both ways, and hides the Placeholder items -->
-        <Style Selector="TreeViewItem" x:DataType="treenodes:TreeNode">
-            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-            <Setter Property="IsVisible" Value="{Binding !IsPlaceholder}" />
+        <Style Selector="TreeView">
+            <Setter Property="SelectionMode" Value="Multiple" />
+            <!-- This lets us control the UI IsExpanded both ways, and hides the Placeholder items -->
+            <Style Selector="^ TreeViewItem" x:DataType="treenodes:TreeNode">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsVisible" Value="{Binding !IsPlaceholder}" />
+            </Style>
         </Style>
     </UserControl.Styles>
 </UserControl>

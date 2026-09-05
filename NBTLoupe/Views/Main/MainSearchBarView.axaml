@@ -4,16 +4,10 @@
              xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
              x:Class="NBTLoupe.Views.Main.MainSearchBarView"
              x:DataType="main:MainViewModel">
-    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderThickness="1"
-            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" CornerRadius="8"
-            Margin="0,88,8,0" HorizontalAlignment="Right"
-            VerticalAlignment="Top" Effect="{DynamicResource DialogShadow}"
-            BackgroundSizing="InnerBorderEdge"
-            IsVisible="{Binding BasicSearcher, Converter={x:Static ObjectConverters.IsNotNull}}">
-        <Border ClipToBounds="True" CornerRadius="8" Padding="16 8">
-            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                <TextBlock FontSize="14" VerticalAlignment="Center"
-                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+    <Border Classes="floatyCard" IsVisible="{Binding BasicSearcher, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <Border>
+            <StackPanel>
+                <TextBlock>
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Match {0} of {1}">
                             <Binding Path="BasicSearcher?.CurrentMatch" TargetNullValue="??" />
@@ -22,7 +16,7 @@
                     </TextBlock.Text>
                 </TextBlock>
 
-                <Separator Height="NaN" Width="1" Background="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <Separator Classes="vertical" />
 
                 <Button Command="{Binding FindPreviousCommand}" ToolTip.Tip="Previous match (Shift+F3)">
                     <ic:FluentIcon Icon="ArrowUp" />
@@ -32,16 +26,15 @@
                 </Button>
 
                 <!-- TODO: Implement the Advanced Search/Replace! -->
-                <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="False">
-                    <Separator Height="NaN" Width="1"
-                               Background="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <StackPanel IsVisible="False">
+                    <Separator Classes="vertical" />
 
                     <Button ToolTip.Tip="Replace this match">
                         <ic:FluentIcon Icon="TranslateAuto" />
                     </Button>
                 </StackPanel>
 
-                <Separator Height="NaN" Width="1" Background="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <Separator Classes="vertical" />
 
                 <Button Command="{Binding FindStopCommand}" ToolTip.Tip="Close">
                     <ic:FluentIcon Icon="Dismiss" />
@@ -49,4 +42,28 @@
             </StackPanel>
         </Border>
     </Border>
+
+    <UserControl.Styles>
+        <Style Selector="Border.floatyCard">
+            <Setter Property="Margin" Value="0,88,8,0" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+
+            <Style Selector="^ > Border">
+                <Setter Property="Padding" Value="16 8" />
+
+                <Style Selector="^ StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal" />
+                    <Setter Property="Spacing" Value="4" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="FontSize" Value="14" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+    </UserControl.Styles>
 </UserControl>

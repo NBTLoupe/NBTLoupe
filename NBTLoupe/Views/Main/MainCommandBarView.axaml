@@ -4,7 +4,7 @@
              xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
              x:Class="NBTLoupe.Views.Main.MainCommandBarView"
              x:DataType="main:MainViewModel">
-    <CommandBar x:Name="MainCommandBar" DefaultLabelPosition="Collapsed" IsDynamicOverflowEnabled="True">
+    <CommandBar x:Name="MainCommandBar">
         <CommandBar.PrimaryCommands>
             <CommandBarButton Label="Open NBT Data Source" ToolTip.Tip="Open NBT Data Source"
                               Command="{Binding OpenFileCommand}">
@@ -174,10 +174,15 @@
     </CommandBar>
 
     <UserControl.Styles>
-        <!-- This makes it obvious when a CommandBarButton is disabled -->
-        <Style Selector="CommandBarButton:disabled">
-            <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundDisabled}" />
-            <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}" />
+        <Style Selector="CommandBar">
+            <Setter Property="DefaultLabelPosition" Value="Collapsed" />
+            <Setter Property="IsDynamicOverflowEnabled" Value="True" />
+
+            <!-- This makes it obvious when a CommandBarButton is disabled -->
+            <Style Selector="^ CommandBarButton:disabled">
+                <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundDisabled}" />
+                <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}" />
+            </Style>
         </Style>
     </UserControl.Styles>
 </UserControl>

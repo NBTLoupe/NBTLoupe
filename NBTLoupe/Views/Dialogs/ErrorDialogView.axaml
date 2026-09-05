@@ -13,25 +13,31 @@
              x:Class="NBTLoupe.Views.Dialogs.ErrorDialogView"
              x:DataType="dialogs:ErrorDialogViewModel">
     <Grid RowDefinitions="Auto,*">
-        <StackPanel Margin="0,0,0,12">
-            <TextBlock TextWrapping="Wrap"
-                       Text="Something went wrong... :C"
-                       FontSize="20" FontWeight="SemiBold"
-                       HorizontalAlignment="Left" VerticalAlignment="Top" />
-            <TextBlock
-                Text="We strongly recommend you save your changes and restart the app. If this keeps happening, please open an issue on our GitHub."
-                IsVisible="{Binding PotentialBug}"
-                TextWrapping="Wrap" FontSize="14"
-                HorizontalAlignment="Left" VerticalAlignment="Top" />
+        <StackPanel>
+            <TextBlock Classes="dialogTitle" Text="Something went wrong... :C" />
+            <TextBlock Classes="dialogSubtitle"
+                       Text="We strongly recommend you save your changes and restart the app. If this keeps happening, please open an issue on our GitHub."
+                       IsVisible="{Binding PotentialBug}" />
 
-            <TextBlock
-                Text="A critical error has occurred in Substrate, compromising the app state. To prevent data corruption, you must restart the app. If this keeps happening, please open an issue on our GitHub."
-                IsVisible="{Binding FatalException}"
-                TextWrapping="Wrap" FontSize="14"
-                HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <TextBlock Classes="dialogSubtitle"
+                       Text="A critical error has occurred in Substrate, compromising the app state. To prevent data corruption, you must restart the app. If this keeps happening, please open an issue on our GitHub."
+                       IsVisible="{Binding FatalException}" />
         </StackPanel>
-        <TextBox Text="{Binding ExceptionText}" TextWrapping="Wrap"
-                 TextAlignment="Center"
-                 MinLines="5" IsReadOnly="True" Grid.Row="1" />
+        <TextBox Grid.Row="1" Text="{Binding ExceptionText}" />
     </Grid>
+
+    <UserControl.Styles>
+        <Style Selector="Grid">
+            <Style Selector="^ > StackPanel">
+                <Setter Property="Margin" Value="0,0,0,12" />
+            </Style>
+
+            <Style Selector="^ > TextBox">
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="MinLines" Value="5" />
+                <Setter Property="IsReadOnly" Value="True" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
 </UserControl>

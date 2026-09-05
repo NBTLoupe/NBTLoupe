@@ -1,12 +1,102 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="NBTLoupe.App"
+             xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
              RequestedThemeVariant="Default"
              Name="NBTLoupe">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
+
+        <!-- This is the style for our Floaty Cards, which are the base of both Dialogs and Bars -->
+        <Style Selector="Border.floatyCard">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
+            <Setter Property="Effect" Value="{DynamicResource DialogShadow}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+
+            <Style Selector="^ > Border">
+                <Setter Property="ClipToBounds" Value="True" />
+                <Setter Property="CornerRadius" Value="8" />
+            </Style>
+        </Style>
+
+        <!-- This is the style that allows our TreeView to have Icons -->
+        <Style Selector="TreeView > TreeViewItem > Grid">
+            <Style Selector="^ > ic|FluentIcon">
+                <Setter Property="Margin" Value="0,0,6,0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+
+            <Style Selector="^ > TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+        </Style>
+
+        <!-- This is the style for Vertical Separators -->
+        <Style Selector="Separator.vertical">
+            <Setter Property="Height" Value="NaN" />
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Style>
+
+        <!-- This is the style for Group-based Dialog items, which require a cute border to separate each group -->
+        <Style Selector="UniformGrid.groupBoxer">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="ColumnSpacing" Value="8" />
+
+            <Style Selector="^ > StackPanel > Border">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="8" />
+            </Style>
+        </Style>
+
+        <!-- This is the style for all our Dialog's Titles -->
+        <Style Selector="TextBlock.dialogTitle">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0 0 0 12" />
+        </Style>
+
+        <!-- This is the style for all our Dialog's Subtitles -->
+        <Style Selector="TextBlock.dialogSubtitle">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+
+        <!-- This is the style for all our Dialog's Inner TextBlocks (which label inputs) -->
+        <Style Selector="TextBlock.innerLeftLabel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10 0 0 0" />
+        </Style>
+
+        <!-- This is the style for our TabStrip-dependent Dialogs -->
+        <Style Selector="TabStrip.dialogTabStrip > TabStripItem">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0 0 16 10" />
+
+            <Style Selector="^:selected /template/ Border#PART_SelectedPipe">
+                <Setter Property="Margin" Value="0 28 0 0" />
+            </Style>
+        </Style>
     </Application.Styles>
 
     <Application.Resources>
