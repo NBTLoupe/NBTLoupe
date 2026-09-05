@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NBTLoupe.Core;
+using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Main;
 
 namespace NBTLoupe.ViewModels.Dialogs;
@@ -81,7 +81,7 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
         InProgress = true;
 
         // And we create our NodeBasicSearcher.
-        var find = new TreeNode.NodeBasicSearcher(MainViewModel.SingleSelectedTreeNode,
+        var find = new NodeBasicSearcher(MainViewModel.SingleSelectedTreeNode,
             BasicNameEnabled ? BasicNameText : null, BasicValueEnabled ? BasicValueText : null);
 
         // Then we try to Find our first instance of the searched parameters.

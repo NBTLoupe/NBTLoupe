@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NBTLoupe.Core;
+using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Main;
 using NBTModel.Data;
 using NBTModel.Data.Nodes;
@@ -44,7 +44,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
         // Set the context-accurate Title and Type.
         TitleText =
-            $"Edit {TreeNode.GetFriendlyTag(tagDataNode?.Tag.GetTagType())}{(!string.IsNullOrEmpty(_oldTagName) ? $": \"{_oldTagName}\"" : " Value")}";
+            $"Edit {tagDataNode?.Tag.GetTagType().GetFriendlyTag()}{(!string.IsNullOrEmpty(_oldTagName) ? $": \"{_oldTagName}\"" : " Value")}";
 
         // If the TreeNode is an Array, we parse it depending on which kind it is.
         _oldTagValue = tagDataNode?.Tag.GetTagType() switch
@@ -264,7 +264,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
             // And finally, we restore our SelectedTreeNodes using our IndexPath and the new name.
             if (savedSelectedTreeNodes is null) return;
             var restoredSelectedTreeNode =
-                TreeNode.GetByIndexPath(MainViewModel.TreeNodes, savedSelectedTreeNodes);
+                NodeStateRestorer.GetByIndexPath(MainViewModel.TreeNodes, savedSelectedTreeNodes);
             var foundNode =
                 restoredSelectedTreeNode?.Parent?.SubNodes?.FirstOrDefault(node => node.DataNode.NodeName == TagName);
             if (foundNode is not null) MainViewModel.SelectedTreeNodes.Add(foundNode);

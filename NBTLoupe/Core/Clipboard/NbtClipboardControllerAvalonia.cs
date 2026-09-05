@@ -5,7 +5,7 @@ using Avalonia.Input;
 using Avalonia.Input.Platform;
 using NBTModel.Interop;
 
-namespace NBTLoupe.Core;
+namespace NBTLoupe.Core.Clipboard;
 
 internal class NbtClipboardControllerAvalonia(IClipboard clipboard) : INbtClipboardController
 {

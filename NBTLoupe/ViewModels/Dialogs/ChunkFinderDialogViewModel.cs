@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Main;
 
 namespace NBTLoupe.ViewModels.Dialogs;
@@ -475,7 +476,7 @@ internal partial class ChunkFinderDialogViewModel : DialogHostViewModel
             !int.TryParse(LocalChunkZ, out var localChunkZ)) throw new UnreachableException();
 
         var foundNode =
-            await MainViewModel.SingleSelectedTreeNode.SearchAsync(regionX, regionZ, localChunkX, localChunkZ);
+            await MainViewModel.SingleSelectedTreeNode.SearchRegionAsync(regionX, regionZ, localChunkX, localChunkZ);
         if (foundNode is null) return;
 
         // We also set FoundMatch to true, preventing the "Chunk not found." dialog from showing.

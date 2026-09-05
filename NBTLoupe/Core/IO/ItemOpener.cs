@@ -1,12 +1,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTLoupe.ViewModels.Main;
 using NBTModel.Data;
 using NBTModel.Data.Nodes;
 
-namespace NBTLoupe.Core;
+namespace NBTLoupe.Core.IO;
 
 internal static class Opener
 {
