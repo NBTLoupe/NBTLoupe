@@ -13,13 +13,7 @@
              x:Class="NBTLoupe.Views.Dialogs.InfoDialogView"
              x:DataType="dialogs:InfoDialogViewModel">
     <Grid RowDefinitions="Auto,*">
-        <StackPanel Margin="0,0,0,12">
-            <TextBlock TextWrapping="Wrap"
-                       Text="Info"
-                       FontSize="20" FontWeight="SemiBold"
-                       HorizontalAlignment="Left" VerticalAlignment="Top" />
-        </StackPanel>
-        <TextBlock Text="{Binding MessageText}" TextWrapping="Wrap"
-                   Grid.Row="1" />
+        <TextBlock Classes="dialogTitle" Text="Info" />
+        <TextBlock Grid.Row="1" Classes="dialogSubtitle" Text="{Binding MessageText}" />
     </Grid>
 </UserControl>

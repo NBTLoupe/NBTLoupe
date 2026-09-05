@@ -12,32 +12,52 @@
              xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
              x:Class="NBTLoupe.Views.Dialogs.AboutDialogView"
              x:DataType="dialogs:AboutDialogViewModel">
-    <Grid RowDefinitions="Auto,*">
-        <DockPanel LastChildFill="True">
-            <Image Width="64" Height="64" Source="/Assets/NBTLoupe.png" />
-            <StackPanel Margin="24,0,0,0">
-                <TextBlock TextWrapping="Wrap"
-                           Text="{Binding AboutTitle}" FontSize="20"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top" />
-                <TextBlock TextWrapping="Wrap" FontSize="14"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top">
-                    Copyright (c) 2024-2026 MallardLuna
-                    <LineBreak />
-                    Copyright (c) 2011-2017 Justin Aquadro
-                    <LineBreak /><LineBreak />
-                    NBTLoupe is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself based on NBTEdit by copygirl).
-                    <LineBreak /><LineBreak />
-                    A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this shows its excellence, it's also starting to show its age and limited native platform support.
-                    <LineBreak /><LineBreak />
-                    NBTLoupe tries to close that gap with the help of .NET 10 and a GUI written from the ground up in Avalonia.
-                    <LineBreak /><LineBreak />
-                    Right now we fully support macOS, Windows and GNU/Linux; and the idea is to eventually bring it to the web as well!
-                    <LineBreak />
-                </TextBlock>
-            </StackPanel>
-        </DockPanel>
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="Auto,*">
+        <Image Source="/Assets/NBTLoupe.png" />
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <TextBlock Classes="dialogTitle" Text="{Binding AboutTitle}" />
+            <TextBlock Classes="dialogSubtitle">
+                Copyright (c) 2024-2026 MallardLuna
+                <LineBreak />
+                Copyright (c) 2011-2017 Justin Aquadro
+            </TextBlock>
+        </StackPanel>
+        <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialogSubtitle">
+            NBTLoupe is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself based on NBTEdit by copygirl).
+            <LineBreak /><LineBreak />
+            A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this shows its excellence, it's also starting to show its age and limited native platform support.
+            <LineBreak /><LineBreak />
+            NBTLoupe tries to close that gap with the help of .NET 10 and a GUI written from the ground up in Avalonia.
+            <LineBreak /><LineBreak />
+            Right now we fully support macOS, Windows and GNU/Linux; and the idea is to eventually bring it to the web as well!
+            <LineBreak />
+        </TextBlock>
     </Grid>
+
+    <UserControl.Styles>
+        <Style Selector="Grid">
+            <Style Selector="^ > Image">
+                <Setter Property="Width" Value="64" />
+                <Setter Property="Height" Value="64" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+            </Style>
+
+            <Style Selector="^ > StackPanel">
+                <Setter Property="Margin" Value="24,0,0,0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+
+                <Style Selector="^ > TextBlock.dialogTitle">
+                    <Setter Property="Margin" Value="0" />
+                </Style>
+
+                <Style Selector="^ > TextBlock.dialogSubtitle">
+                    <Setter Property="FontFeatures" Value="+tnum" />
+                </Style>
+            </Style>
+
+            <Style Selector="^ > TextBlock.dialogSubtitle">
+                <Setter Property="Margin" Value="24,24,0,0" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
 </UserControl>

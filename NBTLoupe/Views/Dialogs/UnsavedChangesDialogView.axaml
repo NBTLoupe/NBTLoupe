@@ -13,14 +13,8 @@
              x:Class="NBTLoupe.Views.Dialogs.UnsavedChangesDialogView"
              x:DataType="dialogs:UnsavedChangesDialogViewModel">
     <Grid RowDefinitions="Auto,*">
-        <StackPanel Margin="0,0,0,12">
-            <TextBlock TextWrapping="Wrap" Text="Unsaved changes!"
-                       FontSize="20" FontWeight="SemiBold"
-                       HorizontalAlignment="Left" VerticalAlignment="Top" />
-            <TextBlock
-                Text="Are you sure you want to continue? Unsaved changes will be lost!"
-                TextWrapping="Wrap" FontSize="14"
-                HorizontalAlignment="Left" VerticalAlignment="Top" />
-        </StackPanel>
+        <TextBlock Classes="dialogTitle" Text="Unsaved changes!" />
+        <TextBlock Grid.Row="1" Classes="dialogSubtitle"
+                   Text="Are you sure you want to continue? Unsaved changes will be lost!" />
     </Grid>
 </UserControl>
