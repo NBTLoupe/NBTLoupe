@@ -44,7 +44,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
         // Set the context-accurate Title and Type.
         TitleText =
-            $"Edit {tagDataNode?.Tag.GetTagType().GetFriendlyTag()}{(!string.IsNullOrEmpty(_oldTagName) ? $": \"{_oldTagName}\"" : " Value")}";
+            $"Edit {tagDataNode?.Tag.GetTagType().GetFriendlyTag()}{(!string.IsNullOrEmpty(_oldTagName) ? $": \"{_oldTagName}\"" : "Value")}";
 
         // If the TreeNode is an Array, we parse it depending on which kind it is.
         _oldTagValue = tagDataNode?.Tag.GetTagType() switch
