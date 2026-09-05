@@ -27,7 +27,7 @@
                         <StackPanel>
                             <TextBlock Text="Find" />
                             <Border>
-                                <StackPanel>
+                                <WrapPanel>
                                     <Button ToolTip.Tip="Edit Selected Rule">
                                         <ic:FluentIcon Icon="Edit" />
                                     </Button>
@@ -70,7 +70,7 @@
                                     <Button ToolTip.Tip="Add Text Tag Rule">
                                         <ic:FluentIcon Icon="TextT" />
                                     </Button>
-                                </StackPanel>
+                                </WrapPanel>
                             </Border>
                         </StackPanel>
 
@@ -96,7 +96,7 @@
                         <StackPanel>
                             <TextBlock Text="Replace" />
                             <Border>
-                                <StackPanel>
+                                <WrapPanel>
                                     <Button ToolTip.Tip="Edit Selected Tag">
                                         <ic:FluentIcon Icon="Edit" />
                                     </Button>
@@ -142,7 +142,7 @@
                                     <Button ToolTip.Tip="Add Compound Tag">
                                         <ic:FluentIcon Icon="Box" />
                                     </Button>
-                                </StackPanel>
+                                </WrapPanel>
                             </Border>
                         </StackPanel>
 
@@ -178,16 +178,15 @@
 
                 <Style Selector="^ > Border">
                     <Setter Property="CornerRadius" Value="4 4 0 0" />
-                    <Setter Property="Height" Value="32" />
                     <Setter Property="ClipToBounds" Value="True" />
                     <Setter Property="Background"
                             Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}" />
 
-                    <Style Selector="^ > StackPanel">
+                    <Style Selector="^ > WrapPanel">
                         <Setter Property="Orientation" Value="Horizontal" />
-                        <Setter Property="Spacing" Value="2" />
 
                         <Style Selector="^ > Button">
+                            <Setter Property="MinHeight" Value="32" />
                             <Setter Property="VerticalAlignment" Value="Stretch" />
                             <Setter Property="Padding" Value="4 2" />
                             <Setter Property="Background" Value="Transparent" />
