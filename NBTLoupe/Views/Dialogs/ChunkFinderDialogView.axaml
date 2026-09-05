@@ -134,8 +134,6 @@
                     <Setter Property="Spacing" Value="4" />
                     <Style Selector="^ NumericUpDown">
                         <Setter Property="MinWidth" Value="140" />
-                        <Setter Property="FormatString" Value="0" />
-                        <Setter Property="ParsingNumberStyle" Value="Integer" />
                         <Setter Property="ShowButtonSpinner" Value="False" />
                         <Setter Property="AllowSpin" Value="False" />
                     </Style>
