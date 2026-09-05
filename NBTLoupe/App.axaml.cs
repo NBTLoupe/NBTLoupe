@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using NBTLoupe.Core;
+using NBTLoupe.Core.Clipboard;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTLoupe.ViewModels.Main;
 using NBTLoupe.Views;

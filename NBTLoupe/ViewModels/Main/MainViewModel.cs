@@ -6,7 +6,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NBTLoupe.Core;
+using NBTLoupe.Core.IO;
+using NBTLoupe.Core.TreeNodes;
 
 namespace NBTLoupe.ViewModels.Main;
 
@@ -67,5 +68,5 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(FindNextCommand))]
     [NotifyCanExecuteChangedFor(nameof(FindPreviousCommand))]
-    internal partial TreeNode.NodeBasicSearcher? BasicSearcher { get; set; }
+    internal partial NodeBasicSearcher? BasicSearcher { get; set; }
 }

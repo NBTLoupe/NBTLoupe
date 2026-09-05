@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:core="clr-namespace:NBTLoupe.Core"
+             xmlns:io="clr-namespace:NBTLoupe.Core.IO"
              xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
              xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
              x:Class="NBTLoupe.Views.Main.MainMenuView"
@@ -138,7 +138,7 @@
         <!-- And these are RecentItem-specific. -->
         <Style Selector="MenuItem.recentItemsMenu > MenuItem">
             <!-- This is so the user can see the full path on the ToolTip. -->
-            <Setter Property="ToolTip.Tip" x:DataType="core:RecentItem" Value="{Binding Path}" />
+            <Setter Property="ToolTip.Tip" x:DataType="io:RecentItem" Value="{Binding Path}" />
             <Setter Property="DataContext" Value="{Binding $self.SelectedItem}" />
 
             <!-- And this makes sure the DisplayPath doesn't leave any blank space -->
