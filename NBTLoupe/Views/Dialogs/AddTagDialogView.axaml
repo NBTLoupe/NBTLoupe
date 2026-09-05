@@ -32,8 +32,6 @@
 
             <Style Selector="^ > NumericUpDown">
                 <Setter Property="Minimum" Value="0" />
-                <Setter Property="FormatString" Value="0" />
-                <Setter Property="ParsingNumberStyle" Value="Integer" />
             </Style>
         </Style>
     </UserControl.Styles>
