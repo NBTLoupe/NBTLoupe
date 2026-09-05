@@ -27,7 +27,7 @@
         </Style>
 
         <!-- This is the style that allows our TreeView to have Icons -->
-        <Style Selector="TreeView > TreeViewItem > Grid">
+        <Style Selector="TreeViewItem > Grid">
             <Style Selector="^ > ic|FluentIcon">
                 <Setter Property="Margin" Value="0,0,6,0" />
                 <Setter Property="VerticalAlignment" Value="Center" />
