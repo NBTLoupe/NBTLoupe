@@ -82,6 +82,12 @@
             <Setter Property="Margin" Value="10 0 0 0" />
         </Style>
 
+        <!-- This is the style for all our NumericUpDowns, as we don't require anything other than Integers -->
+        <Style Selector="NumericUpDown">
+            <Setter Property="ParsingNumberStyle" Value="Integer" />
+            <Setter Property="FormatString" Value="0" />
+        </Style>
+
         <!-- This is the style for our TabStrip-dependent Dialogs -->
         <Style Selector="TabStrip.dialogTabStrip > TabStripItem">
             <Setter Property="FontSize" Value="20" />
