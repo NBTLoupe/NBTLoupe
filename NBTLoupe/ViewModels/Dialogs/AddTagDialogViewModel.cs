@@ -1,3 +1,5 @@
+using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,14 +14,28 @@ namespace NBTLoupe.ViewModels.Dialogs;
 // Here we define the AddTag Dialog!
 internal partial class AddTagDialogViewModel : DialogHostViewModel
 {
+    // We save the Dialog TagType here to be able to use it later on.
+    private readonly TagType _dialogTagType;
+
     // Here we set up the Dialog!
-    internal AddTagDialogViewModel(MainViewModel mainViewModel, TagType tagType) : base(mainViewModel)
+    internal AddTagDialogViewModel(MainViewModel mainViewModel, TagType? tagType = null,
+        FindAdvancedDialogViewModel? parent = null) : base(mainViewModel, parent)
     {
-        DialogTagType = tagType;
+        _dialogTagType = (tagType ?? parent?.NewTagType) ?? throw new InvalidOperationException();
 
         // Set the context-accurate Title and Type.
-        TitleText = $"Add {DialogTagType.GetFriendlyTag()}";
+        TitleText = $"Add {_dialogTagType.GetFriendlyTag()}";
     }
+
+    // This is so we grab our staging TreeNode when this is opened as the Find and Replace's Nested Dialog. 
+    private TreeNode? SingleSelectedTreeNode => Parent is FindAdvancedDialogViewModel parent
+        ? parent.SingleSelectedReplacementTag
+        : MainViewModel.SingleSelectedTreeNode;
+
+    // This is so we auto-select on our staging TreeNode when this is opened as the Find and Replace's Nested Dialog. 
+    private ObservableCollection<TreeNode> SelectedTreeNodes => Parent is FindAdvancedDialogViewModel parent
+        ? parent.SelectedReplacementTags
+        : MainViewModel.SelectedTreeNodes;
 
     // Here's all the fields we bind to in the XAML...
     // The Title TextBlock...
@@ -34,7 +50,7 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
     [ObservableProperty] public partial decimal TagSize { get; set; }
 
     // ...(which is only enabled in certain cases, by the way)
-    internal bool SizeEnabled => DialogTagType is TagType.TAG_BYTE_ARRAY or TagType.TAG_SHORT_ARRAY
+    internal bool SizeEnabled => _dialogTagType is TagType.TAG_BYTE_ARRAY or TagType.TAG_SHORT_ARRAY
         or TagType.TAG_INT_ARRAY or TagType.TAG_LONG_ARRAY;
 
     // And here's where our Validation magic happens!
@@ -43,10 +59,10 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
         get
         {
             // Only enable the OK button if:
-            // - The use inputted a Name.
+            // - The user inputted a Name.
             // - There isn't already a sibling with that same Name.
             if (string.IsNullOrEmpty(TagName)) return false;
-            var metaTagContainer = MainViewModel.SingleSelectedTreeNode?.DataNode as IMetaTagContainer;
+            var metaTagContainer = SingleSelectedTreeNode?.DataNode as IMetaTagContainer;
             return metaTagContainer?.NamedTagContainer is null ||
                    !metaTagContainer.NamedTagContainer.TagNamesInUse.Contains(TagName);
         }
@@ -61,28 +77,28 @@ internal partial class AddTagDialogViewModel : DialogHostViewModel
     }
 
     // And here's the actual magic! The OK button!
-    internal override async Task ExecuteAsync()
+    internal sealed override async Task ExecuteAsync()
     {
         // Check if SubNodes is null, and return if so.
-        if (MainViewModel.SingleSelectedTreeNode?.SubNodes is null) throw new UnreachableException();
+        if (SingleSelectedTreeNode?.SubNodes is null) throw new UnreachableException();
 
         // Save its parent's SubNodes.
-        var before = MainViewModel.SingleSelectedTreeNode.SubNodes.Select(n => n.DataNode).ToHashSet();
+        var before = SingleSelectedTreeNode.SubNodes.Select(n => n.DataNode).ToHashSet();
 
         // Create the new TreeNode.
-        if (!MainViewModel.SingleSelectedTreeNode.DataNode.CreateNode(DialogTagType, TagName ?? "", (int)TagSize))
+        if (!SingleSelectedTreeNode.DataNode.CreateNode(_dialogTagType, TagName ?? "", (int)TagSize))
             throw new UnreachableException();
 
         // IsExpand (UI-wise) the new TreeNode.
-        MainViewModel.SingleSelectedTreeNode.IsExpanded = true;
+        SingleSelectedTreeNode.IsExpanded = true;
 
         // Refresh its parent.
-        await MainViewModel.SingleSelectedTreeNode.RefreshChildNodesAsync();
+        await SingleSelectedTreeNode.RefreshChildNodesAsync();
 
         // And find the new TreeNode, so we can Select it.
         var newFound =
-            MainViewModel.SingleSelectedTreeNode.SubNodes.FirstOrDefault(node => !before.Contains(node.DataNode));
-        MainViewModel.SelectedTreeNodes.Clear();
-        if (newFound is not null) MainViewModel.SelectedTreeNodes.Add(newFound);
+            SingleSelectedTreeNode.SubNodes.FirstOrDefault(node => !before.Contains(node.DataNode));
+        SelectedTreeNodes.Clear();
+        if (newFound is not null) SelectedTreeNodes.Add(newFound);
     }
 }

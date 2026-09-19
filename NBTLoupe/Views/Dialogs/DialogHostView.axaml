@@ -15,114 +15,175 @@
              x:Class="NBTLoupe.Views.Dialogs.DialogHostView"
              x:DataType="main:MainViewModel">
     <Border IsVisible="{Binding IsDialogOpen}">
-        <Panel Classes="dialogPanel">
+        <Panel x:Name="DialogPanel" Classes="dialogPanel">
             <Border Classes="floatyCard">
                 <Border>
-                    <Grid RowDefinitions="*,Auto">
-                        <ScrollViewer>
-                            <Border Classes="dialogSegment">
-                                <!-- Personalised dialogs -->
-                                <ContentControl Content="{Binding CurrentDialog}">
-                                    <ContentControl.DataTemplates>
-                                        <!-- Add Tag -->
-                                        <DataTemplate DataType="{x:Type dialogvms:AddTagDialogViewModel}">
-                                            <dialogs:AddTagDialogView />
-                                        </DataTemplate>
+                    <Panel>
+                        <!-- Main Dialog -->
+                        <Grid RowDefinitions="*,Auto">
+                            <ScrollViewer>
+                                <Border Classes="dialogSegment">
+                                    <!-- Personalised dialogs -->
+                                    <ContentControl Content="{Binding CurrentDialog}">
+                                        <ContentControl.DataTemplates>
+                                            <!-- Add Tag -->
+                                            <DataTemplate DataType="{x:Type dialogvms:AddTagDialogViewModel}">
+                                                <dialogs:AddTagDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- Edit Tag Value -->
-                                        <DataTemplate DataType="{x:Type dialogvms:EditTagDialogViewModel}">
-                                            <dialogs:EditTagDialogView />
-                                        </DataTemplate>
+                                            <!-- Edit Tag Value -->
+                                            <DataTemplate DataType="{x:Type dialogvms:EditTagDialogViewModel}">
+                                                <dialogs:EditTagDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- Basic Find -->
-                                        <DataTemplate DataType="{x:Type dialogvms:FindBasicDialogViewModel}">
-                                            <dialogs:FindBasicDialogView />
-                                        </DataTemplate>
+                                            <!-- Basic Find -->
+                                            <DataTemplate DataType="{x:Type dialogvms:FindBasicDialogViewModel}">
+                                                <dialogs:FindBasicDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- Advanced Find and Replace -->
-                                        <DataTemplate DataType="{x:Type dialogvms:FindAdvancedDialogViewModel}">
-                                            <dialogs:FindAdvancedDialogView />
-                                        </DataTemplate>
+                                            <!-- Advanced Find and Replace -->
+                                            <DataTemplate
+                                                DataType="{x:Type dialogvms:FindAdvancedDialogViewModel}">
+                                                <dialogs:FindAdvancedDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- Chunk Finder -->
-                                        <DataTemplate DataType="{x:Type dialogvms:ChunkFinderDialogViewModel}">
-                                            <dialogs:ChunkFinderDialogView />
-                                        </DataTemplate>
+                                            <!-- Chunk Finder -->
+                                            <DataTemplate DataType="{x:Type dialogvms:ChunkFinderDialogViewModel}">
+                                                <dialogs:ChunkFinderDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- About -->
-                                        <DataTemplate DataType="{x:Type dialogvms:AboutDialogViewModel}">
-                                            <dialogs:AboutDialogView Loaded="InformationalDialog_OnLoaded" />
-                                        </DataTemplate>
+                                            <!-- About -->
+                                            <DataTemplate DataType="{x:Type dialogvms:AboutDialogViewModel}">
+                                                <dialogs:AboutDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- Info -->
-                                        <DataTemplate DataType="{x:Type dialogvms:InfoDialogViewModel}">
-                                            <dialogs:InfoDialogView Loaded="InformationalDialog_OnLoaded" />
-                                        </DataTemplate>
+                                            <!-- Info -->
+                                            <DataTemplate DataType="{x:Type dialogvms:InfoDialogViewModel}">
+                                                <dialogs:InfoDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- Error -->
-                                        <DataTemplate DataType="{x:Type dialogvms:ErrorDialogViewModel}">
-                                            <dialogs:ErrorDialogView Loaded="InformationalDialog_OnLoaded" />
-                                        </DataTemplate>
+                                            <!-- Error -->
+                                            <DataTemplate DataType="{x:Type dialogvms:ErrorDialogViewModel}">
+                                                <dialogs:ErrorDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
 
-                                        <!-- Unsaved Changes -->
-                                        <DataTemplate DataType="{x:Type dialogvms:UnsavedChangesDialogViewModel}">
-                                            <dialogs:UnsavedChangesDialogView Loaded="InformationalDialog_OnLoaded" />
-                                        </DataTemplate>
-                                    </ContentControl.DataTemplates>
-                                </ContentControl>
+                                            <!-- Unsaved Changes -->
+                                            <DataTemplate DataType="{x:Type dialogvms:UnsavedChangesDialogViewModel}">
+                                                <dialogs:UnsavedChangesDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
+                                        </ContentControl.DataTemplates>
+                                    </ContentControl>
+                                </Border>
+                            </ScrollViewer>
+
+                            <!-- The buttons! -->
+                            <Border Grid.Row="1" Classes="dialogSegment">
+                                <DockPanel>
+                                    <!-- Personalised ("Special") buttons -->
+                                    <ItemsControl ItemsSource="{Binding CurrentDialog?.SpecialButtons}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="dialogvms:DialogButton">
+                                                <Button Content="{Binding Text}" Command="{Binding Command}">
+                                                    <Button.KeyBindings>
+                                                        <KeyBinding Gesture="Enter" Command="{Binding Command}" />
+                                                    </Button.KeyBindings>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <!-- Generic buttons (Cancel and OK) -->
+                                    <StackPanel>
+                                        <Button x:Name="DialogCancelButton" Classes="dialogCancelButton"
+                                                Content="{Binding CurrentDialog?.CancelText}"
+                                                Command="{Binding CurrentDialog?.DialogCancelCommand}">
+                                            <Button.KeyBindings>
+                                                <KeyBinding Gesture="Enter"
+                                                            Command="{Binding CurrentDialog?.DialogCancelCommand}" />
+                                            </Button.KeyBindings>
+                                        </Button>
+                                        <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+                                        <Button Classes="accent" x:Name="DialogOkButton"
+                                                Content="{Binding CurrentDialog?.OkText}"
+                                                Command="{Binding CurrentDialog?.DialogOkCommand}" />
+                                    </StackPanel>
+                                </DockPanel>
                             </Border>
-                        </ScrollViewer>
+                        </Grid>
 
-                        <!-- The buttons! -->
-                        <Border Grid.Row="1" Classes="dialogSegment">
-                            <DockPanel>
-                                <!-- Personalised ("Special") buttons -->
-                                <ItemsControl ItemsSource="{Binding CurrentDialog?.SpecialButtons}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate x:DataType="dialogvms:DialogButton">
-                                            <Button Content="{Binding Text}" Command="{Binding Command}">
-                                                <Button.KeyBindings>
-                                                    <KeyBinding Gesture="Enter" Command="{Binding Command}" />
-                                                </Button.KeyBindings>
-                                            </Button>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                        <!-- Nested Dialog -->
+                        <Border Background="{DynamicResource DialogOverlayBrush}"
+                                IsVisible="{Binding CurrentDialog?.IsNestedDialogOpen, TargetNullValue=False}"
+                                ZIndex="100">
+                            <Border Classes="floatyCard">
+                                <Border>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <ScrollViewer>
+                                            <Border Classes="dialogSegment">
+                                                <!-- Personalised dialogs -->
+                                                <ContentControl Content="{Binding CurrentDialog?.NestedDialogContext}">
+                                                    <ContentControl.DataTemplates>
+                                                        <!-- Edit Tag Rule -->
+                                                        <DataTemplate
+                                                            DataType="{x:Type dialogvms:EditTagRuleDialogViewModel}">
+                                                            <dialogs:EditTagRuleDialogView Loaded="Dialog_OnLoaded" />
+                                                        </DataTemplate>
 
-                                <!-- Generic buttons (Cancel and OK) -->
-                                <StackPanel>
-                                    <Button x:Name="DialogCancelButton" Content="{Binding CurrentDialog?.CancelText}"
-                                            Command="{Binding CurrentDialog?.DialogCancelCommand}">
-                                        <Button.KeyBindings>
-                                            <KeyBinding Gesture="Enter"
-                                                        Command="{Binding CurrentDialog?.DialogCancelCommand}" />
-                                        </Button.KeyBindings>
-                                    </Button>
-                                    <!-- ReSharper disable once Xaml.StyleClassNotFound -->
-                                    <Button Classes="accent" x:Name="DialogOkButton"
-                                            Content="{Binding CurrentDialog?.OkText}"
-                                            Command="{Binding CurrentDialog?.DialogOkCommand}" />
-                                </StackPanel>
-                            </DockPanel>
+                                                        <!-- Add Replacement Tag -->
+                                                        <DataTemplate
+                                                            DataType="{x:Type dialogvms:AddTagDialogViewModel}">
+                                                            <dialogs:AddTagDialogView Loaded="Dialog_OnLoaded" />
+                                                        </DataTemplate>
+
+                                                        <!-- Edit Replacement Tag Value -->
+                                                        <DataTemplate
+                                                            DataType="{x:Type dialogvms:EditTagDialogViewModel}">
+                                                            <dialogs:EditTagDialogView Loaded="Dialog_OnLoaded" />
+                                                        </DataTemplate>
+                                                    </ContentControl.DataTemplates>
+                                                </ContentControl>
+                                            </Border>
+                                        </ScrollViewer>
+
+                                        <!-- The buttons! -->
+                                        <Border Classes="dialogSegment">
+                                            <DockPanel>
+                                                <!-- Generic buttons (Cancel and OK) -->
+                                                <StackPanel>
+                                                    <Button Classes="dialogCancelButton"
+                                                            Content="{Binding CurrentDialog?.NestedDialogContext?.CancelText}"
+                                                            Command="{Binding CurrentDialog?.NestedDialogContext?.DialogCancelCommand}" />
+                                                    <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+                                                    <Button Classes="accent"
+                                                            Content="{Binding CurrentDialog?.NestedDialogContext?.OkText}"
+                                                            Command="{Binding CurrentDialog?.NestedDialogContext?.DialogOkCommand}" />
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </Border>
                         </Border>
-                    </Grid>
+                    </Panel>
                 </Border>
             </Border>
         </Panel>
-
-        <Border.KeyBindings>
-            <KeyBinding Gesture="Enter" Command="{Binding CurrentDialog?.DialogOkCommand}" />
-            <KeyBinding Gesture="Escape" Command="{Binding CurrentDialog?.DialogCancelCommand}" />
-        </Border.KeyBindings>
     </Border>
+
+
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Enter" Command="{Binding CurrentDialog?.DialogOkKeyCommand}" />
+        <KeyBinding Gesture="Escape" Command="{Binding CurrentDialog?.DialogCancelKeyCommand}" />
+    </UserControl.KeyBindings>
 
     <UserControl.Styles>
         <Style Selector="Panel.dialogPanel">
+            <Setter Property="Focusable" Value="True" />
             <Setter Property="Background" Value="{DynamicResource DialogOverlayBrush}" />
 
             <Style Selector="^ > Border.floatyCard">
@@ -135,7 +196,7 @@
                     <Setter Property="Padding" Value="24" />
                 </Style>
 
-                <Style Selector="^ > Border > Grid">
+                <Style Selector="^ > Border > Panel > Grid, ^ > Border > Panel > Border > Border > Border > StackPanel">
                     <Setter Property="ClipToBounds" Value="True" />
 
                     <Style Selector="^ > ScrollViewer">
@@ -173,12 +234,19 @@
                                 </Style>
 
                                 <!-- We hide the Cancel Dialog Button when it is disabled -->
-                                <Style Selector="^ > Button#DialogCancelButton:disabled">
+                                <Style Selector="^ > Button.dialogCancelButton:disabled">
                                     <Setter Property="IsVisible" Value="False" />
                                 </Style>
                             </Style>
                         </Style>
                     </Style>
+                </Style>
+
+                <Style Selector="^ > Border > Panel > Border > Border > Border > StackPanel">
+                    <Setter Property="MinWidth" Value="320" />
+                    <Setter Property="MaxWidth"
+                            Value="{Binding CurrentDialog?.NestedDialogContext?.MaxWidth, TargetNullValue=640}" />
+                    <Setter Property="MaxHeight" Value="640" />
                 </Style>
             </Style>
         </Style>

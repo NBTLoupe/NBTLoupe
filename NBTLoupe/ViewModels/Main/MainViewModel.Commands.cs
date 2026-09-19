@@ -451,14 +451,30 @@ public partial class MainViewModel
         });
     }
 
-    // This one is executed when the user chooses to open a Find Dialog.
+    // This one is executed when the user chooses to open a Basic Find Dialog.
     [RelayCommand(CanExecute = nameof(CanFind))]
-    private Task<bool> Find()
+    private Task<bool> FindBasic()
     {
         return SafeExecuteAsync(async () =>
         {
             // We first create the Dialog...
             var dialogViewModel = new FindBasicDialogViewModel(this);
+
+            // ...then we open it, and wait for the results. If we didn't find anything...
+            if (await OpenDialogAsync(dialogViewModel) && !dialogViewModel.FoundMatch)
+                // ...we tell the user.
+                await OpenDialogAsync(new InfoDialogViewModel(this, "No matching tags were found."));
+        });
+    }
+
+    // This one is executed when the user chooses to open an Advanced Find and Replace Dialog.
+    [RelayCommand(CanExecute = nameof(CanFind))]
+    private Task<bool> FindAdvanced()
+    {
+        return SafeExecuteAsync(async () =>
+        {
+            // We first create the Dialog...
+            var dialogViewModel = new FindAdvancedDialogViewModel(this);
 
             // ...then we open it, and wait for the results. If we didn't find anything...
             if (await OpenDialogAsync(dialogViewModel) && !dialogViewModel.FoundMatch)
@@ -475,11 +491,11 @@ public partial class MainViewModel
         {
             await WithBlock(async () =>
             {
-                // Check if the BasicSearcher is null, which it shouldn't if the RelayCommand is enabled.
-                if (BasicSearcher is null) throw new UnreachableException();
+                // Check if the NodeSearcher is null, which it shouldn't if the RelayCommand is enabled.
+                if (NodeSearcher is null) throw new UnreachableException();
 
                 // Then we Find the next instance of the searched parameters.
-                var found = await BasicSearcher.FindNextAsync();
+                var found = await NodeSearcher.FindNextAsync();
 
                 // If we didn't Find anything, we immediately return.
                 if (found is null) return;
@@ -505,11 +521,11 @@ public partial class MainViewModel
         {
             await WithBlock(async () =>
             {
-                // Check if the BasicSearcher is null, which it shouldn't if the RelayCommand is enabled.
-                if (BasicSearcher is null) throw new UnreachableException();
+                // Check if the NodeSearcher is null, which it shouldn't if the RelayCommand is enabled.
+                if (NodeSearcher is null) throw new UnreachableException();
 
                 // Then we Find the next instance of the searched parameters.
-                var found = BasicSearcher.FindPrevious();
+                var found = NodeSearcher.FindPrevious();
 
                 // If we didn't Find anything, we immediately return.
                 if (found is null) return;
@@ -535,20 +551,32 @@ public partial class MainViewModel
         {
             await WithBlock(() =>
             {
-                // Yup, all we do is set the BasicSearcher to null!
-                BasicSearcher = null;
+                // Yup, all we do is set the NodeSearchers to null!
+                NodeSearcher = null;
+                NodeSearcherAdvanced = null;
 
                 return Task.CompletedTask;
             });
         });
     }
 
-    // This one is executed when the user chooses to open a Replace Dialog (AKA an Advanced mode Find Dialog).
-    // TODO: This kind of mode isn't implemented yet!
+    // This one is executed when the user chooses to Replace the current selection, after starting a Find and Replace operation.
     [RelayCommand(CanExecute = nameof(CanReplace))]
     private Task<bool> Replace()
     {
-        return SafeExecuteAsync(async () => { await OpenDialogAsync(new FindAdvancedDialogViewModel(this)); });
+        return SafeExecuteAsync(async () =>
+        {
+            // Check if the NodeSearchers are null, which they shouldn't if the RelayCommand is enabled.
+            if (NodeSearcherAdvanced is null || NodeSearcher is not NodeSearcherAdvanced nodeSearcherAdvanced)
+                throw new UnreachableException();
+
+            // Check if selectedTreeNode is null.
+            if (SingleSelectedTreeNode is null) throw new UnreachableException();
+
+            // Call the Dialog's Replace method, passing it our Selected Node, and a list to save its Matches to.
+            await WithBlock(() =>
+                NodeSearcherAdvanced.Replace(SingleSelectedTreeNode, nodeSearcherAdvanced.CurrentMatchedTags));
+        });
     }
 
     // This one is executed when the user chooses to open a ChunkFinder Dialog.

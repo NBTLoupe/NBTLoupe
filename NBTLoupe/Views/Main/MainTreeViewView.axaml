@@ -7,7 +7,7 @@
              x:DataType="main:MainViewModel">
     <TreeView x:Name="MainTreeView" ItemsSource="{Binding TreeNodes}"
               SelectedItems="{Binding SelectedTreeNodes}"
-              IsHitTestVisible="{Binding BasicSearcher, Converter={x:Static ObjectConverters.IsNull}}"
+              IsHitTestVisible="{Binding NodeSearcher, Converter={x:Static ObjectConverters.IsNull}}"
               DoubleTapped="InputElement_OnDoubleTapped" DragDrop.AllowDrop="True"
               DragDrop.DragOver="TreeView_OnDragOver"
               DragDrop.Drop="TreeView_OnDrop">
@@ -64,8 +64,8 @@
             <KeyBinding Gesture="{OnPlatform 'Ctrl+Down', macOS='Cmd+Down'}"
                         Command="{Binding MoveDownCommand}" />
 
-            <KeyBinding Gesture="{OnPlatform 'Ctrl+F', macOS='Cmd+F'}" Command="{Binding FindCommand}" />
-            <KeyBinding Gesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}" Command="{Binding ReplaceCommand}" />
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+F', macOS='Cmd+F'}" Command="{Binding FindBasicCommand}" />
+            <KeyBinding Gesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}" Command="{Binding FindAdvancedCommand}" />
         </TreeView.KeyBindings>
     </TreeView>
 

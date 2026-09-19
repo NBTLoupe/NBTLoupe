@@ -17,7 +17,7 @@ internal partial class TreeNode
     internal static void ExpandNode(IList<DataNode> nodeTree, ObservableCollection<TreeNode> treeNodes,
         Func<Func<Task>, bool, bool, Task> withBlock,
         Func<Func<MainViewModel, DialogHostViewModel>, Task<bool>> openDialogAsync,
-        TreeNode? parent = null)
+        TreeNode? parent = null, bool isReplacementTagRoot = false)
     {
         // First we sort the NodeTree...
         var sortedNodeTree = nodeTree.OrderBy(dataNode => dataNode, NodeComparer);
@@ -31,7 +31,7 @@ internal partial class TreeNode
             var subNodes = new ObservableCollection<TreeNode>();
 
             // ...and initialize a new TreeNode with it.
-            var treeNode = new TreeNode(dataNode, subNodes, withBlock, openDialogAsync);
+            var treeNode = new TreeNode(dataNode, subNodes, withBlock, openDialogAsync, false, isReplacementTagRoot);
             treeNode.SetParent(parent);
 
             // And finally, we can add the Expanded one back to its parent.
