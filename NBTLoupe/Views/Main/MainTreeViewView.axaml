@@ -23,14 +23,22 @@
             <ContextMenu
                 IsEnabled="{Binding SingleSelectedTreeNode, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <MenuItem x:Name="Expand" Header="_Expand"
-                          IsVisible="{Binding !SingleSelectedTreeNode?.IsExpanded}"
+                          IsVisible="{Binding !SingleSelectedTreeNode?.IsExpanded, TargetNullValue=False}"
                           Command="{Binding ToggleExpandCommand}" />
                 <MenuItem x:Name="Collapse" Header="_Collapse"
-                          IsVisible="{Binding !!SingleSelectedTreeNode?.IsExpanded}"
+                          IsVisible="{Binding !!SingleSelectedTreeNode?.IsExpanded, TargetNullValue=False}"
                           Command="{Binding ToggleExpandCommand}" />
                 <Separator />
                 <MenuItem Header="Expand C_hildren" Command="{Binding ExpandChildrenCommand}" />
                 <MenuItem Header="Expand _Tree" Command="{Binding ExpandTreeCommand}" />
+
+                <Separator />
+
+                <MenuItem Header="Clear _List" Command="{Binding ClearListCommand}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="Dismiss" />
+                    </MenuItem.Icon>
+                </MenuItem>
 
                 <Separator />
                 <MenuItem Header="Move _Up" Command="{Binding MoveUpCommand}">
