@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using NBTModel.Data.Nodes;
 using Substrate.Nbt;
 
@@ -34,6 +36,8 @@ public enum WildcardOperator
 
 public abstract class SearchRule
 {
+    protected const double Epsilon = 1e-5;
+
     public static readonly Dictionary<NumericOperator, string> NumericOpStrings = new()
     {
         { NumericOperator.Equals, "=" },
@@ -61,6 +65,15 @@ public abstract class SearchRule
         { WildcardOperator.Any, "ANY" }
     };
 
+    public static readonly Dictionary<string, NumericOperator> NumericOpFromString =
+        NumericOpStrings.ToDictionary(x => x.Value, x => x.Key);
+
+    public static readonly Dictionary<string, StringOperator> StringOpFromString =
+        StringOpStrings.ToDictionary(x => x.Value, x => x.Key);
+
+    public static readonly Dictionary<string, WildcardOperator> WildcardOpFromString =
+        WildcardOpStrings.ToDictionary(x => x.Value, x => x.Key);
+
     public abstract string NodeDisplay { get; }
 
     public virtual bool CanAddRules => false;
@@ -82,7 +95,7 @@ public abstract class SearchRule
 
 public abstract class GroupRule : SearchRule
 {
-    public List<SearchRule> Rules { get; init; } = new();
+    public List<SearchRule> Rules { get; } = [];
 
     public override bool CanAddRules => true;
 }
@@ -93,11 +106,7 @@ public class UnionRule : GroupRule
 
     public override bool Matches(TagCompoundDataNode container, List<TagDataNode?> matchedNodes)
     {
-        foreach (var rule in Rules)
-            if (rule.Matches(container, matchedNodes))
-                return true;
-
-        return false;
+        return Rules.Any(rule => rule.Matches(container, matchedNodes));
     }
 }
 
@@ -107,11 +116,7 @@ public class IntersectRule : GroupRule
 
     public override bool Matches(TagCompoundDataNode container, List<TagDataNode?> matchedNodes)
     {
-        foreach (var rule in Rules)
-            if (!rule.Matches(container, matchedNodes))
-                return false;
-
-        return true;
+        return Rules.All(rule => rule.Matches(container, matchedNodes));
     }
 }
 
@@ -122,10 +127,10 @@ public class RootRule : IntersectRule
 
 public abstract class TagRule : SearchRule
 {
-    public TagType TagType { get; init; }
+    public abstract TagType TagType { get; }
     public required string Name { get; init; }
 
-    protected T? LookupTag<T>(TagCompoundDataNode container, string name)
+    protected static T? LookupTag<T>(TagCompoundDataNode container, string name)
         where T : TagNode
     {
         return container.NamedTagContainer.GetTagNode(name) as T;
@@ -139,8 +144,8 @@ public abstract class IntegralTagRule<T> : TagRule
 
     public NumericOperator Operator { get; init; }
 
-    public override string NodeDisplay => string.Format("{0} {1} {2}", Name, NumericOpStrings[Operator],
-        Operator != NumericOperator.Any ? Value.ToString() : "");
+    public override string NodeDisplay =>
+        $"{Name} {NumericOpStrings[Operator]} {(Operator != NumericOperator.Any ? Value.ToString() : "")}";
 
     public override bool Matches(TagCompoundDataNode container, List<TagDataNode?> matchedNodes)
     {
@@ -152,19 +157,19 @@ public abstract class IntegralTagRule<T> : TagRule
         switch (Operator)
         {
             case NumericOperator.Equals:
-                if (data.ToTagLong() != Value)
+                if (data.ToTagLong().Data != Value)
                     return false;
                 break;
             case NumericOperator.NotEquals:
-                if (data.ToTagLong() == Value)
+                if (data.ToTagLong().Data == Value)
                     return false;
                 break;
             case NumericOperator.GreaterThan:
-                if (data.ToTagLong() <= Value)
+                if (data.ToTagLong().Data <= Value)
                     return false;
                 break;
             case NumericOperator.LessThan:
-                if (data.ToTagLong() >= Value)
+                if (data.ToTagLong().Data >= Value)
                     return false;
                 break;
             case NumericOperator.Any:
@@ -182,18 +187,22 @@ public abstract class IntegralTagRule<T> : TagRule
 
 public class ByteTagRule : IntegralTagRule<TagNodeByte>
 {
+    public override TagType TagType => TagType.TAG_BYTE;
 }
 
 public class ShortTagRule : IntegralTagRule<TagNodeShort>
 {
+    public override TagType TagType => TagType.TAG_SHORT;
 }
 
 public class IntTagRule : IntegralTagRule<TagNodeInt>
 {
+    public override TagType TagType => TagType.TAG_INT;
 }
 
 public class LongTagRule : IntegralTagRule<TagNodeLong>
 {
+    public override TagType TagType => TagType.TAG_LONG;
 }
 
 public abstract class FloatTagRule<T> : TagRule
@@ -203,8 +212,8 @@ public abstract class FloatTagRule<T> : TagRule
 
     public NumericOperator Operator { get; init; }
 
-    public override string NodeDisplay => string.Format("{0} {1} {2}", Name, NumericOpStrings[Operator],
-        Operator != NumericOperator.Any ? Value.ToString(CultureInfo.InvariantCulture) : "");
+    public override string NodeDisplay =>
+        $"{Name} {NumericOpStrings[Operator]} {(Operator != NumericOperator.Any ? Value.ToString(CultureInfo.InvariantCulture) : "")}";
 
     public override bool Matches(TagCompoundDataNode container, List<TagDataNode?> matchedNodes)
     {
@@ -216,19 +225,19 @@ public abstract class FloatTagRule<T> : TagRule
         switch (Operator)
         {
             case NumericOperator.Equals:
-                if (data.ToTagDouble() != Value)
+                if (Math.Abs(data.ToTagDouble().Data - Value) > Epsilon)
                     return false;
                 break;
             case NumericOperator.NotEquals:
-                if (data.ToTagDouble() == Value)
+                if (Math.Abs(data.ToTagDouble().Data - Value) <= Epsilon)
                     return false;
                 break;
             case NumericOperator.GreaterThan:
-                if (data.ToTagDouble() <= Value)
+                if (data.ToTagDouble().Data <= Value)
                     return false;
                 break;
             case NumericOperator.LessThan:
-                if (data.ToTagDouble() >= Value)
+                if (data.ToTagDouble().Data >= Value)
                     return false;
                 break;
             case NumericOperator.Any:
@@ -246,20 +255,24 @@ public abstract class FloatTagRule<T> : TagRule
 
 public class FloatTagRule : FloatTagRule<TagNodeFloat>
 {
+    public override TagType TagType => TagType.TAG_FLOAT;
 }
 
 public class DoubleTagRule : FloatTagRule<TagNodeDouble>
 {
+    public override TagType TagType => TagType.TAG_DOUBLE;
 }
 
 public class StringTagRule : TagRule
 {
+    public override TagType TagType => TagType.TAG_STRING;
+
     public required string Value { get; init; }
 
     public StringOperator Operator { get; init; }
 
-    public override string NodeDisplay => string.Format("{0} {1} {2}", Name, StringOpStrings[Operator],
-        Operator != StringOperator.Any ? '"' + Value + '"' : "");
+    public override string NodeDisplay =>
+        $"{Name} {StringOpStrings[Operator]} {(Operator != StringOperator.Any ? '"' + Value + '"' : "")}";
 
     public override bool Matches(TagCompoundDataNode container, List<TagDataNode?> matchedNodes)
     {
@@ -314,8 +327,8 @@ public class WildcardRule : SearchRule
 
     public WildcardOperator Operator { get; init; }
 
-    public override string NodeDisplay => string.Format("{0} {1} {2}", Name, WildcardOpStrings[Operator],
-        Operator != WildcardOperator.Any ? Value : "");
+    public override string NodeDisplay =>
+        $"{Name} {WildcardOpStrings[Operator]} {(Operator != WildcardOperator.Any ? Value : "")}";
 
     public override bool Matches(TagCompoundDataNode container, List<TagDataNode?> matchedNodes)
     {
@@ -352,11 +365,11 @@ public class WildcardRule : SearchRule
                     switch (Operator)
                     {
                         case WildcardOperator.Equals:
-                            if (double.Parse(Value) != tag.ToTagDouble())
+                            if (Math.Abs(double.Parse(Value) - tag.ToTagDouble().Data) > Epsilon)
                                 return false;
                             break;
                         case WildcardOperator.NotEquals:
-                            if (double.Parse(Value) == tag.ToTagDouble())
+                            if (Math.Abs(double.Parse(Value) - tag.ToTagDouble().Data) <= Epsilon)
                                 return false;
                             break;
                     }

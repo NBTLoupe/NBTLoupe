@@ -13,11 +13,6 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
     // Here we set up the Dialog!
     internal FindBasicDialogViewModel(MainViewModel mainViewModel) : base(mainViewModel)
     {
-        BasicNameText = MainViewModel.BasicSearcher?.Name ?? "";
-        BasicValueText = MainViewModel.BasicSearcher?.Value ?? "";
-
-        BasicNameEnabled = MainViewModel.BasicSearcher?.Name is not null;
-        BasicValueEnabled = MainViewModel.BasicSearcher?.Value is not null;
     }
 
     // Here's all the fields we bind to in the XAML...
@@ -26,24 +21,32 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
     [NotifyPropertyChangedFor(nameof(IsOkEnabled))]
     public partial bool InProgress { get; private set; }
 
+    // The TabStrip locker...
+    public bool CanSwitchMode => (!BasicNameEnabled || string.IsNullOrEmpty(BasicNameText)) && (!BasicValueEnabled ||
+        string.IsNullOrEmpty(BasicValueText));
+
     // The BasicName CheckBox...
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOkEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanSwitchMode))]
     public partial bool BasicNameEnabled { get; set; }
 
     // The BasicValue Checkbox...
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOkEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanSwitchMode))]
     public partial bool BasicValueEnabled { get; set; }
 
     // The BasicName TextBox...
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOkEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanSwitchMode))]
     public partial string? BasicNameText { get; set; }
 
     // The BasicValue TextBox...
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOkEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanSwitchMode))]
     public partial string? BasicValueText { get; set; }
 
     // Not really magic, but just a hacky way to be able to show a new Dialog if we don't find anything. 
@@ -57,6 +60,7 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
     // This gives the OK button tailor-made text!
     internal override string OkText => "Next...";
 
+    // This tells the MainViewModel to display/hide the ProgressBar when we change our internal InProgress value.
     partial void OnInProgressChanged(bool value)
     {
         MainViewModel.IsDialogProgressing = value;
@@ -67,7 +71,7 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
     [RelayCommand]
     private async Task DialogSwitchModes()
     {
-        await MainViewModel.OpenDialogAsync(new FindAdvancedDialogViewModel(MainViewModel));
+        await MainViewModel.FindAdvancedCommand.ExecuteAsync(null);
         CompletionSource.TrySetResult(false);
     }
 
@@ -80,8 +84,8 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
         // We block the UI to prevent the user from doing anything while we process the search.
         InProgress = true;
 
-        // And we create our NodeBasicSearcher.
-        var find = new NodeBasicSearcher(MainViewModel.SingleSelectedTreeNode,
+        // And we create our NodeSearcherBasic.
+        var find = new NodeSearcherBasic(MainViewModel.SingleSelectedTreeNode,
             BasicNameEnabled ? BasicNameText : null, BasicValueEnabled ? BasicValueText : null);
 
         // Then we try to Find our first instance of the searched parameters.
@@ -91,7 +95,7 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
         if (found is not null)
         {
             // Then we can suppose there are even more things to Find, and thus we save the state in the MainViewModel.
-            MainViewModel.BasicSearcher = find;
+            MainViewModel.NodeSearcher = find;
 
             // We also set FoundMatch to true, preventing the "No matching tags were found." dialog from showing.
             FoundMatch = true;
@@ -107,6 +111,6 @@ internal partial class FindBasicDialogViewModel : DialogHostViewModel
         }
 
         // If we don't, though, we make sure to clean up any leftover state in the MainViewModel.
-        MainViewModel.BasicSearcher = null;
+        MainViewModel.NodeSearcher = null;
     }
 }

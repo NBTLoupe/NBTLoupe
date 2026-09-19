@@ -15,6 +15,11 @@ public class CompoundTagContainer(TagNodeCompound tag) : INamedTagContainer
         return tag.Keys.First(name => tag[name] == tag1);
     }
 
+    public TagNode? GetTagNode(string name)
+    {
+        return tag.TryGetValue(name, out var foundTag) ? foundTag : null;
+    }
+
     public bool RenameTag(TagNode tag1, string name)
     {
         if (tag.ContainsKey(name))

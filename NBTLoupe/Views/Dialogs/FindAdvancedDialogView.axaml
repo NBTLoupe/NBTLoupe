@@ -10,12 +10,14 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
-             xmlns:findAdvancedDialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs.FindAdvancedDialog"
-             x:Class="NBTLoupe.Views.Dialogs.FindAdvancedDialog.FindAdvancedDialogView"
-             x:DataType="findAdvancedDialogs:FindAdvancedDialogViewModel">
+             xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
+             xmlns:treenodes="clr-namespace:NBTLoupe.Core.TreeNodes"
+             xmlns:nbt="clr-namespace:Substrate.Nbt;assembly=neoSubstrate"
+             x:Class="NBTLoupe.Views.Dialogs.FindAdvancedDialogView"
+             x:DataType="dialogs:FindAdvancedDialogViewModel">
     <Grid RowDefinitions="Auto, *" IsEnabled="{Binding !InProgress}">
         <TabStrip Classes="dialogTabStrip" Padding="0" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
-            <TabStripItem x:Name="Basic" IsSelected="False">Find (Basic)</TabStripItem>
+            <TabStripItem x:Name="Basic" IsSelected="False" IsEnabled="{Binding CanSwitchMode}">Find (Basic)</TabStripItem>
             <TabStripItem x:Name="Advanced" IsSelected="True" IsHitTestVisible="False">Find and Replace (Advanced)</TabStripItem>
         </TabStrip>
 
@@ -28,62 +30,74 @@
                             <TextBlock Text="Find" />
                             <Border>
                                 <WrapPanel>
-                                    <Button ToolTip.Tip="Edit Selected Rule">
+                                    <Button ToolTip.Tip="Edit Selected Rule" Command="{Binding EditRuleCommand}">
                                         <ic:FluentIcon Icon="Edit" />
                                     </Button>
-                                    <Button ToolTip.Tip="Delete Selected Rule">
+                                    <Button ToolTip.Tip="Delete Selected Rule" Command="{Binding DeleteRuleCommand}">
                                         <ic:FluentIcon Icon="Delete" />
                                     </Button>
 
                                     <Separator Classes="vertical" />
 
-                                    <Button ToolTip.Tip="Add Match-All Group">
+                                    <Button ToolTip.Tip="Add Match-All Group"
+                                            Command="{Binding AddMatchGroupCommand}"
+                                            CommandParameter="{x:Static treenodes:MatchGroupKind.All}">
                                         <ic:FluentIcon Icon="ShapeIntersect" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Match-Any Group">
+                                    <Button ToolTip.Tip="Add Match-Any Group"
+                                            Command="{Binding AddMatchGroupCommand}"
+                                            CommandParameter="{x:Static treenodes:MatchGroupKind.Any}">
                                         <ic:FluentIcon Icon="ShapeUnion" />
                                     </Button>
 
                                     <Separator Classes="vertical" />
 
-                                    <Button ToolTip.Tip="Add Any-Type Tag Rule">
+                                    <Button ToolTip.Tip="Add Any-Type Tag Rule" Command="{Binding AddTagRuleCommand}">
                                         <ic:FluentIcon Icon="TextAsterisk" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Byte Tag Rule">
+                                    <Button ToolTip.Tip="Add Byte Tag Rule" Command="{Binding AddTagRuleCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_BYTE}">
                                         <ic:FluentIcon Icon="NumberCircle1" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Short Tag Rule">
+                                    <Button ToolTip.Tip="Add Short Tag Rule" Command="{Binding AddTagRuleCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_SHORT}">
                                         <ic:FluentIcon Icon="NumberCircle2" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Int Tag Rule">
+                                    <Button ToolTip.Tip="Add Int Tag Rule" Command="{Binding AddTagRuleCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_INT}">
                                         <ic:FluentIcon Icon="NumberCircle4" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Long Tag Rule">
+                                    <Button ToolTip.Tip="Add Long Tag Rule" Command="{Binding AddTagRuleCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_LONG}">
                                         <ic:FluentIcon Icon="NumberCircle8" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Float Tag Rule">
+                                    <Button ToolTip.Tip="Add Float Tag Rule" Command="{Binding AddTagRuleCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_FLOAT}">
                                         <ic:FluentIcon Icon="DecimalArrowLeft" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Double Tag Rule">
+                                    <Button ToolTip.Tip="Add Double Tag Rule" Command="{Binding AddTagRuleCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_DOUBLE}">
                                         <ic:FluentIcon Icon="DecimalArrowRight" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Text Tag Rule">
+                                    <Button ToolTip.Tip="Add Text Tag Rule" Command="{Binding AddTagRuleCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_STRING}">
                                         <ic:FluentIcon Icon="TextT" />
                                     </Button>
                                 </WrapPanel>
                             </Border>
                         </StackPanel>
 
-                        <TreeView>
-                            <TreeViewItem IsExpanded="True">
-                                <TreeViewItem.Header>
+                        <TreeView Classes="rules" ItemsSource="{Binding TreeRules}"
+                                  SelectedItem="{Binding SelectedRuleNode}"
+                                  DoubleTapped="InputElement_OnDoubleTapped">
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding Children}">
                                     <Grid ColumnDefinitions="Auto,*">
-                                        <ic:FluentIcon Icon="ArrowDownRight" />
-                                        <TextBlock Grid.Column="1" Text="Search Rules" />
+                                        <ic:FluentIcon Icon="{Binding Icon}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" />
                                     </Grid>
-                                </TreeViewItem.Header>
-                                <TreeViewItem Header="Not implemented!" />
-                            </TreeViewItem>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
                         </TreeView>
                     </DockPanel>
                 </Border>
@@ -97,67 +111,80 @@
                             <TextBlock Text="Replace" />
                             <Border>
                                 <WrapPanel>
-                                    <Button ToolTip.Tip="Edit Selected Tag">
+                                    <Button ToolTip.Tip="Edit Selected Tag" Command="{Binding EditTagCommand}">
                                         <ic:FluentIcon Icon="Edit" />
                                     </Button>
-                                    <Button ToolTip.Tip="Delete Selected Tag">
+                                    <Button ToolTip.Tip="Delete Selected Tag" Command="{Binding DeleteTagCommand}">
                                         <ic:FluentIcon Icon="Delete" />
                                     </Button>
 
                                     <Separator Classes="vertical" />
 
-                                    <Button ToolTip.Tip="Add Byte Tag">
+                                    <Button ToolTip.Tip="Add Byte Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_BYTE}">
                                         <ic:FluentIcon Icon="NumberCircle1" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Short Tag">
+                                    <Button ToolTip.Tip="Add Short Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_SHORT}">
                                         <ic:FluentIcon Icon="NumberCircle2" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Int Tag">
+                                    <Button ToolTip.Tip="Add Int Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_INT}">
                                         <ic:FluentIcon Icon="NumberCircle4" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Long Tag">
+                                    <Button ToolTip.Tip="Add Long Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_LONG}">
                                         <ic:FluentIcon Icon="NumberCircle8" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Float Tag">
+                                    <Button ToolTip.Tip="Add Float Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_FLOAT}">
                                         <ic:FluentIcon Icon="DecimalArrowLeft" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Double Tag">
+                                    <Button ToolTip.Tip="Add Double Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_DOUBLE}">
                                         <ic:FluentIcon Icon="DecimalArrowRight" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Byte Array Tag">
+                                    <Button ToolTip.Tip="Add Byte Array Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_BYTE_ARRAY}">
                                         <ic:FluentIcon Icon="CodeBlock" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Int Array Tag">
+                                    <Button ToolTip.Tip="Add Int Array Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_INT_ARRAY}">
                                         <ic:FluentIcon Icon="DataBarVertical" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Long Array Tag">
+                                    <Button ToolTip.Tip="Add Long Array Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_LONG_ARRAY}">
                                         <ic:FluentIcon Icon="DataBarHorizontal" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add String Tag">
+                                    <Button ToolTip.Tip="Add String Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_STRING}">
                                         <ic:FluentIcon Icon="TextT" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add List Tag">
+                                    <Button ToolTip.Tip="Add List Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_LIST}">
                                         <ic:FluentIcon Icon="TextBulletList" />
                                     </Button>
-                                    <Button ToolTip.Tip="Add Compound Tag">
+                                    <Button ToolTip.Tip="Add Compound Tag" Command="{Binding AddTagCommand}"
+                                            CommandParameter="{x:Static nbt:TagType.TAG_COMPOUND}">
                                         <ic:FluentIcon Icon="Box" />
                                     </Button>
                                 </WrapPanel>
                             </Border>
                         </StackPanel>
 
-                        <CheckBox>Delete matched tags before applying replacements.</CheckBox>
+                        <CheckBox IsChecked="{Binding DeleteMatchedTags, Mode=TwoWay}">Delete matched tags before applying replacements.</CheckBox>
 
-                        <TreeView>
-                            <TreeViewItem IsExpanded="True">
-                                <TreeViewItem.Header>
+                        <TreeView Classes="replacementTags" ItemsSource="{Binding ReplacementTags}"
+                                  SelectedItems="{Binding SelectedReplacementTags}"
+                                  DoubleTapped="InputElement_OnDoubleTapped">
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding SubNodes}">
                                     <Grid ColumnDefinitions="Auto,*">
-                                        <ic:FluentIcon Icon="ArrowDownRight" />
-                                        <TextBlock Grid.Column="1" Text="Replacement Tags" />
+                                        <ic:FluentIcon Icon="{Binding Icon}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" />
                                     </Grid>
-                                </TreeViewItem.Header>
-                                <TreeViewItem Header="Not implemented!" />
-                            </TreeViewItem>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
                         </TreeView>
                     </DockPanel>
                 </Border>
@@ -190,16 +217,23 @@
                             <Setter Property="VerticalAlignment" Value="Stretch" />
                             <Setter Property="Padding" Value="4 2" />
                             <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="CornerRadius" Value="0" />
                         </Style>
 
                         <Style Selector="^ > Button:pointerover">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
 
                         <Style Selector="^ > Button:pressed">
                             <Setter Property="Background"
                                     Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+                        </Style>
+
+                        <Style Selector="^ > Button:disabled">
+                            <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}" />
+                            <Style Selector="^ > ContentPresenter">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
                         </Style>
 
                         <Style Selector="^ > Separator">
@@ -212,6 +246,21 @@
             <Style Selector="^ > CheckBox">
                 <Setter Property="DockPanel.Dock" Value="Bottom" />
                 <Setter Property="Margin" Value="0 4 0 0" />
+            </Style>
+        </Style>
+
+        <Style Selector="TreeView.rules">
+            <!-- This lets us control the UI IsExpanded both ways -->
+            <Style Selector="^ TreeViewItem" x:DataType="treenodes:TreeRule">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+            </Style>
+        </Style>
+
+        <Style Selector="TreeView.replacementTags">
+            <!-- This lets us control the UI IsExpanded both ways, and hides the Placeholder items -->
+            <Style Selector="^ TreeViewItem" x:DataType="treenodes:TreeNode">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsVisible" Value="{Binding !IsPlaceholder}" />
             </Style>
         </Style>
     </UserControl.Styles>

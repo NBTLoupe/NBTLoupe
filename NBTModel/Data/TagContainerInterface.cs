@@ -25,6 +25,8 @@ public interface INamedTagContainer : ITagContainer
 
     string GetTagName(TagNode tag);
 
+    TagNode? GetTagNode(string name);
+
     bool RenameTag(TagNode tag, string name);
 }
 

@@ -109,14 +109,14 @@
         </MenuItem>
         <MenuItem Header="_Search">
             <MenuItem Header="_Find..." InputGesture="{OnPlatform 'Ctrl+F', macOS='Cmd+F'}"
-                      Command="{Binding FindCommand}">
+                      Command="{Binding FindBasicCommand}">
                 <MenuItem.Icon>
                     <ic:FluentIcon Icon="Search" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Header="_Replace..." InputGesture="{OnPlatform 'Ctrl+H', macOS='Cmd+H'}"
-                      Command="{Binding ReplaceCommand}" />
+                      Command="{Binding FindAdvancedCommand}" />
             <Separator />
             <MenuItem Header="_Chunk Finder..." Command="{Binding ChunkFinderCommand}" />
         </MenuItem>

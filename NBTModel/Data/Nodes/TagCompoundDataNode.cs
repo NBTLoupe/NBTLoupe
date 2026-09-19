@@ -119,7 +119,7 @@ public class TagCompoundDataNode(TagNodeCompound tag) : TagDataNode.Container(ta
         }
     }
 
-    private void AddTag(TagNode tag, string name)
+    public void AddTag(TagNode tag, string name)
     {
         _container.AddTag(tag, name);
         IsDataModified = true;

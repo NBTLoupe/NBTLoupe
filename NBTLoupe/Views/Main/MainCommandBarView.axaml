@@ -161,7 +161,7 @@
 
             <CommandBarSeparator />
 
-            <CommandBarButton Label="Find" ToolTip.Tip="Find" Command="{Binding FindCommand}">
+            <CommandBarButton Label="Find" ToolTip.Tip="Find" Command="{Binding FindBasicCommand}">
                 <CommandBarButton.Icon>
                     <ic:FluentIcon Icon="Search" />
                 </CommandBarButton.Icon>

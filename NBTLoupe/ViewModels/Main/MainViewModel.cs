@@ -8,6 +8,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using NBTLoupe.Core.IO;
 using NBTLoupe.Core.TreeNodes;
+using NBTLoupe.ViewModels.Dialogs;
 
 namespace NBTLoupe.ViewModels.Main;
 
@@ -39,8 +40,8 @@ public partial class MainViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(DeleteCommand))]
     [NotifyCanExecuteChangedFor(nameof(MoveUpCommand))]
     [NotifyCanExecuteChangedFor(nameof(MoveDownCommand))]
-    [NotifyCanExecuteChangedFor(nameof(FindCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ReplaceCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FindBasicCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FindAdvancedCommand))]
     [NotifyCanExecuteChangedFor(nameof(ChunkFinderCommand))]
     [NotifyCanExecuteChangedFor(nameof(AddByteTagCommand))]
     [NotifyCanExecuteChangedFor(nameof(AddShortTagCommand))]
@@ -64,9 +65,14 @@ public partial class MainViewModel : ViewModelBase
     internal ObservableCollection<RecentItem> RecentFiles { get; set; } = [.. RecentItems.Where(x => !x.IsFolder)];
     internal ObservableCollection<RecentItem> RecentFolders { get; set; } = [.. RecentItems.Where(x => x.IsFolder)];
 
-    // This stores the values set on the BasicFind Dialog, allowing the Find Next functionality to work.
+    // This stores the values set on the Find Dialogs, allowing the Find Next functionality to work.
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(FindNextCommand))]
     [NotifyCanExecuteChangedFor(nameof(FindPreviousCommand))]
-    internal partial NodeBasicSearcher? BasicSearcher { get; set; }
+    internal partial NodeSearcher? NodeSearcher { get; set; }
+
+    // This stores the Find and Replace Dialog state, allowing us to use its methods from elsewhere.
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ReplaceCommand))]
+    internal partial FindAdvancedDialogViewModel? NodeSearcherAdvanced { get; set; }
 }

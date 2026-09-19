@@ -53,13 +53,13 @@ public partial class MainViewModel
 
     private bool CanFind => SingleSelectedTreeNode?.DataNode.CanSearchNode ?? false;
 
-    private bool CanFindNext => BasicSearcher is not null &&
-                                (BasicSearcher?.TotalMatches is null ||
-                                 BasicSearcher?.CurrentMatch < BasicSearcher?.TotalMatches);
+    private bool CanFindNext => NodeSearcher is not null &&
+                                (NodeSearcher?.TotalMatches is null ||
+                                 NodeSearcher?.CurrentMatch < NodeSearcher?.TotalMatches);
 
-    private bool CanFindPrevious => BasicSearcher?.CurrentMatch > 1;
+    private bool CanFindPrevious => NodeSearcher?.CurrentMatch > 1;
 
-    private bool CanReplace => SingleSelectedTreeNode?.DataNode.CanSearchNode ?? false;
+    private bool CanReplace => NodeSearcherAdvanced?.CanReplace ?? false;
 
     private bool CanChunkFinder =>
         SingleSelectedTreeNode?.DataNode is DirectoryDataNode or RegionFileDataNode or RegionChunkDataNode;
