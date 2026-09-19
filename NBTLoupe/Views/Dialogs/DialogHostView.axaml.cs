@@ -12,11 +12,15 @@ public partial class DialogHostView : UserControl
         InitializeComponent();
     }
 
-    // Once an Informational Dialog is loaded...
-    internal void InformationalDialog_OnLoaded(object? sender, RoutedEventArgs e)
+    // Once any Dialog is loaded...
+    internal void Dialog_OnLoaded(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not MainViewModel mainViewModel) return;
 
+        // ...we focus it. (So the KeyBinds work.)
+        DialogPanel.Focus();
+
+        // And if it is informational...
         switch (mainViewModel.CurrentDialog)
         {
             // ...we focus its corresponding Buttons.

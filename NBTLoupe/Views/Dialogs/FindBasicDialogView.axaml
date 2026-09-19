@@ -15,7 +15,7 @@
     <Grid RowDefinitions="Auto, *" IsEnabled="{Binding !InProgress}">
         <TabStrip Classes="dialogTabStrip" Padding="0" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
             <TabStripItem x:Name="Basic" IsSelected="True" IsHitTestVisible="False">Find (Basic)</TabStripItem>
-            <TabStripItem x:Name="Advanced" IsSelected="False">Find and Replace (Advanced)</TabStripItem>
+            <TabStripItem x:Name="Advanced" IsSelected="False" IsEnabled="{Binding CanSwitchMode}">Find and Replace (Advanced)</TabStripItem>
         </TabStrip>
 
         <StackPanel Grid.Row="1">

@@ -4,14 +4,14 @@
              xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
              x:Class="NBTLoupe.Views.Main.MainSearchBarView"
              x:DataType="main:MainViewModel">
-    <Border Classes="floatyCard" IsVisible="{Binding BasicSearcher, Converter={x:Static ObjectConverters.IsNotNull}}">
+    <Border Classes="floatyCard" IsVisible="{Binding NodeSearcher, Converter={x:Static ObjectConverters.IsNotNull}}">
         <Border>
             <StackPanel>
                 <TextBlock>
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Match {0} of {1}">
-                            <Binding Path="BasicSearcher?.CurrentMatch" TargetNullValue="??" />
-                            <Binding Path="BasicSearcher?.TotalMatches" TargetNullValue="??" />
+                            <Binding Path="NodeSearcher?.CurrentMatch" TargetNullValue="??" />
+                            <Binding Path="NodeSearcher?.TotalMatches" TargetNullValue="??" />
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
@@ -25,11 +25,10 @@
                     <ic:FluentIcon Icon="ArrowDown" />
                 </Button>
 
-                <!-- TODO: Implement the Advanced Search/Replace! -->
-                <StackPanel IsVisible="False">
+                <StackPanel IsVisible="{Binding NodeSearcherAdvanced?.CanReplace, TargetNullValue=False}">
                     <Separator Classes="vertical" />
 
-                    <Button ToolTip.Tip="Replace this match">
+                    <Button Command="{Binding ReplaceCommand}" ToolTip.Tip="Replace this match">
                         <ic:FluentIcon Icon="TranslateAuto" />
                     </Button>
                 </StackPanel>

@@ -1,19 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NBTModel.Data.Nodes;
 
 namespace NBTLoupe.Core.TreeNodes;
 
-// This does the *actual* search work of the Basic Find.
-internal partial class NodeBasicSearcher(TreeNode parent, string? name, string? value) : ObservableObject
+internal abstract partial class NodeSearcher(TreeNode parent) : ObservableObject
 {
-    // First we store the Name and/or Value inserted, as we use it in the Dialog. 
-    internal readonly string? Name = name;
-    internal readonly string? Value = value;
-
     // We also cache the found ones as we go, which lets us go backwards.
     private readonly List<TreeNode> _alreadyFound = [];
 
@@ -29,13 +22,15 @@ internal partial class NodeBasicSearcher(TreeNode parent, string? name, string? 
     private partial int Index { get; set; } = -1;
 
     // This gives us a cute number to use in the UI.
-    internal int CurrentMatch => Index + 1;
+    public int CurrentMatch => Index + 1;
 
     // And this gives use another cute number to use in the UI, although only once we reached the end.
-    [ObservableProperty] internal partial int? TotalMatches { get; private set; }
+    [ObservableProperty] public partial int? TotalMatches { get; private set; }
+
+    protected abstract bool IsMatch(TreeNode node);
 
     // Then, every time we need to Find the Next result...
-    internal async Task<TreeNode?> FindNextAsync()
+    public async Task<TreeNode?> FindNextAsync()
     {
         // If we already found this result, but moved behind it...
         if (Index + 1 < _alreadyFound.Count)
@@ -102,7 +97,7 @@ internal partial class NodeBasicSearcher(TreeNode parent, string? name, string? 
     }
 
     // Then, every time we need to Find the Previous result...
-    internal TreeNode? FindPrevious()
+    public TreeNode? FindPrevious()
     {
         // ...we start looping... 
         while (Index > 0)
@@ -142,17 +137,5 @@ internal partial class NodeBasicSearcher(TreeNode parent, string? name, string? 
 
         // If we finish climbing, and we never encountered a broken Parent, our TreeNode is still valid.
         return true;
-    }
-
-    // This checks both of our Basic Search conditions with a given TreeNode.
-    private bool IsMatch(TreeNode node)
-    {
-        return node.DataNode is TagDataNode &&
-               (Name is null ||
-                node.DataNode.NodeName.Contains(Name,
-                    StringComparison.InvariantCultureIgnoreCase)) &&
-               (Value is null ||
-                node.DataNode.NodeDisplay.Contains(Value,
-                    StringComparison.InvariantCultureIgnoreCase));
     }
 }

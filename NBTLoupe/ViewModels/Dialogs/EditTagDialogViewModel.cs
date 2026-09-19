@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,25 +22,29 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 {
     // The old Name and Value...
     private readonly string _oldTagName;
-
     private readonly string _oldTagValue;
 
     // Here we set up the Dialog!
-    internal EditTagDialogViewModel(MainViewModel mainViewModel, bool isRename = false) : base(mainViewModel)
+    internal EditTagDialogViewModel(MainViewModel mainViewModel, bool isRename = false,
+        FindAdvancedDialogViewModel? parent = null) : base(mainViewModel, parent)
     {
+        // We make sure to set IsRename, so we can focus on the right TextBox!
         IsRename = isRename;
 
+        // This makes sure our Import/Export Buttons only show when there's actually content to Import/Export!
         SpecialButtons = ValueVisible
             ? [new DialogButton("Import", DialogImportCommand), new DialogButton("Export", DialogExportCommand)]
             : [];
 
-        var tagDataNode = MainViewModel.SingleSelectedTreeNode?.DataNode as TagDataNode;
-        DialogTagType = tagDataNode?.Tag.GetTagType() ?? TagType.TAG_END;
+        // If the TreeNode is a Tag, we can get some extra information from it. 
+        var tagDataNode = SingleSelectedTreeNode?.DataNode as TagDataNode;
 
-        // If the TreeNode is a NbtFileDataNode, its Renameable Name is different.
-        _oldTagName = (MainViewModel.SingleSelectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
-            ? MainViewModel.SingleSelectedTreeNode?.DataNode?.NodeName
+        // But if it is a NbtFileDataNode, its Renameable Name is different.
+        _oldTagName = (SingleSelectedTreeNode?.DataNode is not NbtFileDataNode fileDataNode
+            ? SingleSelectedTreeNode?.DataNode?.NodeName
             : fileDataNode.TreeName) ?? "";
+
+        // And we prepopulate the Dialog with the current Name!
         TagName = _oldTagName;
 
         // Set the context-accurate Title and Type.
@@ -55,8 +60,25 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
             TagType.TAG_LONG_ARRAY => string.Join(",", tagDataNode.Tag.ToTagLongArray().Data),
             _ => tagDataNode?.Tag.ToString()
         } ?? "";
+
+        // And we prepopulate the Dialog with the current Value!
         TagValue = _oldTagValue;
     }
+
+    // This is so we grab our staging TreeNode when this is opened from the Find and Replace's Nested Dialog. 
+    private TreeNode? SingleSelectedTreeNode => Parent is FindAdvancedDialogViewModel parent
+        ? parent.SingleSelectedReplacementTag
+        : MainViewModel.SingleSelectedTreeNode;
+
+    // This is so we back up our staging TreeNode's selections when this is opened from the Find and Replace's Nested Dialog. 
+    private ObservableCollection<TreeNode> TreeNodes => Parent is FindAdvancedDialogViewModel parent
+        ? parent.ReplacementTags
+        : MainViewModel.TreeNodes;
+
+    // This is so we auto-select on our staging TreeNode when this is opened from the Find and Replace's Nested Dialog. 
+    private ObservableCollection<TreeNode> SelectedTreeNodes => Parent is FindAdvancedDialogViewModel parent
+        ? parent.SelectedReplacementTags
+        : MainViewModel.SelectedTreeNodes;
 
     // This is so we focus on the Name TextBox if clicking the Rename button!
     internal bool IsRename { get; }
@@ -71,7 +93,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
     public partial string? TagName { get; set; }
 
     // ...(which is only visible in certain cases, by the way)
-    internal bool NameVisible => MainViewModel.SingleSelectedTreeNode?.DataNode.CanRenameNode ?? false;
+    internal bool NameVisible => SingleSelectedTreeNode?.DataNode.CanRenameNode ?? false;
 
     // ... and the new Value TextBox
     [ObservableProperty]
@@ -79,7 +101,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
     public partial string? TagValue { get; set; }
 
     // ...(which is only visible in certain cases, by the way)
-    internal bool ValueVisible => MainViewModel.SingleSelectedTreeNode?.DataNode.CanEditNode ?? false;
+    internal bool ValueVisible => SingleSelectedTreeNode?.DataNode.CanEditNode ?? false;
 
     // And here's where our Validation magic happens!
     internal override bool IsOkEnabled
@@ -87,7 +109,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
         get
         {
             // Only enable the OK button if:
-            // - The use inputted a new Name or Value.
+            // - The user inputted a new Name or Value.
             // - The new Name is valid for the corresponding TagType.
             // - The new Value is valid for the corresponding TagType.
             var hasNewTagName = _oldTagName != TagName;
@@ -95,7 +117,7 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
 
             if (!hasNewTagName && !hasNewTagValue) return false;
 
-            var tagNode = MainViewModel.SingleSelectedTreeNode?.DataNode;
+            var tagNode = SingleSelectedTreeNode?.DataNode;
             var tagDataNode = tagNode as TagDataNode;
             var metaTagContainer = tagDataNode?.Parent as IMetaTagContainer;
 
@@ -128,13 +150,13 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
         return MainViewModel.SafeExecuteAsync(async () =>
         {
             // Check if DataNode is null.
-            if (MainViewModel.SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
+            if (SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
 
             // First we get the TreeNode's type...
-            var tagDataNode = MainViewModel.SingleSelectedTreeNode.DataNode as TagDataNode;
+            var tagDataNode = SingleSelectedTreeNode.DataNode as TagDataNode;
             var tagType = tagDataNode?.Tag.GetTagType();
             // ...and build an extension for it.
-            var nodePath = MainViewModel.SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
+            var nodePath = SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
             var extension = $".{tagType}";
 
             // We open a FilePicker that only accepts that extension.
@@ -174,13 +196,13 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
         return MainViewModel.SafeExecuteAsync(async () =>
         {
             // Check if DataNode is null.
-            if (MainViewModel.SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
+            if (SingleSelectedTreeNode?.DataNode is null) throw new UnreachableException();
 
             // First we get the TreeNode's type...
-            var tagDataNode = MainViewModel.SingleSelectedTreeNode.DataNode as TagDataNode;
+            var tagDataNode = SingleSelectedTreeNode.DataNode as TagDataNode;
             var tagType = tagDataNode?.Tag.GetTagType();
             // ...and build an extension for it.
-            var nodePath = MainViewModel.SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
+            var nodePath = SingleSelectedTreeNode.DataNode.NodePath.TrimStart('/', '\\');
             var extension = $".{tagType}";
 
             // We open a SaveFilePicker that only accepts that extension.
@@ -241,33 +263,37 @@ internal partial class EditTagDialogViewModel : DialogHostViewModel
     // And here's the actual magic! The OK button!
     internal override async Task ExecuteAsync()
     {
-        var dataNode = MainViewModel.SingleSelectedTreeNode?.DataNode;
+        var dataNode = SingleSelectedTreeNode?.DataNode;
 
         var hasNewTagName = _oldTagName != TagName;
         var hasNewTagValue = _oldTagValue != TagValue;
 
         var success = true;
-        // ...we let the FormHandlers deal with it.
+
+        // ...we let NBTModel deal with it.
         if (TagName is not null && hasNewTagName) success &= dataNode?.RenameNode(TagName) == true;
         if (TagValue is not null && hasNewTagValue) success &= dataNode?.EditNode(TagValue) == true;
 
         if (!success) throw new UnreachableException();
 
         // Then we back up our SelectedTreeNodes' IndexPath.
-        var savedSelectedTreeNodes = MainViewModel.SingleSelectedTreeNode?.GetIndexPath(MainViewModel.TreeNodes);
+        var savedSelectedTreeNodes = SingleSelectedTreeNode?.GetIndexPath(TreeNodes);
+
+        // On a revalue, we refresh its title so it shows properly on the UI.
+        if (hasNewTagValue) SingleSelectedTreeNode?.RefreshTitle();
 
         // And, on a rename, we refresh its parent so the order updates.
-        if (hasNewTagName && MainViewModel.SingleSelectedTreeNode?.Parent is not null)
+        if (hasNewTagName && SingleSelectedTreeNode?.Parent is not null)
         {
-            await MainViewModel.SingleSelectedTreeNode.Parent.RefreshChildNodesAsync();
+            await SingleSelectedTreeNode.Parent.RefreshChildNodesAsync();
 
             // And finally, we restore our SelectedTreeNodes using our IndexPath and the new name.
             if (savedSelectedTreeNodes is null) return;
             var restoredSelectedTreeNode =
-                NodeStateRestorer.GetByIndexPath(MainViewModel.TreeNodes, savedSelectedTreeNodes);
+                NodeStateRestorer.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
             var foundNode =
                 restoredSelectedTreeNode?.Parent?.SubNodes?.FirstOrDefault(node => node.DataNode.NodeName == TagName);
-            if (foundNode is not null) MainViewModel.SelectedTreeNodes.Add(foundNode);
+            if (foundNode is not null) SelectedTreeNodes.Add(foundNode);
         }
     }
 }

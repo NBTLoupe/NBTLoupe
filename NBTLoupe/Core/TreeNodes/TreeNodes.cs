@@ -23,7 +23,8 @@ internal partial class TreeNode : ObservableObject
     // And here's how you create the actual TreeNode!
     private TreeNode(DataNode dataNode, ObservableCollection<TreeNode> subNodes,
         Func<Func<Task>, bool, bool, Task> withBlock,
-        Func<Func<MainViewModel, DialogHostViewModel>, Task<bool>> openDialogAsync, bool isPlaceholder = false)
+        Func<Func<MainViewModel, DialogHostViewModel>, Task<bool>> openDialogAsync, bool isPlaceholder = false,
+        bool isReplacementTagRoot = false)
     {
         _withBlock = withBlock;
         _openDialogAsync = openDialogAsync;
@@ -31,7 +32,8 @@ internal partial class TreeNode : ObservableObject
         DataNode = dataNode;
         SubNodes = subNodes;
         IsPlaceholder = isPlaceholder;
-        Title = dataNode.NodeDisplay;
+        IsReplacementTagRoot = isReplacementTagRoot;
+        Title = !isReplacementTagRoot ? dataNode.NodeDisplay : "Replacement Tags";
     }
 
     // ...it includes its children (SubNodes), its data (DataNode), and its Parent.
@@ -39,6 +41,7 @@ internal partial class TreeNode : ObservableObject
     internal DataNode DataNode { get; }
     internal TreeNode? Parent { get; private set; }
     internal bool IsPlaceholder { get; }
+    internal bool IsReplacementTagRoot { get; }
 
     // Oh, but all that data is for our fun. Avalonia cares about its Title and its Icon, which is here.
     [ObservableProperty] internal partial string Title { get; private set; }
@@ -60,7 +63,7 @@ internal partial class TreeNode : ObservableObject
         TagStringDataNode => "TextT",
         TagListDataNode => "TextBulletList",
 
-        TagCompoundDataNode => "Box",
+        TagCompoundDataNode => !IsReplacementTagRoot ? "Box" : "ArrowDownRight",
 
         DirectoryDataNode => "Folder",
         NbtFileDataNode => "Archive",
@@ -99,7 +102,7 @@ internal partial class TreeNode : ObservableObject
     // Oh, and this is how you refresh its Title if you have to.
     internal void RefreshTitle()
     {
-        Title = DataNode.NodeDisplay;
+        Title = !IsReplacementTagRoot ? DataNode.NodeDisplay : "Replacement Tags";
     }
 
     // Oh, and here's how you set its parent!
