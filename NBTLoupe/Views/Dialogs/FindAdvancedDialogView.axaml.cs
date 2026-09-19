@@ -1,9 +1,9 @@
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using NBTLoupe.ViewModels.Dialogs;
+using NBTLoupe.ViewModels.Dialogs.FindAdvancedDialog;
 
-namespace NBTLoupe.Views.Dialogs;
+namespace NBTLoupe.Views.Dialogs.FindAdvancedDialog;
 
 public partial class FindAdvancedDialogView : UserControl
 {

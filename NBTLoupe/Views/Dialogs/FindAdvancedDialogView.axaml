@@ -10,9 +10,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
-             xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
-             x:Class="NBTLoupe.Views.Dialogs.FindAdvancedDialogView"
-             x:DataType="dialogs:FindAdvancedDialogViewModel">
+             xmlns:findAdvancedDialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs.FindAdvancedDialog"
+             x:Class="NBTLoupe.Views.Dialogs.FindAdvancedDialog.FindAdvancedDialogView"
+             x:DataType="findAdvancedDialogs:FindAdvancedDialogViewModel">
     <Grid RowDefinitions="Auto, *" IsEnabled="{Binding !InProgress}">
         <TabStrip Classes="dialogTabStrip" Padding="0" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
             <TabStripItem x:Name="Basic" IsSelected="False">Find (Basic)</TabStripItem>
