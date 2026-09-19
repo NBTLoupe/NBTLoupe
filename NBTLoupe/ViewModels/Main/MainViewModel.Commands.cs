@@ -269,7 +269,7 @@ public partial class MainViewModel
                     throw new UnreachableException();
 
                 // We isolate the parent because its child is going to be Cut...
-                var parent = SingleSelectedTreeNode.Parent ?? TreeNodes.FirstOrDefault();
+                var parent = SingleSelectedTreeNode.Parent ?? TreeNodes[0];
 
                 // Then we back up our SelectedTreeNodes' IndexPath.
                 var savedSelectedTreeNodes = SingleSelectedTreeNode.GetIndexPath(TreeNodes);
@@ -278,7 +278,7 @@ public partial class MainViewModel
                 if (!await SingleSelectedTreeNode.DataNode.CutNode()) throw new UnreachableException();
 
                 // Then we refresh the TreeNode's parent...
-                if (parent is not null) await parent.RefreshChildNodesAsync();
+                await parent.RefreshChildNodesAsync();
 
                 // And clear the SelectedTreeNodes, as they're invalid now.
                 SelectedTreeNodes.Clear();
@@ -392,7 +392,7 @@ public partial class MainViewModel
                     if (!selectedTreeNode.DataNode.DeleteNode()) throw new UnreachableException();
 
                     // We make sure we don't refresh the same parent twice.
-                    parents.Add(selectedTreeNode.Parent ?? TreeNodes.FirstOrDefault());
+                    parents.Add(selectedTreeNode.Parent ?? TreeNodes[0]);
                 }
 
                 // We do have to deal with refreshing the parent ourselves, though...
