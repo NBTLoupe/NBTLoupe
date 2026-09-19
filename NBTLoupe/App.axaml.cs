@@ -61,19 +61,19 @@ public class App : Application
         // Exception handling for non-RelayCommands.
         Dispatcher.UIThread.UnhandledException += async (_, e) =>
         {
+            e.Handled = true;
+            
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unhandled UI thread exception");
             await mainViewModel.OpenDialogAsync(new ErrorDialogViewModel(mainViewModel, e.Exception));
-
-            e.Handled = true;
         };
         TaskScheduler.UnobservedTaskException += async (_, e) =>
         {
+            e.SetObserved();
+            
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unobserved task exception");
             await mainViewModel.OpenDialogAsync(new ErrorDialogViewModel(mainViewModel, e.Exception));
-
-            e.SetObserved();
         };
         AppDomain.CurrentDomain.UnhandledException += async (_, e) =>
         {
