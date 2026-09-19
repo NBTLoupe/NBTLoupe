@@ -55,7 +55,7 @@ Talking of the .NET Community, I'm also really thankful to **davidxuang** for th
 
 Oh, and I have someone else to thank... **YOU**!
 
-I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. NBTLoupe is still a **really early project**, and it's your support which lets me continue iterating over it, and hopefully soon, reach full feature parity!
+I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. NBTLoupe is still a **really early project**, and it's your support which lets me continue iterating over it!
 
 
 ## FAQ
@@ -68,12 +68,6 @@ I'm a really small developer, and it's thanks to people like you that I can cont
   ```bash
   xattr -d com.apple.quarantine /Applications/NBTLoupe.app
   ```
-</details>
-<details>
-  <summary><b>Wait, "reach full feature parity"? What are you missing?</b></summary>
-  From the original NBTExplorer, only one thing as far as I'm aware: the <b>find functionality</b>. With this I'm grouping both <b>searching</b> and <b>replacing</b> tag values.
-  <br>
-  But I'm also supposing there are certain things that the game introduced over the years that the original NBTExplorer never supported. We're reusing the same backend, so we don't support these either. That's the next step after we reach feature parity with the original, though!
 </details>
 <details>
   <summary><b>Avalonia UI? That means you could run in a web browser!</b></summary>
