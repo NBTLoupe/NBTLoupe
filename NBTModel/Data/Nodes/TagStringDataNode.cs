@@ -8,14 +8,6 @@ public class TagStringDataNode(TagNodeString tag) : TagDataNode(tag)
 
     public override string NodeDisplay => NodeDisplayPrefix + Tag.ToString().Replace('\n', (char)0x00B6);
 
-    public override bool Parse(string value)
-    {
-        Tag.Data = value;
-        IsDataModified = true;
-
-        return true;
-    }
-
     public override bool EditNode(string value)
     {
         return EditStringValue(Tag, value);

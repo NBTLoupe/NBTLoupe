@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using NBTModel.Data.Nodes;
@@ -355,6 +356,9 @@ public class WildcardRule : SearchRule
                             if (long.Parse(Value) == tag.ToTagLong())
                                 return false;
                             break;
+                        case WildcardOperator.Any:
+                        default:
+                            break;
                     }
 
                     if (!matchedNodes.Contains(childNode))
@@ -372,6 +376,9 @@ public class WildcardRule : SearchRule
                             if (Math.Abs(double.Parse(Value) - tag.ToTagDouble().Data) <= Epsilon)
                                 return false;
                             break;
+                        case WildcardOperator.Any:
+                        default:
+                            break;
                     }
 
                     if (!matchedNodes.Contains(childNode))
@@ -388,11 +395,24 @@ public class WildcardRule : SearchRule
                             if (Value == tag.ToTagString().Data)
                                 return false;
                             break;
+                        case WildcardOperator.Any:
+                        default:
+                            break;
                     }
 
                     if (!matchedNodes.Contains(childNode))
                         matchedNodes.Add(childNode);
                     return true;
+                
+                case TagType.TAG_END:
+                case TagType.TAG_LIST:
+                case TagType.TAG_COMPOUND:
+                case TagType.TAG_BYTE_ARRAY:
+                case TagType.TAG_INT_ARRAY:
+                case TagType.TAG_LONG_ARRAY:
+                case TagType.TAG_SHORT_ARRAY:
+                default:
+                    throw new UnreachableException();
             }
         }
         catch

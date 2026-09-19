@@ -37,8 +37,6 @@ public class RegionChunkDataNode(RegionFile regionFile, int x, int z) : DataNode
         }
     }
 
-    public override bool IsContainerType => true;
-
     public bool IsNamedContainer => true;
 
     public bool IsOrderedContainer => false;

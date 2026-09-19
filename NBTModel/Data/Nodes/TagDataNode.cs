@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -89,7 +90,7 @@ public abstract class TagDataNode(TagNode tag) : DataNode
         };
     }
 
-    public static TagNode DefaultTag(TagType type)
+    protected static TagNode DefaultTag(TagType type)
     {
         return type switch
         {
@@ -109,12 +110,7 @@ public abstract class TagDataNode(TagNode tag) : DataNode
             _ => new TagNodeByte(0)
         };
     }
-
-    public virtual bool Parse(string value)
-    {
-        return false;
-    }
-
+    
     public override bool DeleteNode()
     {
         if (!CanDeleteNode) return false;
@@ -197,9 +193,19 @@ public abstract class TagDataNode(TagNode tag) : DataNode
                 break;
 
             case TagType.TAG_BYTE:
-            default:
                 tag.ToTagByte().Data = unchecked((byte)sbyte.Parse(value));
                 break;
+
+            case TagType.TAG_END:
+            case TagType.TAG_LIST:
+            case TagType.TAG_COMPOUND:
+            case TagType.TAG_STRING:
+            case TagType.TAG_BYTE_ARRAY:
+            case TagType.TAG_INT_ARRAY:
+            case TagType.TAG_LONG_ARRAY:
+            case TagType.TAG_SHORT_ARRAY:
+            default:
+                throw new UnreachableException();
         }
 
         IsDataModified = true;
@@ -305,8 +311,6 @@ public abstract class TagDataNode(TagNode tag) : DataNode
             | NodeCapabilities.Search;
 
         public override bool HasUnexpandedChildren => !IsExpanded && TagCount > 0;
-
-        public override bool IsContainerType => true;
 
         public override string NodeDisplay => NodeDisplayPrefix + TagCount + (TagCount == 1 ? " entry" : " entries");
 

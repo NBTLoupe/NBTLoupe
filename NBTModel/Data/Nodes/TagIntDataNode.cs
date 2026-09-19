@@ -6,17 +6,6 @@ public class TagIntDataNode(TagNodeInt tag) : TagDataNode(tag)
 {
     private new TagNodeInt Tag => (TagNodeInt)base.Tag;
 
-    public override bool Parse(string value)
-    {
-        if (!int.TryParse(value, out var data))
-            return false;
-
-        Tag.Data = data;
-        IsDataModified = true;
-
-        return true;
-    }
-
     public override bool EditNode(string value)
     {
         return EditScalarValue(Tag, value);

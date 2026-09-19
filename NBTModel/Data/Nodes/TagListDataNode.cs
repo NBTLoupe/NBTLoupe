@@ -9,7 +9,7 @@ public sealed class TagListDataNode(TagNodeList tag) : TagDataNode.Container(tag
 {
     private readonly ListTagContainer _container = new(tag);
 
-    public new TagNodeList Tag => (TagNodeList)base.Tag;
+    private new TagNodeList Tag => (TagNodeList)base.Tag;
 
     public override bool IsOrderedContainer => true;
 
@@ -50,9 +50,8 @@ public sealed class TagListDataNode(TagNodeList tag) : TagDataNode.Container(tag
             return false;
 
         if (Tag.Count == 0) Tag.ChangeValueType(type);
-
-        AppendTag(DefaultTag(type));
-        return true;
+        
+        return AppendTag(DefaultTag(type));
     }
 
     public override async Task<bool> PasteNode()
@@ -65,9 +64,8 @@ public sealed class TagListDataNode(TagNodeList tag) : TagDataNode.Container(tag
             return false;
 
         if (Tag.Count == 0) Tag.ChangeValueType(clipboard.Node.GetTagType());
-
-        AppendTag(clipboard.Node);
-        return true;
+        
+        return AppendTag(clipboard.Node);
     }
 
     public override bool DeleteTag(TagNode tag)
@@ -86,7 +84,7 @@ public sealed class TagListDataNode(TagNodeList tag) : TagDataNode.Container(tag
         IsDataModified = true;
     }
 
-    public bool AppendTag(TagNode tag)
+    private bool AppendTag(TagNode tag)
     {
         if (!CanCreateTag(tag.GetTagType()))
             return false;

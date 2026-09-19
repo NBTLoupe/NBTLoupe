@@ -18,8 +18,6 @@ public class DataNode
 
     public DataNode? Parent { get; internal set; }
 
-    public DataNode Root => Parent == null ? this : Parent.Root;
-
     public DataNodeCollection Nodes { get; }
 
     public bool IsModified => _dataModified || _childModified;
@@ -57,8 +55,6 @@ public class DataNode
     public virtual string NodePathName => NodeName;
 
     public virtual string NodeDisplay => "";
-
-    public virtual bool IsContainerType => false;
 
     public virtual bool HasUnexpandedChildren => false;
 

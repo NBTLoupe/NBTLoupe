@@ -20,8 +20,6 @@ public partial class CubicRegionDataNode : DataNode
 
     public override bool HasUnexpandedChildren => !IsExpanded;
 
-    public override bool IsContainerType => true;
-
     public override string NodePathName => Path.GetFileName(_path);
 
     public override string NodeDisplay => Path.GetFileName(_path);

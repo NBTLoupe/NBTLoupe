@@ -51,8 +51,6 @@ public partial class NbtFileDataNode : DataNode, IMetaTagContainer
 
     public override bool HasUnexpandedChildren => !IsExpanded;
 
-    public override bool IsContainerType => true;
-
     public override bool CanRenameNode => _tree != null;
 
     public bool IsNamedContainer => true;

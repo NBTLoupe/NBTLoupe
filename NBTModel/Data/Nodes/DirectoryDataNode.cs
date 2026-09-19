@@ -28,8 +28,6 @@ public class DirectoryDataNode(string path) : DataNode
 
     public override bool HasUnexpandedChildren => !IsExpanded;
 
-    public override bool IsContainerType => true;
-
     protected override void ExpandCore()
     {
         foreach (var dirpath in Directory.GetDirectories(path)) Nodes.Add(new DirectoryDataNode(dirpath));
