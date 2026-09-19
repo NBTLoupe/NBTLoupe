@@ -45,6 +45,8 @@ public partial class MainViewModel
 
     private bool CanDelete => SelectedTreeNodes.Count > 0 && SelectedTreeNodes.All(x => x.DataNode.CanDeleteNode);
 
+    internal bool CanClearList => SingleSelectedTreeNode?.DataNode is TagListDataNode;
+
     private bool CanMoveUp => SingleSelectedTreeNode?.DataNode is
         { CanReoderNode: true, CanMoveNodeUp: true };
 

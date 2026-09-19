@@ -411,6 +411,37 @@ public partial class MainViewModel
         });
     }
 
+    // This one is executed when the user chooses to Clear a List.
+    [RelayCommand(CanExecute = nameof(CanClearList))]
+    private Task<bool> ClearList()
+    {
+        return SafeExecuteAsync(async () =>
+        {
+            await WithBlock(async () =>
+            {
+                // Check if Parent is null.
+                if (SingleSelectedTreeNode?.Parent is null) throw new UnreachableException();
+
+                // Check if DataNode is a List.
+                if (SingleSelectedTreeNode.DataNode is not TagListDataNode tagListDataNode)
+                    throw new UnreachableException();
+
+                // Then we back up our SelectedTreeNodes' IndexPath.
+                var savedSelectedTreeNodes = SingleSelectedTreeNode.GetIndexPath(TreeNodes);
+
+                // The actual clearing is dealt with by NBTModel, convenient!
+                tagListDataNode.Clear();
+
+                // We do have to deal with refreshing the parent ourselves, though...
+                await SingleSelectedTreeNode.Parent.RefreshChildNodesAsync();
+
+                // And finally, we restore our SelectedTreeNodes using our IndexPath.
+                var restoredSelectedTreeNode = NodeStateRestorer.GetByIndexPath(TreeNodes, savedSelectedTreeNodes);
+                if (restoredSelectedTreeNode is not null) SelectedTreeNodes.Add(restoredSelectedTreeNode);
+            });
+        });
+    }
+
     // This one is executed when the user chooses to Move Up a TreeNode.
     [RelayCommand(CanExecute = nameof(CanMoveUp))]
     private Task<bool> MoveUp()
