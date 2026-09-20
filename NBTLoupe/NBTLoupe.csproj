@@ -80,8 +80,8 @@
             <DependentUpon>MainSearchBarView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Views\Dialogs\DialogHostViewModel.axaml.cs">
-            <DependentUpon>DialogHostViewModel.axaml</DependentUpon>
+        <Compile Update="Views\Dialogs\DialogHostView.axaml.cs">
+            <DependentUpon>DialogHostView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\Dialogs\AboutDialogView.axaml.cs">
