@@ -100,8 +100,16 @@
             <DependentUpon>EditTagDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Views\Dialogs\EditTagRuleDialogView.axaml.cs">
+            <DependentUpon>EditTagRuleDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
         <Compile Update="Views\Dialogs\ErrorDialogView.axaml.cs">
             <DependentUpon>ErrorDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\FindAdvancedDialogView.axaml.cs">
+            <DependentUpon>FindAdvancedDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\Dialogs\FindBasicDialogView.axaml.cs">
@@ -116,15 +124,6 @@
             <DependentUpon>UnsavedChangesDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Core\TreeNodes\NodeSearcher.Advanced.cs">
-            <DependentUpon>NodeSearcher.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Core\TreeNodes\NodeSearcher.Basic.cs">
-            <DependentUpon>NodeSearcher.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Core\TreeNodes\TreeNodes.Expansion.cs">
-            <DependentUpon>TreeNodes.cs</DependentUpon>
-        </Compile>
         <Compile Update="ViewModels\Main\MainViewModel.Blocking.cs">
             <DependentUpon>MainViewModel.cs</DependentUpon>
         </Compile>
@@ -137,13 +136,14 @@
         <Compile Update="ViewModels\Main\MainViewModel.Dialogs.cs">
             <DependentUpon>MainViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Views\Dialogs\FindAdvancedDialogView.axaml.cs">
-            <DependentUpon>FindAdvancedDialogView.axaml</DependentUpon>
-            <SubType>Code</SubType>
+        <Compile Update="Core\TreeNodes\TreeNodes.Expansion.cs">
+            <DependentUpon>TreeNodes.cs</DependentUpon>
         </Compile>
-        <Compile Update="Views\Dialogs\EditTagRuleDialogView.axaml.cs">
-            <DependentUpon>EditTagRuleDialogView.axaml</DependentUpon>
-            <SubType>Code</SubType>
+        <Compile Update="Core\TreeNodes\NodeSearcher.Advanced.cs">
+            <DependentUpon>NodeSearcher.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Core\TreeNodes\NodeSearcher.Basic.cs">
+            <DependentUpon>NodeSearcher.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>
