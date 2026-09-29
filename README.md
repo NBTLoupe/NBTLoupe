@@ -1,9 +1,14 @@
+> [!NOTE]
+> **TRANSITION IN PROCESS**
+>
+> As part of ongoing major restructuring, this repository has undergone a major Git history rewrite, and development has been temporarily moved to a separate branch. Please [read this announcement](https://github.com/NBTLoupe/NBTLoupe/discussions/4) for more information.
+
 <p align="center">
   <img width="128" src="ASSETS/icons/NBTLoupe.png">
   <br>
   <br>
   <b>NBTLoupe</b><br>
-  A native cross-platform fork of NBTExplorer.<br><br>
+  The native NBT editor designed to be performant, modern, and cute.<br><br>
   <img src="ASSETS/screenshots/light.png#gh-light-mode-only">
   <img src="ASSETS/screenshots/dark.png#gh-dark-mode-only">
   <br><br>
@@ -26,7 +31,7 @@ The **DEBUG** one is less performant (it's compiled **JIT** instead of **AOT**),
 ## How do I build it?
 That's also really easy!
 
-First, you have to **clone the repo**. The `--recursive` flag here makes sure you also clone neoSubstrate!
+First, you have to **clone the repo**. The `--recursive` flag here makes sure you also clone neoNBTModel and neoSubstrate!
 ```bash
 git clone https://github.com/NBTLoupe/NBTLoupe --recursive
 ```
@@ -43,7 +48,7 @@ dotnet publish -c Debug
 .NET will tell you where the built binaries are! They're usually at `./NBTLoupe/bin/[BUILD TYPE]/net10.0/[YOUR OS]/publish/` if you can't find them, though! 
 
 ## Thank you!
-I really need to thank **Justin Aquadro**. The original **NBTExplorer** keeps showing its excellence, and it's that excellence that made this project possible in the first place. We're a fork after all!
+I really need to thank **Justin Aquadro**. The original **NBTExplorer** keeps showing its excellence, and it's that excellence that made this project possible in the first place.
 
 I also have to thank **copygirl** for **NBTEdit**, which was the pillar to the original NBTExplorer. A lot of people haven't heard of this project, but without it, history would be really different. Maybe NBTExplorer wouldn't have even existed! And without the original NBTExplorer, this project wouldn't have existed either!
 
@@ -86,8 +91,8 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 
 
 ## Attribution
-If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file! And all licenses are in the [**LICENSES/**](./LICENSES/) subdirectory.
+If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file! That file will also guide you to the respective **LICENSE** files.
 
-The NBTLoupe subdirectory is entirely my own code, unless it is explicitly noted as not. Two examples of this are the Dialogs, which are derived from **FluentAvalonia**; and the **"reused infrastructure"**, which is derived from the original NBTExplorer.
+Everything in this main repository is entirely my own code, unless it is explicitly noted as not. The main example of this are the Dialogs, which are derived from **FluentAvalonia**.
 
-Although the NBTModel and the Substrate subdirectories have been substantially modified and aren't backwards compatible, both are **directly derived** from the original NBTExplorer and contain much of the original code.
+This is because all the code derived from NBTExplorer has been moved to **submodules** in a recent **Git history rewrite**, and all the attribution and licensing has been retroactively modified to reflect this. Please [read this announcement](https://github.com/NBTLoupe/NBTLoupe/discussions/4) for more information.
