@@ -20,7 +20,7 @@
                        IsVisible="{Binding PotentialBug}" />
 
             <TextBlock Classes="dialogSubtitle"
-                       Text="A critical error has occurred in Substrate, compromising the app state. To prevent data corruption, you must restart the app. If this keeps happening, please open an issue on our GitHub."
+                       Text="A critical error has occurred, compromising the app state. To prevent data corruption, you must restart the app. If this keeps happening, please open an issue on our GitHub."
                        IsVisible="{Binding FatalException}" />
         </StackPanel>
         <TextBox Grid.Row="1" Text="{Binding ExceptionText}" />

@@ -2,11 +2,8 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using NBTLoupe.ViewModels.Dialogs;
-using NBTModel.Data.Nodes;
 using Serilog;
 using Serilog.Events;
-using Substrate;
-using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Main;
 

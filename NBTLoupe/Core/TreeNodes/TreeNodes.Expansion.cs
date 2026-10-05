@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTLoupe.ViewModels.Main;
-using NBTModel.Data.Nodes;
 
 namespace NBTLoupe.Core.TreeNodes;
 

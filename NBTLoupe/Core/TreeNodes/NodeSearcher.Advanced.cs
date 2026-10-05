@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NBTModel.Data.Nodes;
-using NBTModel.Search;
 
 namespace NBTLoupe.Core.TreeNodes;
 

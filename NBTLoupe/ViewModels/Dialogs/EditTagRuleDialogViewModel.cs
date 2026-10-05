@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Main;
-using NBTModel.Search;
-using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Dialogs;
 

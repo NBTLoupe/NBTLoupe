@@ -8,9 +8,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Main;
-using NBTModel.Data.Nodes;
-using NBTModel.Search;
-using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Dialogs;
 

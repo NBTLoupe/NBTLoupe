@@ -11,11 +11,8 @@ using CommunityToolkit.Mvvm.Input;
 using NBTLoupe.Core.IO;
 using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Dialogs;
-using NBTModel.Data.Nodes;
 using Serilog;
 using Serilog.Events;
-using Substrate;
-using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Main;
 
@@ -42,7 +39,7 @@ public partial class MainViewModel
 
             if (path is null)
             {
-                // First we open a FilePicker, using the same FileTypeFilters as the original NBTExplorer 
+                // First we open a FilePicker, using relevant FileTypeFilters for the most common file extensions.
                 var files = await TopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
                     FileTypeFilter =

@@ -12,7 +12,6 @@
              xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
              xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
              xmlns:treenodes="clr-namespace:NBTLoupe.Core.TreeNodes"
-             xmlns:nbt="clr-namespace:Substrate.Nbt;assembly=neoSubstrate"
              x:Class="NBTLoupe.Views.Dialogs.FindAdvancedDialogView"
              x:DataType="dialogs:FindAdvancedDialogViewModel">
     <Grid RowDefinitions="Auto, *" IsEnabled="{Binding !InProgress}">

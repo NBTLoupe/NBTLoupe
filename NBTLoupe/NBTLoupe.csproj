@@ -35,10 +35,6 @@
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\NBTModel\NBTModel.csproj"/>
-    </ItemGroup>
-
     <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
         <ItemGroup>
             <Icons Include="..\ASSETS\icons\NBTLoupe.png;..\ASSETS\icons\NBTLoupe.ico"/>

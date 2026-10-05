@@ -17,19 +17,17 @@
         <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock Classes="dialogTitle" Text="{Binding AboutTitle}" />
             <TextBlock Classes="dialogSubtitle">
-                Copyright (c) 2024-2026 MallardLuna
+                The native NBT editor designed to be performant, modern, and cute.
                 <LineBreak />
-                Copyright (c) 2011-2017 Justin Aquadro
+                Copyright (c) 2024-2026 MallardLuna
             </TextBlock>
         </StackPanel>
         <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialogSubtitle">
-            NBTLoupe is MallardLuna's fork of Justin Aquadro's NBTExplorer (which is itself based on NBTEdit by copygirl).
+            Most NBT editors are built strictly with Windows in mind, and although this is fine for most users, it's an obstacle for everyone else. The few cross-platform alternatives are unfortunately either feature incomplete, or have made serious compromises in their UI design.
             <LineBreak /><LineBreak />
-            A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this shows its excellence, it's also starting to show its age and limited native platform support.
+            NBTLoupe solves this with the help of .NET 10 (NAOT!), and a GUI written from the ground up in Avalonia. As a result, we're a performant NBT editor with a really modern UI! The cutest, I dare to say! (And yes, cuteness is a valid reason for Windows users to give us a try!)
             <LineBreak /><LineBreak />
-            NBTLoupe tries to close that gap with the help of .NET 10 and a GUI written from the ground up in Avalonia.
-            <LineBreak /><LineBreak />
-            Right now we fully support macOS, Windows and GNU/Linux; and the idea is to eventually bring it to the web as well!
+            Right now we fully support macOS, Windows, and GNU/Linux; but you can also use it almost anywhere else through our WASM frontend (on the web!)
             <LineBreak />
         </TextBlock>
     </Grid>
@@ -48,10 +46,6 @@
 
                 <Style Selector="^ > TextBlock.dialogTitle">
                     <Setter Property="Margin" Value="0" />
-                </Style>
-
-                <Style Selector="^ > TextBlock.dialogSubtitle">
-                    <Setter Property="FontFeatures" Value="+tnum" />
                 </Style>
             </Style>
 

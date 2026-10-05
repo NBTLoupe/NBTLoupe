@@ -1,5 +1,3 @@
-using Substrate.Nbt;
-
 namespace NBTLoupe.Core.TreeNodes;
 
 internal static class NodeFriendlyTag

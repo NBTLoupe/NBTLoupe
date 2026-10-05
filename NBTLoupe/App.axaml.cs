@@ -9,7 +9,6 @@ using NBTLoupe.ViewModels.Dialogs;
 using NBTLoupe.ViewModels.Main;
 using NBTLoupe.Views;
 using NBTLoupe.Views.Main;
-using NBTModel.Interop;
 using Serilog;
 
 namespace NBTLoupe;

@@ -1,7 +1,10 @@
-> [!NOTE]
-> **TRANSITION IN PROCESS**
+> [!CAUTION]
+> **TRANSITION BRANCH**
+> 
+> This branch is where our **major restructuring** is happening, and it'll be **uncompilable** for a while. Please [read this announcement](https://github.com/NBTLoupe/NBTLoupe/discussions/4) for more information.
 >
-> As part of ongoing major restructuring, this repository has undergone a major Git history rewrite, and development has been temporarily moved to a separate branch. Please [read this announcement](https://github.com/NBTLoupe/NBTLoupe/discussions/4) for more information.
+> Do note that this **README** currently reflects a **hypothetical future scenario**. Lots of the things mentioned in here **aren't true at the moment**, but will be once I remove this banner.
+>
 
 <p align="center">
   <img width="128" src="ASSETS/icons/NBTLoupe.png">
@@ -15,15 +18,17 @@
 </p>
 
 ## But why?
-A big chunk of the Minecraft community heavily depends on **NBTExplorer**. And although this shows its excellence, it's also starting to show its age and limited native platform support.
+Most **NBT editors** are built strictly with **Windows** in mind, and although this is fine for most users, it's an obstacle for everyone else. The few **cross-platform alternatives** are unfortunately either **feature incomplete**, or have made **serious compromises** in their UI design.
 
-**NBTLoupe** tries to close that gap with the help of **.NET 10** and a GUI written from the ground up in **Avalonia**.
+**NBTLoupe** solves this with the help of **.NET 10** (**NAOT**!), and a GUI written from the ground up in **Avalonia**. As a result, we're a **performant NBT editor** with a really **modern UI**! The **cutest**, I dare to say! (And yes, cuteness is a valid reason for **Windows users** to give us a try!)
 
-Right now we fully support **macOS**, **Windows** and **GNU/Linux**; and the idea is to eventually bring it to the web as well!
+Right now we fully support **macOS**, **Windows**, and **GNU/Linux**; but you can also use it almost anywhere else through our **WASM** frontend (on the web!)
 
 
 ## How do I use it?
-You can download the latest version for your operating system from the [Releases](https://github.com/NBTLoupe/NBTLoupe/releases) page. Make sure to download the one labelled **RELEASE**!
+You can download the latest version for your operating system directly from [**our website**](https://nbtloupe.mallardluna.com/).
+
+Alternatively, you can grab it from [**our GitHub Releases**](https://github.com/NBTLoupe/NBTLoupe/releases) page. If you do so, make sure to download the one labelled **RELEASE**!
 
 The **DEBUG** one is less performant (it's compiled **JIT** instead of **AOT**), and won't offer you anything useful if you're not, well, debugging!
 
@@ -31,9 +36,9 @@ The **DEBUG** one is less performant (it's compiled **JIT** instead of **AOT**),
 ## How do I build it?
 That's also really easy!
 
-First, you have to **clone the repo**. The `--recursive` flag here makes sure you also clone neoNBTModel and neoSubstrate!
+First, you have to **clone the repo**.
 ```bash
-git clone https://github.com/NBTLoupe/NBTLoupe --recursive
+git clone https://github.com/NBTLoupe/NBTLoupe
 ```
 Then, assuming you already have the **.NET SDK** installed, you run this for a **RELEASE** build...
 
@@ -45,22 +50,7 @@ dotnet publish -c Release
 ```bash
 dotnet publish -c Debug
 ```
-.NET will tell you where the built binaries are! They're usually at `./NBTLoupe/bin/[BUILD TYPE]/net10.0/[YOUR OS]/publish/` if you can't find them, though! 
-
-## Thank you!
-I really need to thank **Justin Aquadro**. The original **NBTExplorer** keeps showing its excellence, and it's that excellence that made this project possible in the first place.
-
-I also have to thank **copygirl** for **NBTEdit**, which was the pillar to the original NBTExplorer. A lot of people haven't heard of this project, but without it, history would be really different. Maybe NBTExplorer wouldn't have even existed! And without the original NBTExplorer, this project wouldn't have existed either!
-
-I'm also really thankful to **amwx**. I'm not an experienced Avalonia developer, so I had quite the struggle getting my Dialogs to work. Thanks to amwx's work on the **FluentAvalonia** project, I could leave that roadblock behind, and was another critical pillar to make this project possible.
-
-And although I don't depend on FluentAvalonia itself, I do depend on **.NET** and **Avalonia UI**. These projects are the backbone of NBTLoupe, so I'm really thankful for all the work the .NET Community and the Avalonia Community have done to make this possible.
-
-Talking of the .NET Community, I'm also really thankful to **davidxuang** for the **FluentIcons** library, which helped give NBTLoupe its modern look. And I'm also thankful to **Serilog** and its contributors, which allowed NBTLoupe to easily expand its logging functionality.
-
-Oh, and I have someone else to thank... **YOU**!
-
-I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. NBTLoupe is still a **really early project**, and it's your support which lets me continue iterating over it!
+.NET will tell you where the built binaries are! They're usually at `./NBTLoupe/bin/[BUILD TYPE]/net10.0/[YOUR OS]/publish/` if you can't find them, though!
 
 
 ## FAQ
@@ -75,14 +65,10 @@ I'm a really small developer, and it's thanks to people like you that I can cont
   ```
 </details>
 <details>
-  <summary><b>Avalonia UI? That means you could run in a web browser!</b></summary>
-  Yup! And that's a <b>future step</b> we're <b>absolutely taking!</b> That way if you ever have to do a quick NBT edit on the go, you won't have to install the app! You'll also get all the same functionality as the original NBTExplorer, or potentially even more! All with the same familiar interface of NBTLoupe! Isn't that neat?
-</details>
-<details>
   <summary><b>What does the icon represent?</b></summary>
   I'm glad you asked, because it's a <b>double entendre</b>!
   <br>
-  When I started working on it, my idea was to have a <b>2D loupe focusing on an amethyst</b>. I still see exactly that, and even added some details like a NBT-shaped sparkle. I went this route both because of my <b>love for the Earth Sciences</b>, and how looking at a gem with a loupe represents very well what a program like this does: magnify what's otherwise impossible to see.
+  When I started working on it, my idea was to have a <b>2D loupe focusing on an amethyst</b>. I still see exactly that, and even added some details like an NBT-shaped sparkle. I went this route both because of my <b>love for the Earth Sciences</b>, and how looking at a gem with a loupe represents very well what a program like this does: magnify what's otherwise impossible to see.
   <br>
   But I showed this icon to a friend, and instead they saw a <b>tag</b>!
   <br>
@@ -90,9 +76,25 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 </details>
 
 
+## Thank you!
+I really need to thank **Justin Aquadro**. The original **NBTExplorer** keeps showing its excellence, and it's that excellence that inspired this project (and powered it in its early days!)
+
+I also have to thank **copygirl** for **NBTEdit**, which was the pillar to the original NBTExplorer. A lot of people haven't heard of this project, but without it, history would be really different. Maybe NBTExplorer wouldn't have even existed! And without the original NBTExplorer, this project wouldn't have existed either!
+
+I'm also really thankful to **amwx**. I'm not an experienced Avalonia developer, so I had quite the struggle getting my Dialogs to work. Thanks to amwx's work on the **FluentAvalonia** project, I could leave that roadblock behind, and was another critical pillar to make this project possible.
+
+And although I don't depend on FluentAvalonia itself, I do depend on **.NET** and **Avalonia UI**. These projects are the backbone of NBTLoupe, so I'm really thankful for all the work the .NET Community and the Avalonia Community have done to make this possible.
+
+Talking of the .NET Community, I'm also really thankful to **davidxuang** for the **FluentIcons** library, which helped give NBTLoupe its modern look. And I'm also thankful to **Serilog** and its contributors, which allowed NBTLoupe to easily expand its logging functionality.
+
+Oh, and I have someone else to thank... **YOU**!
+
+I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. NBTLoupe is still a **fairly niche project**, and it's your support which lets me continue iterating over it!
+
+
 ## Attribution
 If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file! That file will also guide you to the respective **LICENSE** files.
 
-Everything in this main repository is entirely my own code, unless it is explicitly noted as not. The main example of this are the Dialogs, which are derived from **FluentAvalonia**.
+Everything in this repository is entirely my own code, unless it is explicitly noted as not. The main example of this are the Dialogs, which are derived from **FluentAvalonia**.
 
-This is because all the code derived from NBTExplorer has been moved to **submodules** in a recent **Git history rewrite**, and all the attribution and licensing has been retroactively modified to reflect this. Please [read this announcement](https://github.com/NBTLoupe/NBTLoupe/discussions/4) for more information.
+This is because, as part of our [**major restructuring**](https://github.com/NBTLoupe/NBTLoupe/discussions/4), all legacy code derived from **NBTExplorer** and **Substrate** has been **completely removed** from this repository.

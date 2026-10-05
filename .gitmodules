@@ -1,7 +1,0 @@
-[submodule "NBTModel"]
-	path = NBTModel
-	url = https://github.com/NBTLoupe/neoNBTModel.git
-
-[submodule "Substrate"]
-	path = Substrate
-	url = https://github.com/NBTLoupe/neoSubstrate.git

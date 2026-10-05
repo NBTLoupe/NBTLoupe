@@ -3,13 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
-using NBTModel.Interop;
 
 namespace NBTLoupe.Core.Clipboard;
 
+// NOTE: This used to be considered "reused infrastructure". That was just because I interoped with NBTExplorer's INbtClipboardController.
+// But this file is still all my own code, that's why I removed that comment but kept the code. Even if it won't compile in its current state, and INbtClipboardController will likely not be a thing anymore.
+
 internal class NbtClipboardControllerAvalonia(IClipboard clipboard) : INbtClipboardController
 {
-    // Yup, we're reusing infrastructure! I Asynced the calls in INbtClipboardController, though! So it's not backwards compatible, sorry!
     // Create an ApplicationFormat to be able to interface with the OS' Clipboard.
     private static readonly DataFormat<byte[]> MyDataFormat =
         DataFormat.CreateBytesApplicationFormat("mallardluna-nbtloupe-nbtClipboardDataAvalonia");

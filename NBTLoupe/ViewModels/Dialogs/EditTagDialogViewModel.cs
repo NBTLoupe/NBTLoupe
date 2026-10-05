@@ -11,9 +11,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Main;
-using NBTModel.Data;
-using NBTModel.Data.Nodes;
-using Substrate.Nbt;
 
 namespace NBTLoupe.ViewModels.Dialogs;
 
