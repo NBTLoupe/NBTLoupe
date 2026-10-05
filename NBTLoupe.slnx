@@ -8,6 +8,4 @@
 
 <Solution>
     <Project Path="NBTLoupe/NBTLoupe.csproj"/>
-    <Project Path="NBTModel/NBTModel.csproj"/>
-    <Project Path="Substrate/Substrate/Substrate.csproj"/>
 </Solution>

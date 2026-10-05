@@ -12,8 +12,6 @@ using Avalonia.Threading;
 using NBTLoupe.Core.TreeNodes;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTLoupe.ViewModels.Main;
-using NBTModel.Data;
-using NBTModel.Data.Nodes;
 
 namespace NBTLoupe.Core.IO;
 

@@ -7,7 +7,6 @@
  */
 
 using System.Threading.Tasks;
-using NBTModel.Data.Nodes;
 
 namespace NBTLoupe.Core.TreeNodes;
 

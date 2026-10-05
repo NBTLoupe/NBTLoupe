@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using NBTLoupe.ViewModels.Dialogs;
 using NBTLoupe.ViewModels.Main;
-using NBTModel.Data.Nodes;
 using Serilog;
 
 namespace NBTLoupe.Core.TreeNodes;

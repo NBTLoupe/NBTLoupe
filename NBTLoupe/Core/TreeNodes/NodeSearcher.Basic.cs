@@ -7,7 +7,6 @@
  */
 
 using System;
-using NBTModel.Data.Nodes;
 
 namespace NBTLoupe.Core.TreeNodes;
 
