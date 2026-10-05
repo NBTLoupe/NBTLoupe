@@ -93,6 +93,6 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 ## Attribution
 If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file! That file will also guide you to the respective **LICENSE** files.
 
-Everything in this main repository is entirely my own code, unless it is explicitly noted as not. The main example of this are the Dialogs, which are derived from **FluentAvalonia**.
+Everything in this main repository is entirely my own code, unless it is explicitly noted as not. The main example of this are the Dialogs' general shape and styles, which are derived from **FluentAvalonia**.
 
 This is because all the code derived from NBTExplorer has been moved to **submodules** in a recent **Git history rewrite**, and all the attribution and licensing has been retroactively modified to reflect this. Please [read this announcement](https://github.com/NBTLoupe/NBTLoupe/discussions/4) for more information.

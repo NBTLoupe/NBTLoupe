@@ -1,3 +1,11 @@
+/*
+ *  Copyright (c) 2024-2026 MallardLuna
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +15,10 @@ using NBTModel.Interop;
 
 namespace NBTLoupe.Core.Clipboard;
 
+// NOTE: This used to be considered "reused infrastructure". This was a misattribution from my part.
+// This file is entirely my own code, and licensed under my terms. That's why I removed that comment but kept the code.
 internal class NbtClipboardControllerAvalonia(IClipboard clipboard) : INbtClipboardController
 {
-    // Yup, we're reusing infrastructure! I Asynced the calls in INbtClipboardController, though! So it's not backwards compatible, sorry!
     // Create an ApplicationFormat to be able to interface with the OS' Clipboard.
     private static readonly DataFormat<byte[]> MyDataFormat =
         DataFormat.CreateBytesApplicationFormat("mallardluna-nbtloupe-nbtClipboardDataAvalonia");

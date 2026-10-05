@@ -1,3 +1,24 @@
+/*
+ *  Copyright (c) 2024-2026 MallardLuna
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+/*
+ *  This NodeTreeComparer implementation is derived from NBTExplorer.
+ *
+ *  Its overall shape is licensed under the MIT License, and can be cross-referenced from upstream.
+ *  Copyright (C) 2011 Justin Aquadro
+ *
+ *  See NBTModel/LICENSES/NBTExplorer-Original.txt for the full license text and attribution.
+ *  Source repository: https://github.com/jaquadro/NBTExplorer
+ *
+ *  Everything new (like the modifications that use modern .NET features) are my own, and are licensed under the MPL.
+ *  Copyright (c) 2024-2026 MallardLuna
+ */
+
 using System.Collections.Generic;
 using NBTModel.Data.Nodes;
 using NBTModel.Utility;
@@ -5,7 +26,7 @@ using Substrate.Nbt;
 
 namespace NBTLoupe.Core.TreeNodes;
 
-// More reused infrastructure! This sorts the TreeNode in exactly the same way as the original NBTExplorer!
+// This sorts the TreeNode in exactly the same way as the original NBTExplorer!
 internal class NodeTreeComparer : IComparer<DataNode>
 {
     private readonly NaturalComparer _comparer = new();
