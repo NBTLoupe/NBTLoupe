@@ -1,4 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<!--
+    This app manifest is derived from Avalonia's MVVM template.
+
+    Licensed under the MIT License.
+    Copyright (c) 2023 .NET Foundation and Contributors
+    See LICENSES/AvaloniaTemplates.txt for the full license text and attribution.
+    
+    Source repository: https://github.com/AvaloniaUI/Avalonia.Templates
+-->
+
+<?xml version="1.0" encoding="utf-8"?>
 <assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
     <!-- This manifest is used on Windows only.
          Don't remove it as it might cause problems with window transparency and embedded controls.

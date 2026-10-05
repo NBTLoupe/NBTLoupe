@@ -1,3 +1,8 @@
+#  Copyright (c) 2024-2026 MallardLuna
+#  This Source Code Form is subject to the terms of the Mozilla Public
+#  License, v. 2.0. If a copy of the MPL was not distributed with this
+#  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 name: Build and Release
 
 on:
@@ -85,7 +90,7 @@ jobs:
           <key>NSHighResolutionCapable</key>
           <true/>
           <key>NSHumanReadableCopyright</key>
-          <string>Copyright (c) 2024-2026 MallardLuna. Licensed under the MIT license.</string>
+          <string>Copyright (c) 2024-2026 MallardLuna</string>
           </dict>
           </plist>
           EOF
@@ -146,7 +151,7 @@ jobs:
           <component type="desktop-application">
             <id>com.mallardluna.nbtloupe</id>
             <metadata_license>MIT</metadata_license>
-            <project_license>MIT</project_license>
+            <project_license>MPL-2.0 AND MIT</project_license>
             <name>NBTLoupe</name>
             <summary>A native cross-platform fork of NBTExplorer</summary>
             <description>

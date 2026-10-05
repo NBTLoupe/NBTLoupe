@@ -1,12 +1,24 @@
 <!--
-    This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+  Copyright (c) 2024-2026 MallardLuna
 
-    Licensed under the MIT License.
-    Copyright (c) 2025 amwx
-    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
-    
-    Source repository: https://github.com/amwx/FluentAvalonia
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at https://mozilla.org/MPL/2.0/.
 -->
+
+<!--
+    This dialog implementation is derived from FluentAvalonia's ContentDialog control.
+    
+    Its general shape and styles are licensed under the MIT license. 
+    Copyright (c) 2025 amwx
+    
+    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+    Source repository: https://github.com/amwx/FluentAvalonia
+
+    The personalised dialogs are my own, and are licensed under the MPL.
+    Copyright (c) 2024-2026 MallardLuna
+-->
+
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:main="clr-namespace:NBTLoupe.ViewModels.Main"
