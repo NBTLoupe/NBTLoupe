@@ -1,0 +1,4 @@
+[submodule "ASSETS"]
+	path = ASSETS
+	url = https://github.com/NBTLoupe/ASSETS.git
+	shallow = true

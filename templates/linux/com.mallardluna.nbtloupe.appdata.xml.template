@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.mallardluna.nbtloupe</id>
+    <metadata_license>MIT</metadata_license>
+    <project_license>MIT</project_license>
+    <name>NBTLoupe</name>
+    <summary>The native NBT editor designed to be performant, modern, and cute</summary>
+    <description>
+        <p>Most NBT editors are built strictly with Windows in mind, and although this is fine for
+            most users, it's an obstacle for everyone else. The few cross-platform alternatives are
+            unfortunately either feature incomplete, or have made serious compromises in their UI
+            design.</p>
+        <p>NBTLoupe solves this with the help of .NET 10 (NAOT!), and a GUI written from the ground
+            up in Avalonia. As a result, we're a performant NBT editor with a really modern UI! The
+            cutest, I dare to say! (And yes, cuteness is a valid reason for Windows users to give us
+            a try!)</p>
+        <p>Right now we fully support macOS, Windows, and GNU/Linux; but you can also use it almost
+            anywhere else through our WASM frontend (on the web!)</p>
+    </description>
+    <launchable type="desktop-id">com.mallardluna.nbtloupe.desktop</launchable>
+    <url type="homepage">https://github.com/NBTLoupe/NBTLoupe</url>
+    <screenshots>
+        <screenshot type="default" environment="plasma">
+            <caption>NBTLoupe (light mode) with an example level.dat open</caption>
+            <image>https://assets.nbtloupe.mallardluna.com/screenshots/light/linux.png</image>
+        </screenshot>
+
+        <screenshot environment="plasma:dark">
+            <caption>NBTLoupe (dark mode) with an example level.dat open</caption>
+            <image>https://assets.nbtloupe.mallardluna.com/screenshots/dark/linux.png</image>
+        </screenshot>
+    </screenshots>
+    <releases>
+        <release version="{{VERSION}}" date="{{DATE}}" />
+    </releases>
+    <content_rating type="oars-1.0" />
+    <developer id="com.mallardluna">
+        <name>MallardLuna</name>
+    </developer>
+    <provides>
+        <id>com.mallardluna.nbtloupe.desktop</id>
+    </provides>
+</component>

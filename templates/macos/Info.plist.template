@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleExecutable</key>
+        <string>NBTLoupe</string>
+        <key>CFBundleIdentifier</key>
+        <string>com.mallardluna.nbtloupe</string>
+        <key>CFBundleName</key>
+        <string>NBTLoupe</string>
+        <key>CFBundleIconFile</key>
+        <string>NBTLoupe.icns</string>
+        <key>CFBundleVersion</key>
+        <string>{{VERSION}}</string>
+        <key>CFBundleShortVersionString</key>
+        <string>{{VERSION}}</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>NSHighResolutionCapable</key>
+        <true />
+        <key>NSHumanReadableCopyright</key>
+        <string>Copyright (c) 2024-2026 MallardLuna. Licensed under the MIT license.</string>
+    </dict>
+</plist>

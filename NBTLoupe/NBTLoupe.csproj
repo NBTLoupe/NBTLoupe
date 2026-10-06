@@ -35,9 +35,15 @@
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
     </ItemGroup>
 
+    <Target Name="FetchIcons" BeforeTargets="CopyIcons" Condition="!Exists('..\ASSETS\icons\common\NBTLoupe.ico') Or !Exists('..\ASSETS\icons\common\NBTLoupe.png')">
+        <Message Importance="High" Text="Fetching icons from the ASSETS submodule..." />
+
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)\.." Command="git -c &quot;alias.fetch-assets=!sh scripts/fetch-assets.sh&quot; fetch-assets icons/common" />
+    </Target>
+
     <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
         <ItemGroup>
-            <Icons Include="..\ASSETS\icons\NBTLoupe.png;..\ASSETS\icons\NBTLoupe.ico"/>
+            <Icons Include="..\ASSETS\icons\common\NBTLoupe.png;..\ASSETS\icons\common\NBTLoupe.ico"/>
         </ItemGroup>
         <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)\Assets" SkipUnchangedFiles="true"/>
     </Target>

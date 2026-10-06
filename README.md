@@ -7,13 +7,16 @@
 >
 
 <p align="center">
-  <img width="128" src="ASSETS/icons/NBTLoupe.png">
+  <img width="128" src="https://assets.nbtloupe.mallardluna.com/icons/common/NBTLoupe.png">
   <br>
   <br>
   <b>NBTLoupe</b><br>
   The native NBT editor designed to be performant, modern, and cute.<br><br>
-  <img src="ASSETS/screenshots/light.png#gh-light-mode-only">
-  <img src="ASSETS/screenshots/dark.png#gh-dark-mode-only">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="https://assets.nbtloupe.mallardluna.com/screenshots/light/composite.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://assets.nbtloupe.mallardluna.com/screenshots/dark/composite.png">
+    <img src="https://assets.nbtloupe.mallardluna.com/screenshots/light/composite.png">
+  </picture>
   <br><br>
 </p>
 
@@ -36,9 +39,9 @@ The **DEBUG** one is less performant (it's compiled **JIT** instead of **AOT**),
 ## How do I build it?
 That's also really easy!
 
-First, you have to **clone the repo**.
+First, you have to **clone the repo**. The `--depth=1` flag is **optional but highly recommended**, as it'll save you a lot of cloning time!
 ```bash
-git clone https://github.com/NBTLoupe/NBTLoupe
+git clone https://github.com/NBTLoupe/NBTLoupe --depth=1
 ```
 Then, assuming you already have the **.NET SDK** installed, you run this for a **RELEASE** build...
 
