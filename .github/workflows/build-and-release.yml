@@ -26,8 +26,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          submodules: 'recursive'
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
@@ -43,152 +41,35 @@ jobs:
 
       - name: Publish (Release)
         shell: bash
-        run: |
-          dotnet publish NBTLoupe -r ${{ matrix.target.rid }} -c Release -o publish/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION}
+        run: dotnet publish NBTLoupe -r ${{ matrix.target.rid }} -c Release -o publish/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION}
 
       - name: Publish (Debug)
         shell: bash
-        run: |
-          dotnet publish NBTLoupe -r ${{ matrix.target.rid }} -c Debug -o publish-DEBUG/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION-DEBUG}
+        run: dotnet publish NBTLoupe -r ${{ matrix.target.rid }} -c Debug -o publish-DEBUG/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION-DEBUG}
 
 
-      - name: Bundle .app (macOS)
+      - name: Package macOS (.app and .dmg)
         if: startsWith(matrix.target.rid, 'osx-')
         shell: bash
-        run: |
-          mkdir -p "publish/dmg/NBTLoupe.app/Contents/MacOS" "publish/dmg/NBTLoupe.app/Contents/Resources"
-
-          cp ASSETS/icons/NBTLoupe.icns "publish/dmg/NBTLoupe.app/Contents/Resources/"
-
-          mv publish/${{ matrix.target.rid }}/NBTLoupe publish/${{ matrix.target.rid }}/*.dylib "publish/dmg/NBTLoupe.app/Contents/MacOS/"
-          chmod +x "publish/dmg/NBTLoupe.app/Contents/MacOS/NBTLoupe"
-
-          cat > "publish/dmg/NBTLoupe.app/Contents/Info.plist" << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-          <key>CFBundleExecutable</key>
-          <string>NBTLoupe</string>
-          <key>CFBundleIdentifier</key>
-          <string>com.mallardluna.nbtloupe</string>
-          <key>CFBundleName</key>
-          <string>NBTLoupe</string>
-          <key>CFBundleIconFile</key>
-          <string>NBTLoupe.icns</string>
-          <key>CFBundleVersion</key>
-          <string>$VERSION</string>
-          <key>CFBundleShortVersionString</key>
-          <string>$VERSION</string>
-          <key>CFBundlePackageType</key>
-          <string>APPL</string>
-          <key>NSHighResolutionCapable</key>
-          <true/>
-          <key>NSHumanReadableCopyright</key>
-          <string>Copyright (c) 2024-2026 MallardLuna. Licensed under the MIT license.</string>
-          </dict>
-          </plist>
-          EOF
-
-      - name: DMG .app (macOS)
-        if: startsWith(matrix.target.rid, 'osx-')
-        shell: bash
-        run: |
-          cd publish
-          ln -s /Applications dmg/Applications
-          diskutil image create from dmg "NBTLoupe-v$VERSION-RELEASE-${{ matrix.target.rid }}.dmg" --volumeName "NBTLoupe v$VERSION" -f UDZO
+        env:
+          RID: ${{ matrix.target.rid }}
+        run: ./scripts/package-macos.sh "$VERSION" "$RID"
 
 
-      - name: Prepare .AppImage (GNU/Linux)
+      - name: Package GNU/Linux (.AppImage)
         if: startsWith(matrix.target.rid, 'linux-')
         shell: bash
-        run: |
-          mkdir -p "publish/NBTLoupe.AppDir/usr/bin" "publish/NBTLoupe.AppDir/usr/share/applications" "publish/NBTLoupe.AppDir/usr/share/metainfo" "publish/NBTLoupe.AppDir/usr/share/icons"
-
-          cp -R ASSETS/icons/xdg "publish/NBTLoupe.AppDir/usr/share/icons/hicolor"
-          cp "publish/NBTLoupe.AppDir/usr/share/icons/hicolor/256x256/apps/NBTLoupe.png" "publish/NBTLoupe.AppDir/"
-
-          mv publish/${{ matrix.target.rid }}/NBTLoupe publish/${{ matrix.target.rid }}/*.so "publish/NBTLoupe.AppDir/usr/bin/"
-          chmod +x "publish/NBTLoupe.AppDir/usr/bin/NBTLoupe"
+        env:
+          RID: ${{ matrix.target.rid }}
+        run: ./scripts/package-linux.sh "$VERSION" "$RID"
 
 
-          cat > "publish/NBTLoupe.AppDir/AppRun" << 'EOF'
-          #!/bin/sh
-          #
-          # Copyright (c) 2004-20 Simon Peter
-          # SPDX-License-Identifier: MIT
-          #
-          # Derived from https://github.com/AppImage/AppImageKit/wiki/Bundling-.NET-Core-apps
-          #
-
-          HERE="$(dirname "$(readlink -f "${0}")")"
-          export PATH="${HERE}"/usr/bin/:"${PATH}"
-          EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
-          exec "${EXEC}" $@
-          EOF
-          chmod +x "publish/NBTLoupe.AppDir/AppRun"
-
-
-          cat > "publish/NBTLoupe.AppDir/usr/share/applications/com.mallardluna.nbtloupe.desktop" << 'EOF'
-          [Desktop Entry]
-          Type=Application
-          Name=NBTLoupe
-          Comment=The native NBT editor designed to be performant, modern, and cute
-          Icon=NBTLoupe
-          Categories=Utility;FileTools;
-          Exec=NBTLoupe
-          EOF
-          cp "publish/NBTLoupe.AppDir/usr/share/applications/com.mallardluna.nbtloupe.desktop" "publish/NBTLoupe.AppDir/com.mallardluna.nbtloupe.desktop"
-
-
-          cat > "publish/NBTLoupe.AppDir/usr/share/metainfo/com.mallardluna.nbtloupe.appdata.xml" << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <component type="desktop-application">
-            <id>com.mallardluna.nbtloupe</id>
-            <metadata_license>MIT</metadata_license>
-            <project_license>MIT</project_license>
-            <name>NBTLoupe</name>
-            <summary>The native NBT editor designed to be performant, modern, and cute</summary>
-            <description>
-              <p>Most NBT editors are built strictly with Windows in mind, and although this is fine for most users, it's an obstacle for everyone else. The few cross-platform alternatives are unfortunately either feature incomplete, or have made serious compromises in their UI design.</p>
-              <p>NBTLoupe solves this with the help of .NET 10 (NAOT!), and a GUI written from the ground up in Avalonia. As a result, we're a performant NBT editor with a really modern UI! The cutest, I dare to say! (And yes, cuteness is a valid reason for Windows users to give us a try!)</p>
-              <p>Right now we fully support macOS, Windows, and GNU/Linux; but you can also use it almost anywhere else through our WASM frontend (on the web!)</p>
-            </description>
-            <launchable type="desktop-id">com.mallardluna.nbtloupe.desktop</launchable>
-            <url type="homepage">https://github.com/NBTLoupe/NBTLoupe</url>
-            <screenshots>
-              <screenshot type="default">
-                <caption>NBTLoupe with an example level.dat open</caption>
-                <image>https://raw.githubusercontent.com/NBTLoupe/NBTLoupe/refs/heads/master/ASSETS/screenshots/KDE-Plasma.png</image>
-              </screenshot>
-            </screenshots>
-            <releases>
-              <release version="$VERSION" date="$(date +%F)" />
-            </releases>
-            <content_rating type="oars-1.0" />
-            <developer id="com.mallardluna">
-              <name>MallardLuna</name>
-            </developer>
-            <provides>
-              <id>com.mallardluna.nbtloupe.desktop</id>
-            </provides>
-          </component>
-          EOF
-
-      - name: Bundle .AppImage (GNU/Linux)
-        if: startsWith(matrix.target.rid, 'linux-')
-        shell: bash
-        run: |
-          cd publish
-          curl -Lo ./appimagetool.AppImage "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$(uname -m).AppImage"
-          chmod +x ./appimagetool.AppImage
-          ./appimagetool.AppImage NBTLoupe.AppDir "NBTLoupe-v$VERSION-RELEASE-${{ matrix.target.rid }}.AppImage"
-
-
-      - name: Zip artifact (Windows)
+      - name: Package Windows (.zip)
         if: startsWith(matrix.target.rid, 'win-')
         shell: pwsh
-        run: Compress-Archive -Path "publish/${{ matrix.target.rid }}/NBTLoupe.exe", "publish/${{ matrix.target.rid }}/*.dll" -DestinationPath "publish/NBTLoupe-v$env:VERSION-RELEASE-${{ matrix.target.rid }}.zip"
+        env:
+          RID: ${{ matrix.target.rid }}
+        run: ./scripts/package-windows.ps1 -Version "$env:VERSION" -Rid "$env:RID"
 
 
       - name: Upload artifacts (Release)

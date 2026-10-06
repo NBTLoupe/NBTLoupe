@@ -37,7 +37,7 @@
 
     <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
         <ItemGroup>
-            <Icons Include="..\ASSETS\icons\NBTLoupe.png;..\ASSETS\icons\NBTLoupe.ico"/>
+            <Icons Include="..\ASSETS\icons\common\NBTLoupe.png;..\ASSETS\icons\common\NBTLoupe.ico"/>
         </ItemGroup>
         <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)\Assets" SkipUnchangedFiles="true"/>
     </Target>

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=NBTLoupe
+Comment=The native NBT editor designed to be performant, modern, and cute
+Icon=NBTLoupe
+Categories=Utility;FileTools;
+Exec=NBTLoupe
