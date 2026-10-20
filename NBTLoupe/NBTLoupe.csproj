@@ -26,6 +26,10 @@
         <OptimizationPreference>Speed</OptimizationPreference>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="12.1.2"/>
         <PackageReference Include="Avalonia.Desktop" Version="12.1.2"/>
@@ -49,7 +53,7 @@
 
     <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
         <ItemGroup>
-            <Icons Include="..\ASSETS\icons\NBTLoupe.png;..\ASSETS\icons\NBTLoupe.ico"/>
+            <Icons Include="..\ASSETS\icons\common\NBTLoupe.png;..\ASSETS\icons\common\NBTLoupe.ico"/>
         </ItemGroup>
         <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)\Assets" SkipUnchangedFiles="true"/>
     </Target>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.mallardluna.nbtloupe</id>
+    <metadata_license>MIT</metadata_license>
+    <project_license>MPL-2.0 AND MIT</project_license>
+    <name>NBTLoupe</name>
+    <summary>The native NBT editor designed to be performant, modern, and cute</summary>
+    <description>
+        <p>This is a legacy (pre-v0.11) version of NBTLoupe, partially based on Justin Aquadro's
+            NBTExplorer (which is itself based on NBTEdit by copygirl).</p>
+        <p>A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this
+            shows its excellence, it's also starting to show its age and limited native platform
+            support.</p>
+        <p>NBTLoupe tries to close that gap with the help of .NET 10 and a GUI written from
+            the ground up in Avalonia.</p>
+    </description>
+    <launchable type="desktop-id">com.mallardluna.nbtloupe.desktop</launchable>
+    <url type="homepage">https://github.com/NBTLoupe/NBTLoupe</url>
+    <screenshots>
+        <screenshot type="default" environment="plasma">
+            <caption>NBTLoupe (light mode) with an example level.dat open</caption>
+            <image>https://nbtloupe.mallardluna.com/assets/screenshots/light/linux.png</image>
+        </screenshot>
+
+        <screenshot environment="plasma:dark">
+            <caption>NBTLoupe (dark mode) with an example level.dat open</caption>
+            <image>https://nbtloupe.mallardluna.com/assets/screenshots/dark/linux.png</image>
+        </screenshot>
+    </screenshots>
+    <releases>
+        <release version="{{VERSION}}" date="{{DATE}}" />
+    </releases>
+    <content_rating type="oars-1.0" />
+    <developer id="com.mallardluna">
+        <name>MallardLuna</name>
+    </developer>
+    <provides>
+        <id>com.mallardluna.nbtloupe.desktop</id>
+    </provides>
+</component>

@@ -25,7 +25,7 @@ Right now we fully support **macOS**, **Windows** and **GNU/Linux**; and the ide
 ## How do I use it?
 You can download the latest version for your operating system from the [Releases](https://github.com/NBTLoupe/NBTLoupe/releases) page. Make sure to download the one labelled **RELEASE**!
 
-The **DEBUG** one is less performant (it's compiled **JIT** instead of **AOT**), and won't offer you anything useful if you're not, well, debugging!
+The **SYMBOLS** won't offer you anything useful if you're not debugging, so you don't have to worry about them for now!
 
 
 ## How do I build it?
