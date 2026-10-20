@@ -26,6 +26,10 @@
         <OptimizationPreference>Speed</OptimizationPreference>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="12.1.2"/>
         <PackageReference Include="Avalonia.Desktop" Version="12.1.2"/>

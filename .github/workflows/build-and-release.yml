@@ -17,6 +17,11 @@ jobs:
   build:
     name: Build (${{ matrix.target.rid }})
     runs-on: ${{ matrix.target.os }}
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     strategy:
       matrix:
         target:
@@ -30,10 +35,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.x"
 
@@ -47,10 +52,6 @@ jobs:
       - name: Publish (Release)
         shell: bash
         run: dotnet publish NBTLoupe -r ${{ matrix.target.rid }} -c Release -o publish/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION}
-
-      - name: Publish (Debug)
-        shell: bash
-        run: dotnet publish NBTLoupe -r ${{ matrix.target.rid }} -c Debug -o publish-DEBUG/${{ matrix.target.rid }} ${VERSION:+-p:Version=$VERSION-DEBUG}
 
 
       - name: Package macOS (.app and .dmg)
@@ -77,6 +78,12 @@ jobs:
         run: ./scripts/package-windows.ps1 -Version "$env:VERSION" -Rid "$env:RID"
 
 
+      - name: Generate signed attestations
+        uses: actions/attest@v4
+        with:
+          subject-path: publish/NBTLoupe-v${{ env.VERSION }}-*-${{ matrix.target.rid }}.*
+
+
       - name: Upload artifacts (Release)
         uses: actions/upload-artifact@v7
         with:
@@ -84,11 +91,12 @@ jobs:
           path: publish/NBTLoupe-v${{ env.VERSION }}-RELEASE-${{ matrix.target.rid }}.*
           archive: false
 
-      - name: Upload artifacts (Debug)
+      - name: Upload artifacts (Symbols)
         uses: actions/upload-artifact@v7
         with:
-          name: NBTLoupe-v${{ env.VERSION }}-DEBUG-${{ matrix.target.rid }}
-          path: publish-DEBUG/${{ matrix.target.rid }}/
+          name: NBTLoupe-v${{ env.VERSION }}-SYMBOLS-${{ matrix.target.rid }}
+          path: publish/NBTLoupe-v${{ env.VERSION }}-SYMBOLS-${{ matrix.target.rid }}.*
+          archive: false
 
   release:
     name: Release
@@ -106,13 +114,7 @@ jobs:
           skip-decompress: true
 
       - name: Create release
-        id: uploadRelease
-        uses: softprops/action-gh-release@v3
-        with:
-          name: NBTLoupe ${{ github.ref_name }}
-          prerelease: ${{ contains(github.ref_name, '-') }}
-          generate_release_notes: true
-          files: |
-            artifacts/*.zip
-            artifacts/*.dmg
-            artifacts/*.AppImage
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create "$GITHUB_REF_NAME" artifacts/*.zip artifacts/*.dmg artifacts/*.AppImage --title "NBTLoupe $GITHUB_REF_NAME" --verify-tag --generate-notes $( if [[ "$GITHUB_REF_NAME" == *-* ]]; then echo "--prerelease"; fi )

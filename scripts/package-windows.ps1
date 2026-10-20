@@ -16,3 +16,5 @@ $SourceFiles = "publish/$Rid/NBTLoupe.exe", "publish/$Rid/*.dll"
 $Destination = "publish/NBTLoupe-v$Version-RELEASE-$Rid.zip"
 
 Compress-Archive -Path $SourceFiles -DestinationPath $Destination
+
+Compress-Archive -Path "publish/$Rid/NBTLoupe.pdb" -DestinationPath "publish/NBTLoupe-v$Version-SYMBOLS-$Rid.zip"

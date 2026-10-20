@@ -23,3 +23,5 @@ sed -e "s/{{VERSION}}/$VERSION/g" templates/macos/Info.plist.template > "$APP_DI
 cd publish
 ln -s /Applications dmg/Applications
 diskutil image create from dmg "NBTLoupe-v$VERSION-RELEASE-$RID.dmg" --volumeName "NBTLoupe v$VERSION" -f UDZO
+
+ditto -c -k --norsrc --keepParent "$RID/NBTLoupe.dSYM" "NBTLoupe-v$VERSION-SYMBOLS-$RID.zip"
