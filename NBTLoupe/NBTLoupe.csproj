@@ -16,7 +16,7 @@
 
         <AssemblyName>NBTLoupe</AssemblyName>
         <Version>0.0.0</Version>
-        <ApplicationIcon>Assets/NBTLoupe.ico</ApplicationIcon>
+        <ApplicationIcon>..\ASSETS\icons\common\NBTLoupe.ico</ApplicationIcon>
 
         <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
@@ -47,16 +47,10 @@
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
     </ItemGroup>
 
-    <Target Name="CopyIcons" BeforeTargets="BeforeBuild">
-        <ItemGroup>
-            <Icons Include="..\ASSETS\icons\common\NBTLoupe.png;..\ASSETS\icons\common\NBTLoupe.ico"/>
-        </ItemGroup>
-        <Copy SourceFiles="@(Icons)" DestinationFolder="$(MSBuildProjectDirectory)\Assets" SkipUnchangedFiles="true"/>
-    </Target>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\NBTLoupe.ico"/>
-        <AvaloniaResource Include="Assets\NBTLoupe.png"/>
+        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.ico" Link="Assets\NBTLoupe.ico" />
+        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.png" Link="Assets\NBTLoupe.png" />
     </ItemGroup>
 
     <ItemGroup>
