@@ -1,0 +1,21 @@
+﻿<!--
+  Copyright (c) 2024-2026 MallardLuna
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+
+        <AssemblyName>NBTLoupe.Core</AssemblyName>
+        <Version>0.0.0</Version>
+
+        <InvariantGlobalization>true</InvariantGlobalization>
+
+        <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
+</Project>

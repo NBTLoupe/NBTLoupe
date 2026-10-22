@@ -8,4 +8,5 @@
 
 <Solution>
     <Project Path="NBTLoupe/NBTLoupe.csproj"/>
+    <Project Path="NBTLoupe.Core/NBTLoupe.Core.csproj"/>
 </Solution>
