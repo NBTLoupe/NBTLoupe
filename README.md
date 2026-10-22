@@ -7,13 +7,16 @@
 >
 
 <p align="center">
-  <img width="128" src="ASSETS/icons/NBTLoupe.png">
+  <img width="128" src="ASSETS/icons/common/NBTLoupe.png">
   <br>
   <br>
   <b>NBTLoupe</b><br>
   The native NBT editor designed to be performant, modern, and cute.<br><br>
-  <img src="ASSETS/screenshots/light.png#gh-light-mode-only">
-  <img src="ASSETS/screenshots/dark.png#gh-dark-mode-only">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="https://nbtloupe.mallardluna.com/assets/screenshots/light/composite.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://nbtloupe.mallardluna.com/assets/screenshots/dark/composite.png">
+    <img src="https://nbtloupe.mallardluna.com/assets/screenshots/light/composite.png">
+  </picture>
   <br><br>
 </p>
 
@@ -36,9 +39,9 @@ The **DEBUG** one is less performant (it's compiled **JIT** instead of **AOT**),
 ## How do I build it?
 That's also really easy!
 
-First, you have to **clone the repo**.
+First, you have to **clone the repo**. The `--depth=1` flag is **optional but highly recommended**, as it'll save you a lot of cloning time!
 ```bash
-git clone https://github.com/NBTLoupe/NBTLoupe
+git clone https://github.com/NBTLoupe/NBTLoupe --depth=1
 ```
 Then, assuming you already have the **.NET SDK** installed, you run this for a **RELEASE** build...
 
@@ -93,7 +96,9 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 
 
 ## Attribution
-If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file! That file will also guide you to the respective **LICENSE** files.
+If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file, and the [**THIRD-PARTY-NOTICES.md**](./THIRD-PARTY-NOTICES.md) file! These files will also guide you to the respective **LICENSE** files.
+
+Alternatively, you can see all of them from **right inside the app**! Just go to **Help -> Acknowledgements**!
 
 Everything in this repository is entirely my own code, unless it is explicitly noted as not. The main example of this are the Dialogs, which are derived from **FluentAvalonia**.
 
