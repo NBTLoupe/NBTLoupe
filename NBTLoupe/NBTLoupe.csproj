@@ -49,10 +49,10 @@
 
 
     <ItemGroup>
-        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.ico" Link="Assets\NBTLoupe.ico" />
-        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.png" Link="Assets\NBTLoupe.png" />
-        <AvaloniaResource Include="..\ASSETS\Notices.json" Link="Assets\Notices.json" />
-        <AvaloniaResource Include="..\LICENSES\**\*" Link="Assets\LICENSES\%(RecursiveDir)%(Filename)%(Extension)" />
+        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.ico" Link="Assets\NBTLoupe.ico"/>
+        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.png" Link="Assets\NBTLoupe.png"/>
+        <AvaloniaResource Include="..\ASSETS\Notices.json" Link="Assets\Notices.json"/>
+        <AvaloniaResource Include="..\LICENSES\**\*" Link="Assets\LICENSES\%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
 
     <ItemGroup>

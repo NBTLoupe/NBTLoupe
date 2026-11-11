@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2024-2026 MallardLuna
- *  
+ *
  *  This Source Code Form is subject to the terms of the Mozilla Public
  *  License, v. 2.0. If a copy of the MPL was not distributed with this
  *  file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -69,7 +69,7 @@ public class App : Application
         Dispatcher.UIThread.UnhandledException += async (_, e) =>
         {
             e.Handled = true;
-            
+
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unhandled UI thread exception");
             await mainViewModel.OpenDialogAsync(new ErrorDialogViewModel(mainViewModel, e.Exception));
@@ -77,7 +77,7 @@ public class App : Application
         TaskScheduler.UnobservedTaskException += async (_, e) =>
         {
             e.SetObserved();
-            
+
             // If something goes wrong, we log it and show a Dialog to the user. :C
             Log.Error(e.Exception, "[NBTLoupe]: Unobserved task exception");
             await mainViewModel.OpenDialogAsync(new ErrorDialogViewModel(mainViewModel, e.Exception));

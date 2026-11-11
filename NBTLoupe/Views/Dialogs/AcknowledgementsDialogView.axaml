@@ -47,8 +47,10 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="dialogs:SectionComponent+Row">
                                             <Grid ColumnDefinitions="Auto,*">
-                                                <TextBlock Classes="dialogSubtitle" Text="{Binding Label, StringFormat='{}{0}: '}" />
-                                                <SelectableTextBlock Grid.Column="1" Classes="dialogSubtitle" Text="{Binding Value}" />
+                                                <TextBlock Classes="dialogSubtitle"
+                                                           Text="{Binding Label, StringFormat='{}{0}: '}" />
+                                                <SelectableTextBlock Grid.Column="1" Classes="dialogSubtitle"
+                                                                     Text="{Binding Value}" />
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -58,7 +60,8 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="dialogs:SectionComponent+Row">
                                             <Grid ColumnDefinitions="Auto,*">
-                                                <TextBlock Classes="dialogSubtitle" Text="{Binding Label, StringFormat='{}{0}: '}" />
+                                                <TextBlock Classes="dialogSubtitle"
+                                                           Text="{Binding Label, StringFormat='{}{0}: '}" />
                                                 <HyperlinkButton Grid.Column="1" NavigateUri="{Binding Value}">
                                                     <TextBlock Classes="dialogSubtitle" Text="{Binding Value}" />
                                                 </HyperlinkButton>
