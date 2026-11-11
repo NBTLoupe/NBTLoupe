@@ -19,7 +19,7 @@ namespace NBTLoupe.Core.IO;
 // We need this so NAOT is happy.
 [JsonSourceGenerationOptions]
 [JsonSerializable(typeof(List<RecentItem>))]
-internal partial class SourceGenerationContext : JsonSerializerContext;
+internal partial class RecentItemsJsonContext : JsonSerializerContext;
 
 // And this is the class which defines our RecentItems!
 public class RecentItem
@@ -81,7 +81,7 @@ public class RecentItem
             var json = File.ReadAllText(Program.RecentItemsFile);
 
             // Then we deserialize it.
-            var items = JsonSerializer.Deserialize(json, SourceGenerationContext.Default.ListRecentItem) ?? [];
+            var items = JsonSerializer.Deserialize(json, RecentItemsJsonContext.Default.ListRecentItem) ?? [];
 
             // If we're not starting up the app, we just return that data...
             if (!startingUp) return items;
@@ -95,7 +95,7 @@ public class RecentItem
 
             // If they don't, we clean up our data file and only return the ones that do exist!
             File.WriteAllText(Program.RecentItemsFile,
-                JsonSerializer.Serialize(existing, SourceGenerationContext.Default.ListRecentItem));
+                JsonSerializer.Serialize(existing, RecentItemsJsonContext.Default.ListRecentItem));
             return existing;
         }
         catch
@@ -128,7 +128,7 @@ public class RecentItem
         {
             // And now we can save our updated data file!
             File.WriteAllText(Program.RecentItemsFile,
-                JsonSerializer.Serialize(items, SourceGenerationContext.Default.ListRecentItem));
+                JsonSerializer.Serialize(items, RecentItemsJsonContext.Default.ListRecentItem));
         }
         catch (Exception e)
         {
@@ -152,7 +152,7 @@ public class RecentItem
         {
             // ...but if it's there, we need to update our data file!
             File.WriteAllText(Program.RecentItemsFile,
-                JsonSerializer.Serialize(items, SourceGenerationContext.Default.ListRecentItem));
+                JsonSerializer.Serialize(items, RecentItemsJsonContext.Default.ListRecentItem));
         }
         catch (Exception e)
         {

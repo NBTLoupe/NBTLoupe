@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia.Controls.Primitives;
 using CommunityToolkit.Mvvm.Input;
 using NBTLoupe.ViewModels.Main;
 
@@ -40,6 +41,12 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     // This allows us to let the Dialogs be a bit (1.55x) wider!
     protected virtual bool IsWide => false;
     internal double MaxWidth => !IsWide ? 640 : 992;
+
+    // This lets a Dialog handle its own scrolling!
+    protected virtual bool HandlesScrolling => false;
+
+    internal ScrollBarVisibility VerticalScrollBarVisibility =>
+        HandlesScrolling ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
 
     // OK is always needed, but it needs to be Toggled based on validation!
     internal virtual bool IsOkEnabled => true;
@@ -96,7 +103,8 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     // This helps us disable Cancel in very specific scenarios.
     private bool CanDialogCancel()
     {
-        return this is not AboutDialogViewModel && this is not InfoDialogViewModel &&
+        return this is not AboutDialogViewModel && this is not AcknowledgementsDialogViewModel &&
+               this is not InfoDialogViewModel &&
                this is not ErrorDialogViewModel && this is not ChunkFinderDialogViewModel { InProgress: true } &&
                this is not FindBasicDialogViewModel { InProgress: true } && this is not FindAdvancedDialogViewModel
                {

@@ -1,0 +1,149 @@
+<!--
+  Copyright (c) 2024-2026 MallardLuna
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogs="clr-namespace:NBTLoupe.ViewModels.Dialogs"
+             x:Class="NBTLoupe.Views.Dialogs.AcknowledgementsDialogView"
+             x:DataType="dialogs:AcknowledgementsDialogViewModel">
+    <Panel Classes="mainPanel">
+        <Border />
+
+        <Grid ColumnDefinitions="Auto,*">
+            <TreeView ItemsSource="{Binding Sections}"
+                      SelectedItem="{Binding SelectedItem}">
+                <TreeView.DataTemplates>
+                    <TreeDataTemplate DataType="dialogs:Section" ItemsSource="{Binding Components}">
+                        <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" />
+                    </TreeDataTemplate>
+                    <TreeDataTemplate DataType="dialogs:SectionComponent">
+                        <TextBlock Text="{Binding Name}" />
+                    </TreeDataTemplate>
+                </TreeView.DataTemplates>
+            </TreeView>
+
+            <ContentControl Grid.Column="1" Content="{Binding SelectedItem}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="dialogs:Section">
+                        <StackPanel>
+                            <TextBlock Classes="dialogTitle" Text="{Binding DisplayTitle}" />
+                            <TextBlock Classes="dialogSubtitle" Text="{Binding Intro}"
+                                       IsVisible="{Binding Intro, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <TextBlock Classes="dialogSubtitle" Text="Select a component to see its license." />
+                        </StackPanel>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="dialogs:SectionComponent">
+                        <ScrollViewer>
+                            <StackPanel>
+                                <TextBlock Classes="dialogTitle" Text="{Binding Name}" />
+
+                                <ItemsControl ItemsSource="{Binding TextRows}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="dialogs:SectionComponent+Row">
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <TextBlock Classes="dialogSubtitle" Text="{Binding Label, StringFormat='{}{0}: '}" />
+                                                <SelectableTextBlock Grid.Column="1" Classes="dialogSubtitle" Text="{Binding Value}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <ItemsControl ItemsSource="{Binding LinkRows}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="dialogs:SectionComponent+Row">
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <TextBlock Classes="dialogSubtitle" Text="{Binding Label, StringFormat='{}{0}: '}" />
+                                                <HyperlinkButton Grid.Column="1" NavigateUri="{Binding Value}">
+                                                    <TextBlock Classes="dialogSubtitle" Text="{Binding Value}" />
+                                                </HyperlinkButton>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <UniformGrid Classes="groupBoxer">
+                                    <StackPanel>
+                                        <ListBox ItemsSource="{Binding AllFiles}"
+                                                 SelectedItem="{Binding SelectedFile}"
+                                                 IsVisible="{Binding HasMultipleFiles}">
+                                            <ListBox.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel />
+                                                </ItemsPanelTemplate>
+                                            </ListBox.ItemsPanel>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate DataType="dialogs:SectionComponent+LicenseFile">
+                                                    <TextBlock Text="{Binding Name}" />
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+
+                                        <Border>
+                                            <SelectableTextBlock Text="{Binding LicenseText}" />
+                                        </Border>
+                                    </StackPanel>
+                                </UniformGrid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
+            </ContentControl>
+        </Grid>
+    </Panel>
+
+    <UserControl.Styles>
+        <Style Selector="Panel.mainPanel">
+            <Style Selector="^ > Border">
+                <Setter Property="Width" Value="942" />
+                <Setter Property="Height" Value="0" />
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </Style>
+
+            <Style Selector="^ > Grid">
+                <Style Selector="^ > TreeView > TreeViewItem">
+                    <Setter Property="IsExpanded" Value="True" />
+                    <Setter Property="Padding" Value="0 0 12 0" />
+                </Style>
+
+                <Style Selector="^ > ContentControl">
+                    <Setter Property="Padding" Value="8" />
+
+                    <Style Selector="^ > StackPanel, ^ > ScrollViewer > StackPanel">
+                        <Setter Property="Spacing" Value="8" />
+
+                        <Style Selector="^ > ItemsControl > ContentPresenter > Grid">
+                            <Setter Property="Margin" Value="0 0 0 4" />
+
+                            <Style Selector="^ > TextBlock.dialogSubtitle">
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Style>
+
+                            <Style Selector="^ > SelectableTextBlock, ^ > HyperlinkButton > TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                            </Style>
+
+                            <Style Selector="^ > HyperlinkButton">
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                            </Style>
+                        </Style>
+
+                        <Style Selector="^ > UniformGrid.groupBoxer > StackPanel">
+                            <Setter Property="Spacing" Value="4" />
+
+                            <Style Selector="^ > Border > SelectableTextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+</UserControl>

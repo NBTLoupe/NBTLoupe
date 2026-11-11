@@ -69,6 +69,11 @@
                                                 <dialogs:AboutDialogView Loaded="Dialog_OnLoaded" />
                                             </DataTemplate>
 
+                                            <!-- Acknowledgements -->
+                                            <DataTemplate DataType="{x:Type dialogvms:AcknowledgementsDialogViewModel}">
+                                                <dialogs:AcknowledgementsDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
+
                                             <!-- Info -->
                                             <DataTemplate DataType="{x:Type dialogvms:InfoDialogViewModel}">
                                                 <dialogs:InfoDialogView Loaded="Dialog_OnLoaded" />
@@ -213,7 +218,8 @@
 
                     <Style Selector="^ > ScrollViewer">
                         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
-                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                        <Setter Property="VerticalScrollBarVisibility"
+                                Value="{Binding CurrentDialog?.VerticalScrollBarVisibility, TargetNullValue=Auto}" />
 
                         <Style Selector="^ > Border">
                             <Setter Property="BorderThickness" Value="0,0,0,1" />

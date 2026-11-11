@@ -642,11 +642,7 @@ public partial class MainViewModel
     [RelayCommand]
     private Task<bool> Acknowledgements()
     {
-        return SafeExecuteAsync(async () =>
-        {
-            await TopLevel.Launcher.LaunchUriAsync(
-                new Uri("https://github.com/NBTLoupe/NBTLoupe/blob/master/NOTICE.md"));
-        });
+        return SafeExecuteAsync(async () => { await OpenDialogAsync(new AcknowledgementsDialogViewModel(this)); });
     }
 
     // These are executed when the user chooses to Add a Tag.

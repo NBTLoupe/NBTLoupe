@@ -1,0 +1,464 @@
+{
+  "Version": 1,
+  "Title": "NBTLoupe",
+  "Sections": [
+    {
+      "Title": "This project contains code derived from the following third-party works:",
+      "Kind": "derived",
+      "Components": [
+        {
+          "Name": "Avalonia.Templates",
+          "Kind": "derived",
+          "License": "MIT",
+          "Copyright": "Copyright © 2023 .NET Foundation and Contributors",
+          "Sources": [
+            "https://github.com/AvaloniaUI/Avalonia.Templates"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "Avalonia.Templates/LICENSE.txt"
+            }
+          ]
+        },
+        {
+          "Name": "FluentAvalonia",
+          "Kind": "derived",
+          "License": "MIT",
+          "Copyright": "Copyright © 2025 amwx",
+          "Sources": [
+            "https://github.com/amwx/FluentAvalonia"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "FluentAvalonia/LICENSE.txt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Title": "This project bundles the following third-party works:",
+      "Kind": "bundled",
+      "Components": [
+        {
+          "Name": ".NET Runtime",
+          "Kind": "bundled",
+          "License": "MIT",
+          "Copyright": "Copyright © .NET Foundation and Contributors",
+          "Sources": [
+            "https://github.com/dotnet/runtime"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "dotnet/LICENSE.txt"
+            },
+            {
+              "Name": "THIRD-PARTY-NOTICES.txt",
+              "Path": "dotnet/THIRD-PARTY-NOTICES.txt"
+            }
+          ]
+        },
+        {
+          "Name": "AppImage Runtime",
+          "Kind": "bundled",
+          "License": "MIT",
+          "Copyright": "Copyright © 2004-2023 probonopd",
+          "Platform": "GNU/Linux AppImage only",
+          "Sources": [
+            "https://github.com/AppImage/type2-runtime"
+          ],
+          "Version": {
+            "Label": "fedfad5",
+            "Url": "https://github.com/AppImage/type2-runtime/tree/fedfad5",
+            "Note": "unmodified"
+          },
+          "Files": [
+            {
+              "Name": "LICENSE-runtime.txt",
+              "Path": "AppImage/LICENSE-runtime.txt"
+            }
+          ],
+          "IncludesIntro": "The runtime is statically linked with the following libraries:",
+          "Includes": [
+            {
+              "Name": "musl libc",
+              "License": "MIT",
+              "Copyright": "Copyright © 2005-2020 Rich Felker, et al.",
+              "File": {
+                "Name": "LICENSE-musl.txt",
+                "Path": "AppImage/LICENSE-musl.txt"
+              }
+            },
+            {
+              "Name": "libfuse",
+              "License": "LGPL-2.1",
+              "Copyright": "Copyright © 2001-2007 Miklos Szeredi",
+              "File": {
+                "Name": "LICENSE-libfuse.txt",
+                "Path": "AppImage/LICENSE-libfuse.txt"
+              }
+            },
+            {
+              "Name": "squashfuse",
+              "License": "BSD-2-Clause",
+              "Copyright": "Copyright © 2012 Dave Vasilevsky and Phillip Lougher",
+              "File": {
+                "Name": "LICENSE-squashfuse.txt",
+                "Path": "AppImage/LICENSE-squashfuse.txt"
+              }
+            },
+            {
+              "Name": "libzstd",
+              "License": "BSD-3-Clause",
+              "Copyright": "Copyright © Meta Platforms, Inc. and affiliates",
+              "File": {
+                "Name": "LICENSE-libzstd.txt",
+                "Path": "AppImage/LICENSE-libzstd.txt"
+              }
+            },
+            {
+              "Name": "zlib",
+              "License": "Zlib",
+              "Copyright": "Copyright © 1995-2026 Jean-loup Gailly and Mark Adler",
+              "File": {
+                "Name": "LICENSE-zlib.txt",
+                "Path": "AppImage/LICENSE-zlib.txt"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "AppImage AppRun script",
+          "Kind": "bundled",
+          "License": "MIT",
+          "Copyright": "Copyright © 2004-2020 Simon Peter",
+          "Platform": "GNU/Linux AppImage only",
+          "SourceLabel": "Source wiki",
+          "Sources": [
+            "https://github.com/AppImage/AppImageKit/wiki/Bundling-.NET-Core-apps"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE-AppRun.txt",
+              "Path": "AppImage/LICENSE-AppRun.txt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Title": "Main dependencies",
+      "Kind": "dependency",
+      "Components": [
+        {
+          "Name": "Avalonia",
+          "Kind": "dependency",
+          "License": "MIT",
+          "Copyright": "Copyright © AvaloniaUI OÜ",
+          "Sources": [
+            "https://github.com/AvaloniaUI/Avalonia"
+          ],
+          "Packages": [
+            "Avalonia 12.1.2",
+            "Avalonia.Desktop 12.1.2",
+            "Avalonia.FreeDesktop 12.1.2",
+            "Avalonia.FreeDesktop.AtSpi 12.1.2",
+            "Avalonia.HarfBuzz 12.1.2",
+            "Avalonia.Native 12.1.2",
+            "Avalonia.Remote.Protocol 12.1.2",
+            "Avalonia.Skia 12.1.2",
+            "Avalonia.Themes.Fluent 12.1.2",
+            "Avalonia.Wayland 12.1.2",
+            "Avalonia.Win32 12.1.2",
+            "Avalonia.X11 12.1.2"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "Avalonia/LICENSE.txt"
+            },
+            {
+              "Name": "NOTICE.txt",
+              "Path": "Avalonia/NOTICE.txt"
+            }
+          ]
+        },
+        {
+          "Name": "Inter",
+          "Kind": "dependency",
+          "License": "OFL-1.1 (font), MIT (package)",
+          "Copyright": "Copyright © 2016 The Inter Project Authors",
+          "Sources": [
+            "https://github.com/rsms/inter"
+          ],
+          "Packages": [
+            "Avalonia.Fonts.Inter 12.1.2"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE-OFL.txt",
+              "Path": "Inter/LICENSE-OFL.txt"
+            }
+          ]
+        },
+        {
+          "Name": "CommunityToolkit",
+          "Kind": "dependency",
+          "License": "MIT",
+          "Copyright": "Copyright © .NET Foundation and Contributors",
+          "Sources": [
+            "https://github.com/CommunityToolkit/dotnet"
+          ],
+          "Packages": [
+            "CommunityToolkit.Mvvm 8.4.2"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "CommunityToolkit/LICENSE.txt"
+            },
+            {
+              "Name": "THIRD-PARTY-NOTICES.txt",
+              "Path": "CommunityToolkit/THIRD-PARTY-NOTICES.txt"
+            }
+          ]
+        },
+        {
+          "Name": "FluentIcons",
+          "Kind": "dependency",
+          "License": "MIT",
+          "Copyright": "Copyright © 2022 davidxuang (FluentIcons); Copyright © 2020 Microsoft Corporation (Fluent UI System Icons)",
+          "Sources": [
+            "https://github.com/davidxuang/FluentIcons",
+            "https://github.com/microsoft/fluentui-system-icons"
+          ],
+          "Packages": [
+            "FluentIcons.Avalonia 2.1.341",
+            "FluentIcons.Common 2.1.341",
+            "FluentIcons.Resources.Avalonia 2.1.341"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE-FluentIcons.txt",
+              "Path": "FluentIcons/LICENSE-FluentIcons.txt"
+            },
+            {
+              "Name": "LICENSE-FluentUI-System-Icons.txt",
+              "Path": "FluentIcons/LICENSE-FluentUI-System-Icons.txt"
+            },
+            {
+              "Name": "NOTICE-FluentUI-System-Icons.txt",
+              "Path": "FluentIcons/NOTICE-FluentUI-System-Icons.txt"
+            }
+          ]
+        },
+        {
+          "Name": "Serilog",
+          "Kind": "dependency",
+          "License": "Apache-2.0",
+          "Copyright": "Copyright © Serilog Contributors",
+          "Sources": [
+            "https://github.com/serilog/serilog",
+            "https://github.com/serilog/serilog-sinks-console",
+            "https://github.com/serilog/serilog-sinks-file"
+          ],
+          "Packages": [
+            "Serilog 4.4.0",
+            "Serilog.Sinks.Console 6.1.1",
+            "Serilog.Sinks.File 7.0.0"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "Serilog/LICENSE.txt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Title": "Avalonia's dependencies",
+      "Kind": "dependency",
+      "Components": [
+        {
+          "Name": "SkiaSharp and HarfBuzzSharp",
+          "Kind": "dependency",
+          "License": "MIT (bindings), bundled native libraries under their own licenses",
+          "Copyright": "Copyright © 2015-2016 Xamarin, Inc.; Copyright © 2017-2018 Microsoft Corporation",
+          "Sources": [
+            "https://github.com/mono/SkiaSharp"
+          ],
+          "Packages": [
+            "HarfBuzzSharp 8.3.1.3",
+            "HarfBuzzSharp.NativeAssets.Linux 8.3.1.3",
+            "HarfBuzzSharp.NativeAssets.macOS 8.3.1.3",
+            "HarfBuzzSharp.NativeAssets.Win32 8.3.1.3",
+            "SkiaSharp 3.119.4",
+            "SkiaSharp.NativeAssets.Linux 3.119.4",
+            "SkiaSharp.NativeAssets.macOS 3.119.4",
+            "SkiaSharp.NativeAssets.Win32 3.119.4"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "Avalonia/SkiaSharp/LICENSE.txt"
+            },
+            {
+              "Name": "THIRD-PARTY-NOTICES.txt",
+              "Path": "Avalonia/SkiaSharp/THIRD-PARTY-NOTICES.txt"
+            }
+          ]
+        },
+        {
+          "Name": "ANGLE",
+          "Kind": "dependency",
+          "License": "BSD-3-Clause, BSD-2-Clause, Apache-2.0, Zlib",
+          "Copyright": "Copyright © 2018 The ANGLE Project Authors",
+          "Sources": [
+            "https://github.com/AvaloniaUI/angle",
+            "https://chromium.googlesource.com/angle/angle"
+          ],
+          "Packages": [
+            "Avalonia.Angle.Windows.Natives 2.1.27548.20260419"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE-abseil.txt",
+              "Path": "Avalonia/ANGLE/LICENSE-abseil.txt"
+            },
+            {
+              "Name": "LICENSE-ANGLE.txt",
+              "Path": "Avalonia/ANGLE/LICENSE-ANGLE.txt"
+            },
+            {
+              "Name": "LICENSE-astc-encoder.txt",
+              "Path": "Avalonia/ANGLE/LICENSE-astc-encoder.txt"
+            },
+            {
+              "Name": "LICENSE-chromium.txt",
+              "Path": "Avalonia/ANGLE/LICENSE-chromium.txt"
+            },
+            {
+              "Name": "LICENSE-xxHash.txt",
+              "Path": "Avalonia/ANGLE/LICENSE-xxHash.txt"
+            },
+            {
+              "Name": "LICENSE-zlib.txt",
+              "Path": "Avalonia/ANGLE/LICENSE-zlib.txt"
+            }
+          ]
+        },
+        {
+          "Name": "MicroCom",
+          "Kind": "dependency",
+          "License": "MIT",
+          "Copyright": "Copyright © 2021 Nikita Tsukanov",
+          "Sources": [
+            "https://github.com/kekekeks/MicroCom"
+          ],
+          "Packages": [
+            "MicroCom.Runtime 0.11.6"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "Avalonia/MicroCom/LICENSE.txt"
+            }
+          ]
+        },
+        {
+          "Name": "NWayland",
+          "Kind": "dependency",
+          "License": "MIT",
+          "Copyright": "Copyright © 2014 Steven Kirk",
+          "Sources": [
+            "https://github.com/AvaloniaUI/NWayland"
+          ],
+          "Packages": [
+            "NWayland 0.11.0"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "Avalonia/NWayland/LICENSE.txt"
+            }
+          ]
+        },
+        {
+          "Name": "Tmds.DBus",
+          "Kind": "dependency",
+          "License": "MIT",
+          "Copyright": "Copyright © 2006 Alp Toker; Copyright © 2010 Other Contributors; Copyright © 2016 Tom Deseyn",
+          "Sources": [
+            "https://github.com/tmds/Tmds.DBus"
+          ],
+          "Packages": [
+            "Tmds.DBus.Protocol 0.94.1"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE.txt",
+              "Path": "Avalonia/Tmds.DBus/LICENSE.txt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Title": "Acknowledged",
+      "Kind": "acknowledged",
+      "Intro": "These submodules were removed as part of our major restructuring, but we proudly acknowledge them for inspiring and powering this project in its early days (v0.1.0-v0.10.0):",
+      "Components": [
+        {
+          "Name": "neoNBTModel",
+          "Kind": "acknowledged",
+          "License": "MIT",
+          "Copyright": "Copyright © 2024-2026 MallardLuna; Copyright © 2011 Justin Aquadro",
+          "DerivedFrom": {
+            "Text": "NBTExplorer",
+            "Url": "https://github.com/jaquadro/NBTExplorer"
+          },
+          "Sources": [
+            "https://github.com/NBTLoupe/neoNBTModel"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE-neoNBTModel.txt",
+              "Path": "neoNBTModel/LICENSE-neoNBTModel.txt"
+            },
+            {
+              "Name": "LICENSE-NBTExplorer.txt",
+              "Path": "neoNBTModel/LICENSE-NBTExplorer.txt"
+            }
+          ]
+        },
+        {
+          "Name": "neoSubstrate",
+          "Kind": "acknowledged",
+          "License": "MIT",
+          "Copyright": "Copyright © 2024-2026 MallardLuna; Copyright © 2011 Justin Aquadro",
+          "DerivedFrom": {
+            "Text": "Substrate",
+            "Url": "https://github.com/minecraft-dotnet/Substrate"
+          },
+          "Sources": [
+            "https://github.com/NBTLoupe/neoSubstrate"
+          ],
+          "Files": [
+            {
+              "Name": "LICENSE-neoSubstrate.txt",
+              "Path": "neoSubstrate/LICENSE-neoSubstrate.txt"
+            },
+            {
+              "Name": "LICENSE-Substrate.txt",
+              "Path": "neoSubstrate/LICENSE-Substrate.txt"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
