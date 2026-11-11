@@ -19,7 +19,7 @@
 
 ### Avalonia
 
-- **Packages:** Avalonia 12.1.2, Avalonia.Desktop 12.1.2, Avalonia.FreeDesktop 12.1.2, Avalonia.FreeDesktop.AtSpi 12.1.2, Avalonia.HarfBuzz 12.1.2, Avalonia.Native 12.1.2, Avalonia.Remote.Protocol 12.1.2, Avalonia.Skia 12.1.2, Avalonia.Themes.Fluent 12.1.2, Avalonia.Wayland 12.1.2, Avalonia.Win32 12.1.2, Avalonia.X11 12.1.2
+- **Packages:** Avalonia 12.1.6, Avalonia.Desktop 12.1.6, Avalonia.FreeDesktop 12.1.6, Avalonia.FreeDesktop.AtSpi 12.1.6, Avalonia.HarfBuzz 12.1.6, Avalonia.Native 12.1.6, Avalonia.Remote.Protocol 12.1.6, Avalonia.Skia 12.1.6, Avalonia.Themes.Fluent 12.1.6, Avalonia.Wayland 12.1.6, Avalonia.Win32 12.1.6, Avalonia.X11 12.1.6
 - **License:** MIT
 - **Copyright:** Copyright © AvaloniaUI OÜ
 - **Source:** <https://github.com/AvaloniaUI/Avalonia>
@@ -27,7 +27,7 @@
 
 ### Inter
 
-- **Packages:** Avalonia.Fonts.Inter 12.1.2
+- **Packages:** Avalonia.Fonts.Inter 12.1.6
 - **License:** OFL-1.1 (font), MIT (package)
 - **Copyright:** Copyright © 2016 The Inter Project Authors
 - **Source:** <https://github.com/rsms/inter>
@@ -43,7 +43,7 @@
 
 ### FluentIcons
 
-- **Packages:** FluentIcons.Avalonia 2.1.341, FluentIcons.Common 2.1.341, FluentIcons.Resources.Avalonia 2.1.341
+- **Packages:** FluentIcons.Avalonia 2.1.345, FluentIcons.Common 2.1.345, FluentIcons.Resources.Avalonia 2.1.345
 - **License:** MIT
 - **Copyright:** Copyright © 2022 davidxuang (FluentIcons); Copyright © 2020 Microsoft Corporation (Fluent UI System Icons)
 - **Source:** <https://github.com/davidxuang/FluentIcons>, <https://github.com/microsoft/fluentui-system-icons>

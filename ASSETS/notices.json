@@ -162,18 +162,18 @@
             "https://github.com/AvaloniaUI/Avalonia"
           ],
           "Packages": [
-            "Avalonia 12.1.2",
-            "Avalonia.Desktop 12.1.2",
-            "Avalonia.FreeDesktop 12.1.2",
-            "Avalonia.FreeDesktop.AtSpi 12.1.2",
-            "Avalonia.HarfBuzz 12.1.2",
-            "Avalonia.Native 12.1.2",
-            "Avalonia.Remote.Protocol 12.1.2",
-            "Avalonia.Skia 12.1.2",
-            "Avalonia.Themes.Fluent 12.1.2",
-            "Avalonia.Wayland 12.1.2",
-            "Avalonia.Win32 12.1.2",
-            "Avalonia.X11 12.1.2"
+            "Avalonia 12.1.6",
+            "Avalonia.Desktop 12.1.6",
+            "Avalonia.FreeDesktop 12.1.6",
+            "Avalonia.FreeDesktop.AtSpi 12.1.6",
+            "Avalonia.HarfBuzz 12.1.6",
+            "Avalonia.Native 12.1.6",
+            "Avalonia.Remote.Protocol 12.1.6",
+            "Avalonia.Skia 12.1.6",
+            "Avalonia.Themes.Fluent 12.1.6",
+            "Avalonia.Wayland 12.1.6",
+            "Avalonia.Win32 12.1.6",
+            "Avalonia.X11 12.1.6"
           ],
           "Files": [
             {
@@ -195,7 +195,7 @@
             "https://github.com/rsms/inter"
           ],
           "Packages": [
-            "Avalonia.Fonts.Inter 12.1.2"
+            "Avalonia.Fonts.Inter 12.1.6"
           ],
           "Files": [
             {
@@ -236,9 +236,9 @@
             "https://github.com/microsoft/fluentui-system-icons"
           ],
           "Packages": [
-            "FluentIcons.Avalonia 2.1.341",
-            "FluentIcons.Common 2.1.341",
-            "FluentIcons.Resources.Avalonia 2.1.341"
+            "FluentIcons.Avalonia 2.1.345",
+            "FluentIcons.Common 2.1.345",
+            "FluentIcons.Resources.Avalonia 2.1.345"
           ],
           "Files": [
             {
