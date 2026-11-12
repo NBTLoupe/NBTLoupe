@@ -28,10 +28,11 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     {
         MainViewModel = mainViewModel;
 
-        // This allows our IsOkEnabled to get updated when needed, by rechecking it every time a Dialog Property changed.
+        // This allows our IsOkEnabled and our IsCancelEnabled to get updated when needed, by rechecking it every time a Dialog Property changed.
         PropertyChanged += (_, e) =>
         {
             if (e.PropertyName != nameof(IsOkEnabled)) DialogOkCommand.NotifyCanExecuteChanged();
+            if (e.PropertyName != nameof(IsCancelEnabled)) DialogCancelCommand.NotifyCanExecuteChanged();
         };
 
         // If this is a Nested Dialog, we assign the Parent so we can access it from the Child.
@@ -61,7 +62,7 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     internal virtual bool IsCancelNeeded => true;
 
     // And talking of Cancel, this lets us disable it when something is busy!
-    protected virtual bool IsBusy => false;
+    protected virtual bool IsCancelEnabled => true;
 
     // This allows us to add our tailor-made buttons to the Dialog!
     internal virtual IReadOnlyList<DialogButton> SpecialButtons { get; } = [];
@@ -106,10 +107,10 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
             await Parent.CloseNestedDialog();
     }
 
-    // This helps us disable Cancel when a Dialog IsBusy, or its only exit path ("Ok") is disabled!
+    // This helps us disable Cancel when a Dialog is busy, or its only exit path ("Ok") is disabled!
     private bool CanDialogCancel()
     {
-        return IsCancelNeeded ? !IsBusy : IsOkEnabled;
+        return IsCancelNeeded ? IsCancelEnabled : IsOkEnabled;
     }
 
     // This one is executed when the user Cancels a Dialog.
