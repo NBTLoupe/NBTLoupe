@@ -43,6 +43,9 @@ internal partial class AcknowledgementsDialogViewModel : DialogHostViewModel
     // Oh, and this lets us handle our own scrolling, so we can isolate both halves!
     protected override bool HandlesScrolling => true;
 
+    // This allows us to hide the Dialog Cancel Button, as it is redundant here!
+    internal override bool IsCancelNeeded => false;
+
     // Here's all the fields we bind to in the XAML...
 
     // The parsed Sections...

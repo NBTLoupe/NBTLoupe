@@ -55,10 +55,14 @@ internal partial class ChunkFinderDialogViewModel : DialogHostViewModel
     {
     }
 
+    // This allows us to disable the Dialog Cancel Button when InProgress, not allowing the user to end up in a weird state!
+    protected override bool IsBusy => InProgress;
+
     // Here's all the fields we bind to in the XAML...
     // The UI locker...
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOkEnabled))]
+    [NotifyPropertyChangedFor(nameof(IsBusy))]
     public partial bool InProgress { get; private set; }
 
     // The Region X's Placeholder TextBox...

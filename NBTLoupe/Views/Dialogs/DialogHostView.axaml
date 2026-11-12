@@ -251,9 +251,10 @@
                                     <Setter Property="VerticalContentAlignment" Value="Center" />
                                 </Style>
 
-                                <!-- We hide the Cancel Dialog Button when it is disabled -->
-                                <Style Selector="^ > Button.dialogCancelButton:disabled">
-                                    <Setter Property="IsVisible" Value="False" />
+                                <!-- We show the Cancel Dialog Button only when it's needed -->
+                                <Style Selector="^ > Button.dialogCancelButton">
+                                    <Setter Property="IsVisible"
+                                            Value="{Binding CurrentDialog?.IsCancelNeeded, TargetNullValue=True}" />
                                 </Style>
                             </Style>
                         </Style>

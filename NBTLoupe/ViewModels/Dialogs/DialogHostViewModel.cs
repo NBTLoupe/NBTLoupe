@@ -57,6 +57,12 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     // This allows us to give the Cancel button tailor-made text!
     internal virtual string CancelText => "Cancel";
 
+    // Cancel is not always needed, so this lets us get rid of it!
+    internal virtual bool IsCancelNeeded => true;
+
+    // And talking of Cancel, this lets us disable it when something is busy!
+    protected virtual bool IsBusy => false;
+
     // This allows us to add our tailor-made buttons to the Dialog!
     internal virtual IReadOnlyList<DialogButton> SpecialButtons { get; } = [];
 
@@ -100,16 +106,10 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
             await Parent.CloseNestedDialog();
     }
 
-    // This helps us disable Cancel in very specific scenarios.
+    // This helps us disable Cancel when a Dialog IsBusy, or its only exit path ("Ok") is disabled!
     private bool CanDialogCancel()
     {
-        return this is not AboutDialogViewModel && this is not AcknowledgementsDialogViewModel &&
-               this is not InfoDialogViewModel &&
-               this is not ErrorDialogViewModel && this is not ChunkFinderDialogViewModel { InProgress: true } &&
-               this is not FindBasicDialogViewModel { InProgress: true } && this is not FindAdvancedDialogViewModel
-               {
-                   InProgress: true
-               };
+        return IsCancelNeeded ? !IsBusy : IsOkEnabled;
     }
 
     // This one is executed when the user Cancels a Dialog.

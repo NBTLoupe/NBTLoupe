@@ -48,6 +48,9 @@ internal class ErrorDialogViewModel : DialogHostViewModel
     // This is just how we force the user to restart the app, by not letting them close the Dialog!
     internal override bool IsOkEnabled => !FatalException;
 
+    // This allows us to hide the Dialog Cancel Button, as it is redundant here!
+    internal override bool IsCancelNeeded => false;
+
     internal override Task ExecuteAsync()
     {
         // Yes, it's really boring... :C
