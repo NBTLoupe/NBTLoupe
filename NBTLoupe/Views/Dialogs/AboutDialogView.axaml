@@ -18,7 +18,10 @@
             <TextBlock Classes="dialogSubtitle">
                 The native NBT editor designed to be performant, modern, and cute.
                 <LineBreak />
-                Copyright (c) 2024-2026 MallardLuna
+                Copyright (c) 2024-2026 MallardLuna -
+                <InlineUIContainer>
+                    <HyperlinkButton NavigateUri="https://mozilla.org/MPL/2.0/">Licensed under the MPL 2.0</HyperlinkButton>
+                </InlineUIContainer>
             </TextBlock>
         </StackPanel>
         <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialogSubtitle">
@@ -45,6 +48,14 @@
 
                 <Style Selector="^ > TextBlock.dialogTitle">
                     <Setter Property="Margin" Value="0" />
+                </Style>
+
+                <Style Selector="^ > TextBlock.dialogSubtitle > InlineUIContainer">
+                    <Setter Property="BaselineAlignment" Value="TextBottom" />
+
+                    <Style Selector="^ > HyperlinkButton">
+                        <Setter Property="Padding" Value="0" />
+                    </Style>
                 </Style>
             </Style>
 
