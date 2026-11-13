@@ -25,6 +25,9 @@ internal class InfoDialogViewModel : DialogHostViewModel
     // The Message TextBlock
     internal string MessageText { get; }
 
+    // This allows us to hide the Dialog Cancel Button, as it is redundant here!
+    internal override bool IsCancelNeeded => false;
+
     internal override Task ExecuteAsync()
     {
         // Yes, it's really boring... :C

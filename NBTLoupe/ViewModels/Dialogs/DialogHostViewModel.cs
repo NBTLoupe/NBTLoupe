@@ -27,10 +27,11 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     {
         MainViewModel = mainViewModel;
 
-        // This allows our IsOkEnabled to get updated when needed, by rechecking it every time a Dialog Property changed.
+        // This allows our IsOkEnabled and our IsCancelEnabled to get updated when needed, by rechecking it every time a Dialog Property changed.
         PropertyChanged += (_, e) =>
         {
             if (e.PropertyName != nameof(IsOkEnabled)) DialogOkCommand.NotifyCanExecuteChanged();
+            if (e.PropertyName != nameof(IsCancelEnabled)) DialogCancelCommand.NotifyCanExecuteChanged();
         };
 
         // If this is a Nested Dialog, we assign the Parent so we can access it from the Child.
@@ -49,6 +50,12 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
 
     // This allows us to give the Cancel button tailor-made text!
     internal virtual string CancelText => "Cancel";
+
+    // Cancel is not always needed, so this lets us get rid of it!
+    internal virtual bool IsCancelNeeded => true;
+
+    // And talking of Cancel, this lets us disable it when something is busy!
+    protected virtual bool IsCancelEnabled => true;
 
     // This allows us to add our tailor-made buttons to the Dialog!
     internal virtual IReadOnlyList<DialogButton> SpecialButtons { get; } = [];
@@ -93,15 +100,10 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
             await Parent.CloseNestedDialog();
     }
 
-    // This helps us disable Cancel in very specific scenarios.
+    // This helps us disable Cancel when a Dialog is busy, or its only exit path ("Ok") is disabled!
     private bool CanDialogCancel()
     {
-        return this is not AboutDialogViewModel && this is not InfoDialogViewModel &&
-               this is not ErrorDialogViewModel && this is not ChunkFinderDialogViewModel { InProgress: true } &&
-               this is not FindBasicDialogViewModel { InProgress: true } && this is not FindAdvancedDialogViewModel
-               {
-                   InProgress: true
-               };
+        return IsCancelNeeded ? IsCancelEnabled : IsOkEnabled;
     }
 
     // This one is executed when the user Cancels a Dialog.
@@ -142,10 +144,20 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     {
         // This routes the KeyBind to the right Dialog...
         if (NestedDialogContext is not null)
+        {
             // ...which is the Nested Dialog if one is open...
-            await NestedDialogContext.DialogCancelCommand.ExecuteAsync(null);
+            if (NestedDialogContext.IsCancelNeeded) await NestedDialogContext.DialogCancelCommand.ExecuteAsync(null);
+
+            // Oh, and if Cancel is hidden, we route to the Ok instead, just in case.
+            else await NestedDialogContext.DialogOkCommand.ExecuteAsync(null);
+        }
         else
+        {
             // ...or the Main Dialog if there isn't a Nested Dialog open.
-            await DialogCancelCommand.ExecuteAsync(null);
+            if (IsCancelNeeded) await DialogCancelCommand.ExecuteAsync(null);
+
+            // Oh, and if Cancel is hidden, we route to the Ok instead, just in case.
+            else await DialogOkCommand.ExecuteAsync(null);
+        }
     }
 }
