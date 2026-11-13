@@ -151,10 +151,20 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     {
         // This routes the KeyBind to the right Dialog...
         if (NestedDialogContext is not null)
+        {
             // ...which is the Nested Dialog if one is open...
-            await NestedDialogContext.DialogCancelCommand.ExecuteAsync(null);
+            if (NestedDialogContext.IsCancelNeeded) await NestedDialogContext.DialogCancelCommand.ExecuteAsync(null);
+
+            // Oh, and if Cancel is hidden, we route to the Ok instead, just in case.
+            else await NestedDialogContext.DialogOkCommand.ExecuteAsync(null);
+        }
         else
+        {
             // ...or the Main Dialog if there isn't a Nested Dialog open.
-            await DialogCancelCommand.ExecuteAsync(null);
+            if (IsCancelNeeded) await DialogCancelCommand.ExecuteAsync(null);
+
+            // Oh, and if Cancel is hidden, we route to the Ok instead, just in case.
+            else await DialogOkCommand.ExecuteAsync(null);
+        }
     }
 }
