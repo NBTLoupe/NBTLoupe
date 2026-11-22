@@ -1,4 +1,7 @@
 /*
+ *  SPDX-FileCopyrightText: 2024-2026 MallardLuna
+ *  SPDX-License-Identifier: MPL-2.0
+ *
  *  Copyright (c) 2024-2026 MallardLuna
  *
  *  This Source Code Form is subject to the terms of the Mozilla Public
@@ -645,11 +648,7 @@ public partial class MainViewModel
     [RelayCommand]
     private Task<bool> Acknowledgements()
     {
-        return SafeExecuteAsync(async () =>
-        {
-            await TopLevel.Launcher.LaunchUriAsync(
-                new Uri("https://github.com/NBTLoupe/NBTLoupe/blob/master/NOTICE.md"));
-        });
+        return SafeExecuteAsync(async () => { await OpenDialogAsync(new AcknowledgementsDialogViewModel(this)); });
     }
 
     // These are executed when the user chooses to Add a Tag.

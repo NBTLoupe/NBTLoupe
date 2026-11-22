@@ -1,0 +1,45 @@
+#  SPDX-FileCopyrightText: 2024-2026 MallardLuna
+#  SPDX-License-Identifier: MPL-2.0
+#
+#  Copyright (c) 2024-2026 MallardLuna
+#
+#  This Source Code Form is subject to the terms of the Mozilla Public
+#  License, v. 2.0. If a copy of the MPL was not distributed with this
+#  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+version = 1
+
+[[annotations]]
+precedence = "override"
+path = [
+    "README.md",
+    "NOTICE.md",
+    "THIRD-PARTY-NOTICES.md",
+    "ASSETS/Notices.json",
+    "templates/linux/type2-runtime.sha256",
+    "templates/linux/com.mallardluna.nbtloupe.desktop",
+    "templates/macos/Info.plist.template",
+]
+SPDX-FileCopyrightText = "2024-2026 MallardLuna"
+SPDX-License-Identifier = "MPL-2.0"
+
+[[annotations]]
+path = "ASSETS/icons/**"
+SPDX-FileCopyrightText = "2024-2026 MallardLuna"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = "templates/linux/com.mallardluna.nbtloupe.appdata.xml.template"
+SPDX-FileCopyrightText = "2024-2026 MallardLuna"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "templates/linux/type2-runtime-signing-pubkey.asc"
+SPDX-FileCopyrightText = "2004-2023 probonopd"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+precedence = "override"
+path = "THIRD-PARTY-LICENSES/**"
+SPDX-FileCopyrightText = "The respective third-party authors"
+SPDX-License-Identifier = "LicenseRef-Third-Party"

@@ -1,9 +1,12 @@
 #!/bin/sh
+
+#  SPDX-FileCopyrightText: 2004-2020 Simon Peter
+#  SPDX-License-Identifier: MIT
 #
-# Copyright (c) 2004-20 Simon Peter
-# SPDX-License-Identifier: MIT
+#  Copyright (c) 2004-2020 Simon Peter
 #
-# Derived from https://github.com/AppImage/AppImageKit/wiki/Bundling-.NET-Core-apps
+#  See THIRD-PARTY-LICENSES/AppImage/LICENSE-AppRun.txt for the full license text and attribution.
+#  Source wiki: https://github.com/AppImage/AppImageKit/wiki/Bundling-.NET-Core-apps
 #
 
 HERE="$(dirname "$(readlink -f "${0}")")"

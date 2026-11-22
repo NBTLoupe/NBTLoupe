@@ -1,10 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
+    SPDX-FileCopyrightText: 2023 .NET Foundation and Contributors
+    SPDX-License-Identifier: MIT
+
     This app manifest is derived from Avalonia's MVVM template.
 
     Licensed under the MIT License.
     Copyright (c) 2023 .NET Foundation and Contributors
-    See LICENSES/AvaloniaTemplates.txt for the full license text and attribution.
+    See THIRD-PARTY-LICENSES/Avalonia.Templates/LICENSE.txt for the full license text and attribution.
     
     Source repository: https://github.com/AvaloniaUI/Avalonia.Templates
 -->

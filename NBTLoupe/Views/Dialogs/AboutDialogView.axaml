@@ -1,4 +1,7 @@
 <!--
+  SPDX-FileCopyrightText: 2024-2026 MallardLuna
+  SPDX-License-Identifier: MPL-2.0
+
   Copyright (c) 2024-2026 MallardLuna
 
   This Source Code Form is subject to the terms of the Mozilla Public
@@ -16,9 +19,12 @@
         <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock Classes="dialogTitle" Text="{Binding AboutTitle}" />
             <TextBlock Classes="dialogSubtitle">
-                Copyright (c) 2024-2026 MallardLuna
+                The native NBT editor designed to be performant, modern, and cute.
                 <LineBreak />
-                Copyright (c) 2011-2017 Justin Aquadro
+                Copyright (c) 2024-2026 MallardLuna -
+                <InlineUIContainer>
+                    <HyperlinkButton NavigateUri="https://mozilla.org/MPL/2.0/">Licensed under the MPL 2.0</HyperlinkButton>
+                </InlineUIContainer>
             </TextBlock>
         </StackPanel>
         <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialogSubtitle">
@@ -49,8 +55,12 @@
                     <Setter Property="Margin" Value="0" />
                 </Style>
 
-                <Style Selector="^ > TextBlock.dialogSubtitle">
-                    <Setter Property="FontFeatures" Value="+tnum" />
+                <Style Selector="^ > TextBlock.dialogSubtitle > InlineUIContainer">
+                    <Setter Property="BaselineAlignment" Value="TextBottom" />
+
+                    <Style Selector="^ > HyperlinkButton">
+                        <Setter Property="Padding" Value="0" />
+                    </Style>
                 </Style>
             </Style>
 

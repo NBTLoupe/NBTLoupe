@@ -1,4 +1,7 @@
 ﻿<!--
+  SPDX-FileCopyrightText: 2024-2026 MallardLuna
+  SPDX-License-Identifier: MPL-2.0
+
   Copyright (c) 2024-2026 MallardLuna
 
   This Source Code Form is subject to the terms of the Mozilla Public
@@ -52,8 +55,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.ico" Link="Assets\NBTLoupe.ico" />
-        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.png" Link="Assets\NBTLoupe.png" />
+        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.ico" Link="Assets\NBTLoupe.ico"/>
+        <AvaloniaResource Include="..\ASSETS\icons\common\NBTLoupe.png" Link="Assets\NBTLoupe.png"/>
+        <AvaloniaResource Include="..\ASSETS\Notices.json" Link="Assets\Notices.json"/>
+        <AvaloniaResource Include="..\THIRD-PARTY-LICENSES\**\*" Link="Assets\THIRD-PARTY-LICENSES\%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -91,6 +96,10 @@
         </Compile>
         <Compile Update="Views\Dialogs\AboutDialogView.axaml.cs">
             <DependentUpon>AboutDialogView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Dialogs\AcknowledgementsDialogView.axaml.cs">
+            <DependentUpon>AcknowledgementsDialogView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\Dialogs\AddTagDialogView.axaml.cs">

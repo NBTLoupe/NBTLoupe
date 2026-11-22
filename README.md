@@ -4,20 +4,23 @@
 > As part of ongoing major restructuring, this repository has undergone a major Git history rewrite, and development has been temporarily moved to a separate branch. Please [read this announcement](https://github.com/NBTLoupe/NBTLoupe/discussions/4) for more information.
 
 <p align="center">
-  <img width="128" src="ASSETS/icons/NBTLoupe.png">
+  <img width="128" src="ASSETS/icons/common/NBTLoupe.png">
   <br>
   <br>
   <b>NBTLoupe</b><br>
   The native NBT editor designed to be performant, modern, and cute.<br><br>
-  <img src="ASSETS/screenshots/light.png#gh-light-mode-only">
-  <img src="ASSETS/screenshots/dark.png#gh-dark-mode-only">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="https://nbtloupe.mallardluna.com/assets/screenshots/light/composite.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://nbtloupe.mallardluna.com/assets/screenshots/dark/composite.png">
+    <img src="https://nbtloupe.mallardluna.com/assets/screenshots/light/composite.png">
+  </picture>
   <br><br>
 </p>
 
 ## But why?
 A big chunk of the Minecraft community heavily depends on **NBTExplorer**. And although this shows its excellence, it's also starting to show its age and limited native platform support.
 
-**NBTLoupe** tries to close that gap with the help of **.NET 11** and a GUI written from the ground up in **Avalonia**.
+**NBTLoupe** tries to close that gap with the help of **.NET 10** and a GUI written from the ground up in **Avalonia**.
 
 Right now we fully support **macOS**, **Windows** and **GNU/Linux**; and the idea is to eventually bring it to the web as well!
 
@@ -45,22 +48,7 @@ dotnet publish -c Release
 ```bash
 dotnet publish -c Debug
 ```
-.NET will tell you where the built binaries are! They're usually at `./NBTLoupe/bin/[BUILD TYPE]/net10.0/[YOUR OS]/publish/` if you can't find them, though! 
-
-## Thank you!
-I really need to thank **Justin Aquadro**. The original **NBTExplorer** keeps showing its excellence, and it's that excellence that made this project possible in the first place.
-
-I also have to thank **copygirl** for **NBTEdit**, which was the pillar to the original NBTExplorer. A lot of people haven't heard of this project, but without it, history would be really different. Maybe NBTExplorer wouldn't have even existed! And without the original NBTExplorer, this project wouldn't have existed either!
-
-I'm also really thankful to **amwx**. I'm not an experienced Avalonia developer, so I had quite the struggle getting my Dialogs to work. Thanks to amwx's work on the **FluentAvalonia** project, I could leave that roadblock behind, and was another critical pillar to make this project possible.
-
-And although I don't depend on FluentAvalonia itself, I do depend on **.NET** and **Avalonia UI**. These projects are the backbone of NBTLoupe, so I'm really thankful for all the work the .NET Community and the Avalonia Community have done to make this possible.
-
-Talking of the .NET Community, I'm also really thankful to **davidxuang** for the **FluentIcons** library, which helped give NBTLoupe its modern look. And I'm also thankful to **Serilog** and its contributors, which allowed NBTLoupe to easily expand its logging functionality.
-
-Oh, and I have someone else to thank... **YOU**!
-
-I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. NBTLoupe is still a **really early project**, and it's your support which lets me continue iterating over it!
+.NET will tell you where the built binaries are! They're usually at `./NBTLoupe/bin/[BUILD TYPE]/net11.0/[YOUR OS]/publish/` if you can't find them, though!
 
 
 ## FAQ
@@ -90,8 +78,26 @@ I'm a really small developer, and it's thanks to people like you that I can cont
 </details>
 
 
+## Thank you!
+I really need to thank **Justin Aquadro**. The original **NBTExplorer** keeps showing its excellence, and it's that excellence that made this project possible in the first place.
+
+I also have to thank **copygirl** for **NBTEdit**, which was the pillar to the original NBTExplorer. A lot of people haven't heard of this project, but without it, history would be really different. Maybe NBTExplorer wouldn't have even existed! And without the original NBTExplorer, this project wouldn't have existed either!
+
+I'm also really thankful to **amwx**. I'm not an experienced Avalonia developer, so I had quite the struggle getting my Dialogs to work. Thanks to amwx's work on the **FluentAvalonia** project, I could leave that roadblock behind, and was another critical pillar to make this project possible.
+
+And although I don't depend on FluentAvalonia itself, I do depend on **.NET** and **Avalonia UI**. These projects are the backbone of NBTLoupe, so I'm really thankful for all the work the .NET Community and the Avalonia Community have done to make this possible.
+
+Talking of the .NET Community, I'm also really thankful to **davidxuang** for the **FluentIcons** library, which helped give NBTLoupe its modern look. And I'm also thankful to **Serilog** and its contributors, which allowed NBTLoupe to easily expand its logging functionality.
+
+Oh, and I have someone else to thank... **YOU**!
+
+I'm a really small developer, and it's thanks to people like you that I can continue doing what I love. NBTLoupe is still a **fairly niche project**, and it's your support which lets me continue iterating over it!
+
+
 ## Attribution
-If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file! That file will also guide you to the respective **LICENSE** files.
+If you need the legal version of my gratitude, you'll find it in the [**NOTICE.md**](./NOTICE.md) file, and the [**THIRD-PARTY-NOTICES.md**](./THIRD-PARTY-NOTICES.md) file! These files will also guide you to the respective **LICENSE** files.
+
+Alternatively, you can see all of them from **right inside the app**! Just go to **Help -> Acknowledgements**!
 
 Everything in this main repository is entirely my own code, unless it is explicitly noted as not. The main example of this are the Dialogs' general shape and styles, which are derived from **FluentAvalonia**.
 

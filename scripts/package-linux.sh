@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#  SPDX-FileCopyrightText: 2024-2026 MallardLuna
+#  SPDX-License-Identifier: MPL-2.0
+#
 #  Copyright (c) 2024-2026 MallardLuna
 #
 #  This Source Code Form is subject to the terms of the Mozilla Public

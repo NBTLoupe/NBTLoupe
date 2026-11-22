@@ -1,4 +1,8 @@
 <!--
+  SPDX-FileCopyrightText: 2025 amwx
+  SPDX-FileCopyrightText: 2024-2026 MallardLuna
+  SPDX-License-Identifier: MPL-2.0 AND MIT
+
   Copyright (c) 2024-2026 MallardLuna
 
   This Source Code Form is subject to the terms of the Mozilla Public
@@ -12,7 +16,7 @@
     Its general shape and styles are licensed under the MIT license. 
     Copyright (c) 2025 amwx
     
-    See LICENSES/FluentAvalonia.txt for the full license text and attribution.
+    See THIRD-PARTY-LICENSES/FluentAvalonia/LICENSE.txt for the full license text and attribution.
     Source repository: https://github.com/amwx/FluentAvalonia
 
     The personalised dialogs are my own, and are licensed under the MPL.
@@ -67,6 +71,11 @@
                                             <!-- About -->
                                             <DataTemplate DataType="{x:Type dialogvms:AboutDialogViewModel}">
                                                 <dialogs:AboutDialogView Loaded="Dialog_OnLoaded" />
+                                            </DataTemplate>
+
+                                            <!-- Acknowledgements -->
+                                            <DataTemplate DataType="{x:Type dialogvms:AcknowledgementsDialogViewModel}">
+                                                <dialogs:AcknowledgementsDialogView Loaded="Dialog_OnLoaded" />
                                             </DataTemplate>
 
                                             <!-- Info -->
@@ -213,7 +222,8 @@
 
                     <Style Selector="^ > ScrollViewer">
                         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
-                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                        <Setter Property="VerticalScrollBarVisibility"
+                                Value="{Binding CurrentDialog?.VerticalScrollBarVisibility, TargetNullValue=Auto}" />
 
                         <Style Selector="^ > Border">
                             <Setter Property="BorderThickness" Value="0,0,0,1" />

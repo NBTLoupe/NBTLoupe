@@ -1,4 +1,7 @@
 /*
+ *  SPDX-FileCopyrightText: 2024-2026 MallardLuna
+ *  SPDX-License-Identifier: MPL-2.0
+ *
  *  Copyright (c) 2024-2026 MallardLuna
  *
  *  This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia.Controls.Primitives;
 using CommunityToolkit.Mvvm.Input;
 using NBTLoupe.ViewModels.Main;
 
@@ -41,6 +45,12 @@ internal abstract partial class DialogHostViewModel : ViewModelBase
     // This allows us to let the Dialogs be a bit (1.55x) wider!
     protected virtual bool IsWide => false;
     internal double MaxWidth => !IsWide ? 640 : 992;
+
+    // This lets a Dialog handle its own scrolling!
+    protected virtual bool HandlesScrolling => false;
+
+    internal ScrollBarVisibility VerticalScrollBarVisibility =>
+        HandlesScrolling ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
 
     // OK is always needed, but it needs to be Toggled based on validation!
     internal virtual bool IsOkEnabled => true;

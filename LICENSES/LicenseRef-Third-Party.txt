@@ -1,0 +1,6 @@
+To ensure legal clarity, I decided to bundle all the unmodified third-party LICENSE files into THIRD-PARTY-LICENSES/ instead of just using generic ones through REUSE.
+But I still wanted to make my code REUSE-complaint! And REUSE gets sad if any file (which includes these) doesn't have SPDX headers.
+Modifying each bundled LICENSE file manually to add a SPDX header would defeat the purpose of bundling them unmodified, so this file stands for them!
+
+In other words, none of the files in THIRD-PARTY-LICENSES/ belong to us. They all belong to their authors, and are licensed under their terms.
+And you should see NOTICE.md and THIRD-PARTY-NOTICES.md to see where they came from.
