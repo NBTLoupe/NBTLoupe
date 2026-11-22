@@ -17,7 +17,7 @@
 ## But why?
 A big chunk of the Minecraft community heavily depends on **NBTExplorer**. And although this shows its excellence, it's also starting to show its age and limited native platform support.
 
-**NBTLoupe** tries to close that gap with the help of **.NET 10** and a GUI written from the ground up in **Avalonia**.
+**NBTLoupe** tries to close that gap with the help of **.NET 11** and a GUI written from the ground up in **Avalonia**.
 
 Right now we fully support **macOS**, **Windows** and **GNU/Linux**; and the idea is to eventually bring it to the web as well!
 

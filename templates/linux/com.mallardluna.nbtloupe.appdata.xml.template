@@ -11,7 +11,7 @@
         <p>A big chunk of the Minecraft community heavily depends on NBTExplorer. And although this
             shows its excellence, it's also starting to show its age and limited native platform
             support.</p>
-        <p>NBTLoupe tries to close that gap with the help of .NET 10 and a GUI written from
+        <p>NBTLoupe tries to close that gap with the help of .NET 11 and a GUI written from
             the ground up in Avalonia.</p>
     </description>
     <launchable type="desktop-id">com.mallardluna.nbtloupe.desktop</launchable>
